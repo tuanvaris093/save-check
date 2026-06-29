@@ -26,7 +26,8 @@ const FormSelect = React.forwardRef<HTMLSelectElement, FormSelectProps>(
     },
     ref,
   ) => {
-    const selectId = id || React.useId();
+    const defaultId = React.useId();
+    const selectId = id || defaultId;
 
     return (
       <div className="flex w-full flex-col gap-1.5">

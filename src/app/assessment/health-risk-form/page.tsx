@@ -17,6 +17,7 @@ import {
   WorkInfoStep,
   ReviewStep,
 } from "@/components/assessment";
+import { HealthRiskStep } from "@/components/assessment/health-risk-step";
 
 const TOTAL_STEPS = 4; // 1: Profile, 2: Work Info, 3: Questions, 4: Review
 
@@ -98,6 +99,11 @@ function HealthRiskFormContent() {
     nextStep();
   };
 
+  const handleHealthRiskNext = (data: any) => {
+    saveDraft({ answers: data });
+    nextStep();
+  }
+
   const handleSubmit = async () => {
     setIsSubmitting(true);
     // TODO: In Phase 10, call real API
@@ -105,7 +111,7 @@ function HealthRiskFormContent() {
       clearDraft();
       setIsSubmitting(false);
       // Dummy submission ID for now
-      router.push(`${ROUTES.RESULT}?submissionId=SUB-20260629-8888`);
+      router.push(`${ROUTES.RESULT}?submissionId=SUB-20260629-9999`);
     }, 1500);
   };
 
@@ -138,37 +144,18 @@ function HealthRiskFormContent() {
           )}
 
           {currentStep === 3 && (
-            <div className="flex flex-col gap-6 animate-fade-in">
-              <div className="rounded-card border border-border bg-surface p-6 text-center shadow-sm">
-                <span className="text-5xl">🩺</span>
-                <h2 className="mt-4 text-section-title font-semibold text-text-primary">
-                  คำถามความเสี่ยงสุขภาพ
-                </h2>
-                <p className="mt-2 text-small text-text-secondary">
-                  จะเชื่อมต่อใน Phase 6 (Health Risk Assessment)
-                </p>
-                <div className="mt-6 flex gap-3">
-                  <button
-                    type="button"
-                    className="flex-1 rounded-button border border-border px-5 py-2.5 text-small font-medium text-text-primary transition-colors hover:bg-muted active:scale-[0.98]"
-                    onClick={prevStep}
-                  >
-                    ย้อนกลับ
-                  </button>
-                  <button
-                    type="button"
-                    className="flex-1 rounded-button bg-primary px-5 py-2.5 text-small font-medium text-white transition-colors hover:bg-primary-deep active:scale-[0.98]"
-                    onClick={nextStep}
-                  >
-                    ถัดไป (ข้ามชั่วคราว)
-                  </button>
-                </div>
-              </div>
-            </div>
+            <HealthRiskStep
+              category={category}
+              defaultValues={draftData.answers as any}
+              onNext={handleHealthRiskNext}
+              onPrev={prevStep}
+            />
           )}
 
           {currentStep === 4 && (
             <ReviewStep
+              type="health_risk"
+              category={category}
               draftData={draftData}
               isSubmitting={isSubmitting}
               onSubmit={handleSubmit}

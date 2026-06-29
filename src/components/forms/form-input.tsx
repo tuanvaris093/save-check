@@ -11,7 +11,8 @@ export interface FormInputProps
 
 const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
   ({ className, label, error, helperText, id, ...props }, ref) => {
-    const inputId = id || React.useId();
+    const defaultId = React.useId();
+    const inputId = id || defaultId;
 
     return (
       <div className="flex w-full flex-col gap-1.5">

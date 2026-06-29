@@ -9,7 +9,8 @@ export interface RadioCardProps extends React.InputHTMLAttributes<HTMLInputEleme
 
 const RadioCard = React.forwardRef<HTMLInputElement, RadioCardProps>(
   ({ className, label, description, icon, id, ...props }, ref) => {
-    const inputId = id || React.useId();
+    const defaultId = React.useId();
+    const inputId = id || defaultId;
 
     return (
       <div className={cn("relative flex", className)}>

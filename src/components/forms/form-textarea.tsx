@@ -11,7 +11,8 @@ export interface FormTextareaProps
 
 const FormTextarea = React.forwardRef<HTMLTextAreaElement, FormTextareaProps>(
   ({ className, label, error, helperText, id, ...props }, ref) => {
-    const textareaId = id || React.useId();
+    const defaultId = React.useId();
+    const textareaId = id || defaultId;
 
     return (
       <div className="flex w-full flex-col gap-1.5">
