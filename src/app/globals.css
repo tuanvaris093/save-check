@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+/* ============================================
+   Save Check - Design System
+   ============================================ */
+
+/* --- Custom Theme Variables --- */
+@theme {
+  /* Primary */
+  --color-primary: #0F63C7;
+  --color-primary-deep: #0B4FAE;
+  --color-primary-soft: #E0F2FE;
+  --color-primary-tint: #F0F9FF;
+
+  /* Success */
+  --color-success: #16A34A;
+  --color-success-soft: #DCFCE7;
+
+  /* Warning */
+  --color-warning: #F59E0B;
+  --color-warning-soft: #FEF3C7;
+
+  /* Danger */
+  --color-danger: #EF4444;
+  --color-danger-soft: #FEE2E2;
+
+  /* Neutral */
+  --color-background: #F8FAFC;
+  --color-surface: #FFFFFF;
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #64748B;
+  --color-border: #E2E8F0;
+  --color-muted: #F1F5F9;
+
+  /* Font Family */
+  --font-sans: "Noto Sans Thai", "Inter", system-ui, -apple-system, sans-serif;
+
+  /* Font Size */
+  --font-size-page-title: 1.5rem;
+  --font-size-section-title: 1.25rem;
+  --font-size-card-title: 1.0625rem;
+  --font-size-body: 1rem;
+  --font-size-small: 0.875rem;
+  --font-size-caption: 0.75rem;
+
+  /* Border Radius */
+  --radius-card: 1rem;
+  --radius-button: 0.875rem;
+  --radius-input: 0.75rem;
+  --radius-badge: 62.4375rem;
+
+  /* Animation */
+  --animate-fade-in: fade-in 0.2s ease-out;
+  --animate-slide-up: slide-up 0.24s ease-out;
+}
+
+/* --- Animations --- */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Base Styles --- */
+html {
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100dvh;
+}
+
+/* --- Focus styles for accessibility --- */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
