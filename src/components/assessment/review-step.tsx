@@ -65,7 +65,7 @@ export function ReviewStep({
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
-      <div className="rounded-card border border-border bg-surface p-5 shadow-sm">
+      <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm">
         <h3 className="mb-4 text-card-title font-semibold text-text-primary">
           ข้อมูลผู้ประเมิน
         </h3>
@@ -94,7 +94,7 @@ export function ReviewStep({
 
       {/* Environment Assessment Result */}
       {type === "environment" && envEvaluation && answers && (
-        <div className="rounded-card border border-border bg-surface p-5 shadow-sm text-center">
+        <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm text-center">
           <div className="flex justify-center mb-3">
             {envEvaluation.isPass ? (
               <CheckCircle2 className="h-16 w-16 text-success animate-in zoom-in" />
@@ -153,7 +153,7 @@ export function ReviewStep({
 
       {/* Health Risk Assessment Result */}
       {type === "health_risk" && hrEvaluation && answers && (
-        <div className="rounded-card border border-border bg-surface p-5 shadow-sm text-center">
+        <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm text-center">
           <div className="flex justify-center mb-3">
             {hrEvaluation.level === "pass" ? (
               <CheckCircle2 className="h-16 w-16 text-success animate-in zoom-in" />
@@ -198,7 +198,7 @@ export function ReviewStep({
 
       {/* Satisfaction Assessment Result */}
       {type === "satisfaction" && satisfactionResult && (
-        <div className="rounded-card border border-border bg-surface p-5 shadow-sm text-center">
+        <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm text-center">
           <div className="flex justify-center mb-3">
             <Star className="h-16 w-16 text-warning fill-warning animate-in zoom-in" />
           </div>
@@ -248,7 +248,7 @@ export function ReviewStep({
                   ข้อเสนอแนะ
                 </p>
                 <p className="text-small text-text-secondary bg-muted p-3 rounded-md italic">
-                  "{satisfactionResult.suggestion}"
+                  &ldquo;{satisfactionResult.suggestion}&rdquo;
                 </p>
               </div>
             )}

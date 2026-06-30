@@ -26,11 +26,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       "inline-flex items-center justify-center whitespace-nowrap rounded-button text-small font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]";
 
     const variants = {
-      primary: "bg-primary text-white hover:bg-primary-deep shadow-sm",
+      primary: "btn-primary-gradient border-none text-white",
       secondary:
         "bg-primary-soft text-primary hover:bg-primary-soft/80 shadow-sm",
       outline:
-        "border border-border bg-surface text-text-primary hover:bg-muted hover:text-text-primary shadow-sm",
+        "btn-secondary-glass",
       ghost: "hover:bg-muted hover:text-text-primary text-text-secondary",
       danger: "bg-danger text-white hover:bg-danger/90 shadow-sm",
     };

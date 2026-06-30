@@ -70,13 +70,18 @@ export function useAssessmentForm({
     }
   }, [draftKey]);
 
-  // Navigation
   const nextStep = useCallback(() => {
-    setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
+    setCurrentStep((prev) => {
+      if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+      return Math.min(prev + 1, totalSteps);
+    });
   }, [totalSteps]);
 
   const prevStep = useCallback(() => {
-    setCurrentStep((prev) => Math.max(prev - 1, 1));
+    setCurrentStep((prev) => {
+      if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+      return Math.max(prev - 1, 1);
+    });
   }, []);
 
   return {

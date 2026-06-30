@@ -1,16 +1,18 @@
 @import "tailwindcss";
 
 /* ============================================
-   Save Check - Design System
+   SafeCheck - Modern Glass Design System
    ============================================ */
 
 /* --- Custom Theme Variables --- */
 @theme {
   /* Primary */
   --color-primary: #0F63C7;
+  --color-primary-bright: #1EA7FF;
   --color-primary-deep: #0B4FAE;
   --color-primary-soft: #E0F2FE;
   --color-primary-tint: #F0F9FF;
+  --color-ice-blue: #F8FCFF;
 
   /* Success */
   --color-success: #16A34A;
@@ -24,11 +26,17 @@
   --color-danger: #EF4444;
   --color-danger-soft: #FEE2E2;
 
+  /* Info */
+  --color-info: #0284C7;
+  --color-info-soft: #E0F2FE;
+
   /* Neutral */
-  --color-background: #F8FAFC;
+  --color-background: #F8FCFF;
   --color-surface: #FFFFFF;
+  --color-surface-soft: #F8FAFC;
   --color-text-primary: #0F172A;
   --color-text-secondary: #64748B;
+  --color-text-muted: #94A3B8;
   --color-border: #E2E8F0;
   --color-muted: #F1F5F9;
 
@@ -36,6 +44,8 @@
   --font-sans: "Noto Sans Thai", "Inter", system-ui, -apple-system, sans-serif;
 
   /* Font Size */
+  --font-size-h1: 2rem;
+  --font-size-h2: 1.5rem;
   --font-size-page-title: 1.5rem;
   --font-size-section-title: 1.25rem;
   --font-size-card-title: 1.0625rem;
@@ -44,48 +54,156 @@
   --font-size-caption: 0.75rem;
 
   /* Border Radius */
-  --radius-card: 1rem;
-  --radius-button: 0.875rem;
-  --radius-input: 0.75rem;
+  --radius-card: 1.5rem;
+  --radius-button: 1.125rem;
+  --radius-input: 1rem;
   --radius-badge: 62.4375rem;
+  --radius-pill: 999px;
+  --radius-sidebar: 2rem;
 
   /* Animation */
-  --animate-fade-in: fade-in 0.2s ease-out;
-  --animate-slide-up: slide-up 0.24s ease-out;
+  --animate-fade-in: fade-in 0.22s ease-out;
+  --animate-slide-up: slide-up 0.26s ease-out;
 }
 
 /* --- Animations --- */
 @keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- Base Styles --- */
+/* --- App Background --- */
 html {
   font-family: var(--font-sans);
   color: var(--color-text-primary);
-  background-color: var(--color-background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   min-height: 100dvh;
+  background:
+    radial-gradient(circle at top left, rgba(30, 167, 255, 0.18), transparent 32%),
+    radial-gradient(circle at top right, rgba(14, 165, 233, 0.12), transparent 28%),
+    linear-gradient(180deg, #F8FCFF 0%, #F0F9FF 45%, #FFFFFF 100%);
+  background-attachment: fixed;
+}
+
+/* --- Glass Card --- */
+.glass-card {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(148, 163, 184, 0.20);
+  box-shadow:
+    0 18px 45px rgba(15, 99, 199, 0.08),
+    0 4px 12px rgba(15, 23, 42, 0.04);
+  border-radius: 1.5rem;
+}
+
+.glass-card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 24px 60px rgba(15, 99, 199, 0.12),
+    0 8px 18px rgba(15, 23, 42, 0.06);
+}
+
+.glass-card-hover:active {
+  transform: scale(0.985);
+}
+
+/* --- Glass Surface (for headers, panels) --- */
+.glass-surface {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+@media (min-width: 768px) {
+  .glass-surface {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom: none;
+    box-shadow: none;
+  }
+}
+
+/* --- Primary Gradient Button --- */
+.btn-primary-gradient {
+  background: linear-gradient(135deg, #1EA7FF 0%, #0F63C7 100%);
+  color: #FFFFFF;
+  border-radius: 1.125rem;
+  height: 52px;
+  box-shadow: 0 12px 28px rgba(30, 167, 255, 0.28);
+  transition: all 0.2s ease;
+}
+
+.btn-primary-gradient:hover {
+  box-shadow: 0 16px 36px rgba(30, 167, 255, 0.36);
+  transform: translateY(-1px);
+}
+
+.btn-primary-gradient:active {
+  transform: scale(0.98);
+}
+
+/* --- Secondary Glass Button --- */
+.btn-secondary-glass {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(14, 165, 233, 0.22);
+  color: #0F63C7;
+  border-radius: 1.125rem;
+  height: 52px;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary-glass:hover {
+  background: rgba(224, 242, 254, 0.6);
+}
+
+/* --- Glass Input --- */
+.glass-input {
+  height: 50px;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass-input:focus {
+  border-color: #1EA7FF;
+  box-shadow: 0 0 0 4px rgba(30, 167, 255, 0.12);
+  outline: none;
+}
+
+/* --- Icon Container --- */
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(224, 242, 254, 0.95), rgba(240, 249, 255, 0.8));
+  color: #0F63C7;
+  flex-shrink: 0;
+}
+
+.icon-container-sm {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
 }
 
 /* --- Focus styles for accessibility --- */
@@ -93,4 +211,15 @@ body {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+/* --- Safe area padding for mobile nav --- */
+.pb-safe-nav {
+  padding-bottom: calc(88px + 16px + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 768px) {
+  .pb-safe-nav {
+    padding-bottom: 2rem;
+  }
 }

@@ -48,7 +48,7 @@ export function HealthRiskStep({
 
   return (
     <form onSubmit={handleSubmit(onNext)} className="flex flex-col gap-6 animate-fade-in" noValidate>
-      <div className="rounded-card border border-border bg-surface p-5 shadow-sm">
+      <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm">
         <h3 className="mb-2 text-card-title font-semibold text-text-primary">
           แบบประเมินความเสี่ยงสุขภาพ ({ASSESSMENT_CATEGORY_LABELS[category]})
         </h3>
@@ -75,15 +75,19 @@ export function HealthRiskStep({
                   {HEALTH_RISK_OPTIONS.map((opt) => (
                     <label
                       key={opt.value}
-                      className="relative flex cursor-pointer items-center gap-3 rounded-md border border-border bg-surface px-4 py-3 transition-all hover:bg-muted focus-within:ring-2 focus-within:ring-primary has-checked:border-primary has-[:checked]:bg-primary-tint"
+                      className="relative flex cursor-pointer items-center gap-3 rounded-md border border-border bg-surface px-4 py-3 transition-all hover:bg-muted active:scale-[0.98] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary has-[:checked]:border-primary has-[:checked]:bg-primary-tint has-[:checked]:shadow-sm"
                     >
                       <input
                         type="radio"
                         value={opt.value}
                         {...register(fieldName)}
-                        className="h-4 w-4 text-primary focus:ring-primary border-border"
+                        className="peer sr-only"
                       />
-                      <span className="text-small font-medium text-text-primary">
+                      {/* Custom radio indicator */}
+                      <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-border bg-surface transition-colors peer-checked:border-primary">
+                        <div className="h-2.5 w-2.5 rounded-full bg-primary opacity-0 transition-opacity peer-checked:opacity-100" />
+                      </div>
+                      <span className="text-small font-medium text-text-primary peer-checked:text-primary">
                         {opt.label}
                       </span>
                     </label>
@@ -100,7 +104,7 @@ export function HealthRiskStep({
         <Button type="button" variant="outline" className="flex-1" onClick={onPrev}>
           ย้อนกลับ
         </Button>
-        <Button type="submit" className="flex-[2]" disabled={!isValid && Object.keys(errors).length > 0}>
+        <Button type="submit" className="flex-[2]" >
           สรุปผลความเสี่ยง
         </Button>
       </div>

@@ -21,7 +21,7 @@ export function QuestionCard({
   return (
     <div
       className={cn(
-        "rounded-card border bg-surface p-5 shadow-sm transition-colors",
+        "rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm transition-colors",
         error ? "border-danger" : "border-border",
         className,
       )}

@@ -50,7 +50,7 @@ export function EnvironmentStep({
       measure_3: undefined,
       working_duration: "",
       twa_8hr: undefined,
-      noise_areas: [{ area_name: "", measure: undefined as any, duration: "" }],
+      noise_areas: category === "noise" ? [{ area_name: "", measure: undefined as any, duration: "" }] : [],
       ...defaultValues,
     } as any,
     mode: "onTouched",
@@ -89,9 +89,14 @@ export function EnvironmentStep({
   useEffect(() => {
     if (defaultValues && Object.keys(defaultValues).length > 0) {
       const mergedDefaults = { ...defaultValues };
-      // ensure we have at least one noise area if category is noise
-      if (category === "noise" && (!mergedDefaults.noise_areas || mergedDefaults.noise_areas.length === 0)) {
-        mergedDefaults.noise_areas = [{ area_name: "", measure: undefined as any, duration: "" }];
+      if (category === "noise") {
+        // ensure we have at least one noise area if category is noise
+        if (!mergedDefaults.noise_areas || mergedDefaults.noise_areas.length === 0) {
+          mergedDefaults.noise_areas = [{ area_name: "", measure: undefined as any, duration: "" }];
+        }
+      } else {
+        // clear noise_areas for non-noise categories to avoid hidden validation errors
+        mergedDefaults.noise_areas = [];
       }
       reset((prev) => ({ ...prev, ...mergedDefaults }));
     }
@@ -116,12 +121,12 @@ export function EnvironmentStep({
       className="flex flex-col gap-6 animate-fade-in"
       noValidate
     >
-      <div className="rounded-card border border-border bg-surface p-5 shadow-sm">
+      <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm">
         <h3 className="mb-4 text-card-title font-semibold text-text-primary">
           แบบฟอร์มบันทึกการตรวจวัด ({ASSESSMENT_CATEGORY_LABELS[category]})
         </h3>
         <div className="flex flex-col gap-4">
-          
+
           {category !== "noise" && (
             <>
               <FormInput
@@ -190,7 +195,7 @@ export function EnvironmentStep({
         </div>
       </div>
 
-      <div className="rounded-card border border-border bg-surface p-5 shadow-sm">
+      <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm">
         <h3 className="mb-4 text-card-title font-semibold text-text-primary flex items-center justify-between">
           <span>
             ค่าที่ตรวจวัดได้ ({unitLabel})
@@ -207,7 +212,7 @@ export function EnvironmentStep({
             <p className="text-caption text-text-secondary -mt-2">
               ระบุพื้นที่ทำงาน ระดับเสียง และระยะเวลาการตรวจวัด (เพิ่มได้สูงสุด 5 พื้นที่)
             </p>
-            
+
             <div className="flex flex-col gap-4">
               {fields.map((field, index) => (
                 <div key={field.id} className="relative grid grid-cols-1 md:grid-cols-3 gap-4 p-4 pt-10 border border-border rounded-lg bg-background shadow-sm animate-in fade-in zoom-in-95 duration-200">
@@ -224,16 +229,16 @@ export function EnvironmentStep({
                       <Trash2 className="h-4 w-4" />
                     </button>
                   )}
-                  
+
                   <FormInput
-                    label="พื้นที่ทำงาน *"
+                    label="พื้นที่ทำงาน"
                     placeholder="เช่น โซนเครื่องจักร"
                     required
                     {...register(`noise_areas.${index}.area_name` as never)}
                     error={noiseErrors?.[index]?.area_name?.message}
                   />
                   <FormInput
-                    label="ความดังเสียง (dBA) *"
+                    label="ความดังเสียง (dBA)"
                     type="number"
                     inputMode="decimal"
                     step="0.1"
@@ -267,7 +272,7 @@ export function EnvironmentStep({
             {/* TWA Field */}
             <div className="mt-4 pt-4 border-t border-border">
               <FormInput
-                label="ระดับเสียงเฉลี่ย TWA 8 ชั่วโมง (dBA) *"
+                label="ระดับเสียงเฉลี่ย TWA 8 ชั่วโมง (dBA)"
                 type="number"
                 inputMode="decimal"
                 step="0.1"
@@ -288,7 +293,7 @@ export function EnvironmentStep({
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <FormInput
-                label="จุดที่ 1 *"
+                label="จุดที่ 1 "
                 type="number"
                 inputMode="decimal"
                 step="0.1"
@@ -332,7 +337,7 @@ export function EnvironmentStep({
         <Button
           type="submit"
           className="flex-[2]"
-          disabled={!isValid && Object.keys(errors).length > 0}
+
         >
           สรุปผลการประเมิน
         </Button>

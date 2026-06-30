@@ -77,16 +77,17 @@ export default function SatisfactionFormPage() {
   };
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="flex min-h-dvh flex-col pb-safe-nav max-w-[800px] mx-auto w-full md:px-8 md:py-6">
       <PageHeader
         title="แบบประเมินความพึงพอใจ"
         subtitle="ตอบคำถามตามขั้นตอน"
         showBack
         backHref={ROUTES.HOME}
+        className="md:px-0 md:bg-transparent md:backdrop-blur-none border-none md:border-none"
       />
 
-      <main className="flex-1 px-4 py-2">
-        <StepProgress currentStep={currentStep} totalSteps={totalSteps} />
+      <main className="flex-1 px-4 py-2 md:px-8 md:py-6 md:glass-card md:mt-4 md:mb-10">
+        <StepProgress currentStep={currentStep} totalSteps={totalSteps} className="md:pt-0" />
 
         <div className="mt-4 pb-8">
           {currentStep === 1 && (

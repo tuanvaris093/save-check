@@ -51,7 +51,7 @@ export function WorkInfoStep({
       className="flex flex-col gap-6 animate-fade-in"
       noValidate
     >
-      <div className="rounded-card border border-border bg-surface p-5 shadow-sm">
+      <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm">
         <h3 className="mb-4 text-card-title font-semibold text-text-primary">
           ข้อมูลการปฏิบัติงาน
         </h3>
@@ -109,7 +109,7 @@ export function WorkInfoStep({
         </div>
       </div>
 
-      <div className="rounded-card border border-border bg-surface p-5 shadow-sm">
+      <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm">
         <h3 className="mb-4 text-card-title font-semibold text-text-primary">
           พื้นที่ปฏิบัติงาน
         </h3>
@@ -137,7 +137,7 @@ export function WorkInfoStep({
         <Button
           type="submit"
           className="flex-[2]"
-          disabled={!isValid && Object.keys(errors).length > 0}
+          
         >
           ถัดไป
         </Button>

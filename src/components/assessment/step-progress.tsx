@@ -26,7 +26,7 @@ export function StepProgress({
           {Math.round(progressPercentage)}%
         </span>
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+      <div className="h-3 w-full overflow-hidden rounded-full border border-primary/25 bg-white/70 shadow-sm backdrop-blur-md">
         <div
           className="h-full rounded-full bg-primary transition-all duration-300 ease-out"
           style={{ width: `${progressPercentage}%` }}

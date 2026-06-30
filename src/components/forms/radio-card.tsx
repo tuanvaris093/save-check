@@ -29,15 +29,19 @@ const RadioCard = React.forwardRef<HTMLInputElement, RadioCardProps>(
             "peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2",
             "peer-checked:border-primary peer-checked:bg-primary-tint peer-checked:shadow-sm",
             "peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
+            "peer-checked:[&_.radio-icon]:text-primary",
+            "peer-checked:[&_.radio-label]:text-primary",
+            "peer-checked:[&_.radio-indicator]:border-primary",
+            "peer-checked:[&_.radio-dot]:opacity-100",
           )}
         >
           {icon && (
-            <div className="shrink-0 text-text-secondary peer-checked:text-primary">
+            <div className="shrink-0 text-text-secondary radio-icon transition-colors">
               {icon}
             </div>
           )}
           <div className="flex flex-1 flex-col gap-0.5">
-            <span className="text-body font-medium text-text-primary peer-checked:text-primary">
+            <span className="text-body font-medium text-text-primary radio-label transition-colors">
               {label}
             </span>
             {description && (
@@ -48,15 +52,8 @@ const RadioCard = React.forwardRef<HTMLInputElement, RadioCardProps>(
           </div>
 
           {/* Custom radio circle indicator */}
-          <div className={cn(
-            "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors",
-            "border-border bg-surface",
-            "peer-checked:border-primary"
-          )}>
-            <div className={cn(
-              "h-2.5 w-2.5 rounded-full bg-primary opacity-0 transition-opacity",
-              "peer-checked:opacity-100"
-            )} />
+          <div className="radio-indicator flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-border bg-surface transition-colors">
+            <div className="radio-dot h-2.5 w-2.5 rounded-full bg-primary opacity-0 transition-opacity" />
           </div>
         </label>
       </div>

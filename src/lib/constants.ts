@@ -26,11 +26,7 @@ export const ASSESSMENT_TYPE_DESCRIPTIONS: Record<AssessmentType, string> = {
     "ประเมินความพึงพอใจด้านเนื้อหา การออกแบบ การใช้งาน และประโยชน์ของแอป",
 };
 
-export const ASSESSMENT_TYPE_ICONS: Record<AssessmentType, string> = {
-  environment: "📋",
-  health_risk: "🩺",
-  satisfaction: "⭐",
-};
+// Icon mapping moved to lucide-react components (no emoji)
 
 // --- Assessment Category Labels ---
 
@@ -41,12 +37,7 @@ export const ASSESSMENT_CATEGORY_LABELS: Record<AssessmentCategory, string> = {
   general: "ทั่วไป",
 };
 
-export const ASSESSMENT_CATEGORY_ICONS: Record<AssessmentCategory, string> = {
-  light: "💡",
-  noise: "🔊",
-  heat: "🌡️",
-  general: "📝",
-};
+// Category icon mapping moved to lucide-react components (no emoji)
 
 // --- Risk Level Labels ---
 

@@ -34,7 +34,7 @@ export function SatisfactionStep({
 
   return (
     <form onSubmit={handleSubmit(onNext)} className="flex flex-col gap-6 animate-fade-in" noValidate>
-      <div className="rounded-card border border-border bg-surface p-5 shadow-sm">
+      <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm">
         <h3 className="mb-2 text-card-title font-semibold text-text-primary">
           แบบประเมินความพึงพอใจ
         </h3>
@@ -69,7 +69,7 @@ export function SatisfactionStep({
                         {SATISFACTION_OPTIONS.map((opt) => (
                           <label
                             key={opt.value}
-                            className="relative flex flex-col items-center justify-center cursor-pointer gap-1 rounded-md border border-border bg-surface p-2 sm:py-3 transition-all hover:bg-muted focus-within:ring-2 focus-within:ring-primary has-checked:border-primary has-[:checked]:bg-primary-tint has-[:checked]:border-primary"
+                            className="group relative flex flex-col items-center justify-center cursor-pointer gap-1 rounded-md border border-border bg-surface p-2 sm:py-3 transition-all hover:bg-muted focus-within:ring-2 focus-within:ring-primary has-[:checked]:border-primary has-[:checked]:bg-primary-tint"
                           >
                             <input
                               type="radio"
@@ -112,7 +112,7 @@ export function SatisfactionStep({
         <Button type="button" variant="outline" className="flex-1" onClick={onPrev}>
           ย้อนกลับ
         </Button>
-        <Button type="submit" className="flex-[2]" disabled={!isValid && Object.keys(errors).length > 0}>
+        <Button type="submit" className="flex-[2]" >
           ดูผลสรุป
         </Button>
       </div>
