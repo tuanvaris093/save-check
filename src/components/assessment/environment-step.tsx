@@ -131,7 +131,7 @@ export function EnvironmentStep({
   const watchedLightAreas = watch("light_areas");
   const heatErrors = errors.heat_areas as any;
 
-  let standards = getEnvironmentStandards(category);
+  const standards = getEnvironmentStandards(category);
 
   useEffect(() => {
     if (category !== "light" && standards.length === 1) {

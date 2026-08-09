@@ -179,7 +179,7 @@ export function ReviewStep({
               if (pt.start_time && pt.end_time) {
                 const [startH, startM] = pt.start_time.split(":").map(Number);
                 const [endH, endM] = pt.end_time.split(":").map(Number);
-                let diffMins = (endH * 60 + endM) - (startH * 60 + startM);
+                const diffMins = (endH * 60 + endM) - (startH * 60 + startM);
                 if (diffMins > 0) {
                   totalTime = `${diffMins} น.`;
                 }
