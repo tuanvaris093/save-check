@@ -112,7 +112,7 @@ export function SatisfactionStep({
         <Button type="button" variant="outline" className="flex-1" onClick={onPrev}>
           ย้อนกลับ
         </Button>
-        <Button type="submit" className="flex-[2]" >
+        <Button type="submit" className="flex-1" >
           ดูผลสรุป
         </Button>
       </div>

@@ -48,6 +48,33 @@ export type RespondentProfileFormValues = z.infer<
   typeof respondentProfileSchema
 >;
 
+// --- Step 1 (Environment): Inspection Data Schema ---
+
+export const inspectionDataSchema = z
+  .object({
+    inspector_name: z.string().min(2, "กรุณาระบุชื่อ-นามสกุลผู้ตรวจ"),
+    position: z.string().min(2, "กรุณาระบุตำแหน่ง"),
+    inspection_location: z.string().min(2, "กรุณาระบุสถานที่ตรวจ"),
+    inspection_date: z.string().min(1, "กรุณาระบุวันที่ทำการตรวจวัด"),
+    equipment: z.string().min(2, "กรุณาระบุเครื่องมือที่ใช้ (เช่น Lux meter รุ่น: tm-204)"),
+    measurement_technique: z.string().min(1, "กรุณาเลือกเทคนิคการตรวจวัด"),
+    start_time: z.string().min(1, "กรุณาระบุเวลาเริ่ม"),
+    end_time: z.string().min(1, "กรุณาระบุเวลาสิ้นสุด"),
+  })
+  .refine(
+    (data) => {
+      if (!data.start_time || !data.end_time) return true;
+      // Compare HH:mm strings directly since they are zero-padded (e.g., 07:00 < 07:01)
+      return data.end_time > data.start_time;
+    },
+    {
+      message: "เวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม",
+      path: ["end_time"],
+    }
+  );
+
+export type InspectionDataFormValues = z.infer<typeof inspectionDataSchema>;
+
 // --- Step 2: Work Info Schema ---
 
 export const workInfoSchema = z.object({
@@ -70,7 +97,6 @@ export const workInfoSchema = z.object({
     .max(7, "ไม่เกิน 7 วัน")
     .optional()
     .or(z.literal("")),
-  work_area: z.string().min(2, "กรุณาระบุพื้นที่ปฏิบัติงาน"),
 });
 
 export type WorkInfoFormValues = z.infer<typeof workInfoSchema>;
@@ -80,6 +106,7 @@ export type WorkInfoFormValues = z.infer<typeof workInfoSchema>;
 export interface AssessmentDraftData {
   profile?: RespondentProfileFormValues;
   workInfo?: WorkInfoFormValues;
+  inspectionData?: InspectionDataFormValues;
   answers?: Record<string, string | number>;
   measuredValues?: Record<string, string>;
   lastSavedAt: string;

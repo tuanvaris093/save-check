@@ -33,7 +33,6 @@ export function WorkInfoStep({
       work_experience_years: undefined,
       working_hours_per_day: undefined,
       working_days_per_week: undefined,
-      work_area: "",
       ...defaultValues,
     },
     mode: "onTouched",
@@ -109,22 +108,6 @@ export function WorkInfoStep({
         </div>
       </div>
 
-      <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm">
-        <h3 className="mb-4 text-card-title font-semibold text-text-primary">
-          พื้นที่ปฏิบัติงาน
-        </h3>
-        <div className="flex flex-col gap-4">
-          <FormInput
-            label="ระบุพื้นที่ปฏิบัติงาน / ห้อง"
-            placeholder="เช่น อาคาร A ชั้น 2 ห้อง 201"
-            required
-            {...register("work_area")}
-            error={errors.work_area?.message}
-            helperText="ระบุให้ชัดเจนเพื่อให้ง่ายต่อการประเมินสภาพแวดล้อม"
-          />
-        </div>
-      </div>
-
       <div className="mt-2 flex gap-3 pb-8">
         <Button
           type="button"
@@ -136,7 +119,7 @@ export function WorkInfoStep({
         </Button>
         <Button
           type="submit"
-          className="flex-[2]"
+          className="flex-1"
           
         >
           ถัดไป

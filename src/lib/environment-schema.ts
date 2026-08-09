@@ -10,13 +10,13 @@ export const environmentMeasurementSchema = z.object({
   // Heat specific
   workload_level: z.string().optional(), 
   
-  // Standard
+  // Standard (Global for Noise/Heat)
   standard_value: z.preprocess(
     (val) => (val === "" || val === undefined || val === null ? undefined : Number(val)),
-    z.number({ invalid_type_error: "กรุณาเลือกมาตรฐาน" }).min(1, "กรุณาเลือกมาตรฐาน")
-  ) as z.ZodType<number, z.ZodTypeDef, any>,
+    z.number().min(1).optional()
+  ) as z.ZodType<number | undefined, z.ZodTypeDef, any>,
   
-  // Generic Measures (Used by Light and Heat)
+  // Generic Measures (Used by Heat)
   measure_1: z.preprocess(
     (val) => (val === "" || val === undefined || val === null ? undefined : Number(val)),
     z.number().min(0, "ค่าตรวจวัดไม่สามารถติดลบได้").optional()
@@ -34,17 +34,93 @@ export const environmentMeasurementSchema = z.object({
   working_duration: z.string().optional(),
   twa_8hr: z.preprocess(
     (val) => (val === "" || val === undefined || val === null ? undefined : Number(val)),
-    z.number().min(0).optional()
+    z.number({ invalid_type_error: "กรุณาระบุค่า" }).min(0).optional()
   ) as z.ZodType<number | undefined, z.ZodTypeDef, any>,
   
   noise_areas: z.array(
     z.object({
-      area_name: z.string().min(1, "กรุณาระบุพื้นที่ทำงาน"),
+      location_desc: z.string().min(1, "กรุณาระบุสถานที่/ลักษณะงาน"),
+      min_dBA: z.preprocess(
+        (val) => (val === "" || val === undefined || val === null ? undefined : Number(val)),
+        z.number({ invalid_type_error: "กรุณาระบุค่า" }).min(0, "ไม่สามารถติดลบได้")
+      ) as z.ZodType<number, z.ZodTypeDef, any>,
+      max_dBA: z.preprocess(
+        (val) => (val === "" || val === undefined || val === null ? undefined : Number(val)),
+        z.number({ invalid_type_error: "กรุณาระบุค่า" }).min(0, "ไม่สามารถติดลบได้")
+      ) as z.ZodType<number, z.ZodTypeDef, any>,
+      avg_dBA: z.preprocess(
+        (val) => (val === "" || val === undefined || val === null ? undefined : Number(val)),
+        z.number({ invalid_type_error: "กรุณาระบุค่า" }).min(0, "ไม่สามารถติดลบได้")
+      ) as z.ZodType<number, z.ZodTypeDef, any>,
+      remark: z.string().optional(),
+    })
+  ).optional(),
+
+  // Light specific fields
+  light_areas: z.array(
+    z.object({
+      location_desc: z.string().min(1, "กรุณาระบุสถานที่/ลักษณะงาน"),
+      standard_value: z.preprocess(
+        (val) => (val === "" || val === undefined || val === null ? undefined : Number(val)),
+        z.number({ invalid_type_error: "กรุณาเลือกมาตรฐาน" }).min(1, "กรุณาเลือกมาตรฐาน")
+      ) as z.ZodType<number, z.ZodTypeDef, any>,
+      standard_text: z.string().optional(),
       measure: z.preprocess(
         (val) => (val === "" || val === undefined || val === null ? undefined : Number(val)),
-        z.number({ invalid_type_error: "กรุณาระบุค่า dBA" }).min(0, "ไม่สามารถติดลบได้")
+        z.number({ invalid_type_error: "กรุณาระบุค่า Lux" }).min(0, "ไม่สามารถติดลบได้")
       ) as z.ZodType<number, z.ZodTypeDef, any>,
-      duration: z.string().optional(),
+      remark: z.string().optional(),
+    })
+  ).optional(),
+  // Heat specific fields
+  heat_areas: z.array(
+    z.object({
+      location_desc: z.string().min(1, "กรุณาระบุสถานที่/แผนกตรวจวัด"),
+      start_time: z.string().min(1, "กรุณาระบุเวลาเริ่มต้น"),
+      end_time: z.string().min(1, "กรุณาระบุเวลาสิ้นสุด"),
+      db_temp: z.preprocess(
+        (val) => (val === "" || val === undefined || val === null ? undefined : Number(val)),
+        z.number().min(0, "ไม่สามารถติดลบได้").optional()
+      ) as z.ZodType<number | undefined, z.ZodTypeDef, any>,
+      wb_temp: z.preprocess(
+        (val) => (val === "" || val === undefined || val === null ? undefined : Number(val)),
+        z.number().min(0, "ไม่สามารถติดลบได้").optional()
+      ) as z.ZodType<number | undefined, z.ZodTypeDef, any>,
+      gt_temp: z.preprocess(
+        (val) => (val === "" || val === undefined || val === null ? undefined : Number(val)),
+        z.number().min(0, "ไม่สามารถติดลบได้").optional()
+      ) as z.ZodType<number | undefined, z.ZodTypeDef, any>,
+      wbgt_in: z.preprocess(
+        (val) => (val === "" || val === undefined || val === null ? undefined : Number(val)),
+        z.number({ invalid_type_error: "กรุณาระบุค่า" }).min(0, "ไม่สามารถติดลบได้").optional()
+      ) as z.ZodType<number | undefined, z.ZodTypeDef, any>,
+      wbgt_type: z.enum(["in", "out"]).default("in").optional(),
+      workload: z.string().min(1, "กรุณาเลือกระดับภาระงาน"),
+      wbgt_avg: z.preprocess(
+        (val) => (val === "" || val === undefined || val === null ? undefined : Number(val)),
+        z.number({ invalid_type_error: "กรุณาระบุค่า WBGT เฉลี่ย" }).min(0, "ไม่สามารถติดลบได้")
+      ) as z.ZodType<number, z.ZodTypeDef, any>,
+      standard_value: z.preprocess(
+        (val) => (val === "" || val === undefined || val === null ? undefined : Number(val)),
+        z.number({ invalid_type_error: "กรุณาระบุมาตรฐาน" }).min(0, "ไม่สามารถติดลบได้")
+      ) as z.ZodType<number, z.ZodTypeDef, any>,
+      remark: z.string().optional(),
+    }).superRefine((data, ctx) => {
+      if (data.start_time && data.end_time) {
+        const [startHours, startMinutes] = data.start_time.split(':').map(Number);
+        const [endHours, endMinutes] = data.end_time.split(':').map(Number);
+        
+        const startTotalMinutes = (startHours * 60) + startMinutes;
+        const endTotalMinutes = (endHours * 60) + endMinutes;
+        
+        if (startTotalMinutes >= endTotalMinutes) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "เวลาสิ้นสุดต้องมากกว่าเวลาเริ่มต้น",
+            path: ["end_time"],
+          });
+        }
+      }
     })
   ).optional(),
 });
@@ -62,8 +138,19 @@ export const LIGHT_STANDARDS = [
   { value: 300, label: "300 Lux - งานละเอียดปานกลาง" },
   { value: 400, label: "400 Lux - งานสำนักงานทั่วไป" },
   { value: 500, label: "500 Lux - งานละเอียด/ห้องตรวจ" },
-  { value: 750, label: "750 Lux - งานละเอียดมาก" },
-  { value: 1000, label: "1000 Lux - งานละเอียดพิเศษ/ห้องผ่าตัด" },
+  { value: 750, label: "750 Lux - งานรายละเอียดมาก" },
+  { value: 1000, label: "1000 Lux - งานรายละเอียดพิเศษ/ห้องผ่าตัด" },
+];
+
+export const LIGHT_POINT_STANDARDS = [
+  { value: 50, display: "50", label: "50 Lux (ทางเดิน/บันได)" },
+  { value: 100, display: "100", label: "100 Lux (งานหยาบ/โกดัง)" },
+  { value: 200, display: "200", label: "200 Lux (งานปานกลาง)" },
+  { value: 300, display: "300", label: "300 Lux (จุดฉีดยา/หัตถการ/งานทั่วไป)" },
+  { value: 400, display: "400-500", label: "400-500 Lux (โต๊ะปฏิบัติงานหน้าคอม)" },
+  { value: 500, display: "500", label: "500 Lux (งานรายละเอียด/ห้องตรวจ)" },
+  { value: 750, display: "750", label: "750 Lux (งานรายละเอียดมาก)" },
+  { value: 1000, display: "1000", label: "1000 Lux (ห้องผ่าตัด)" },
 ];
 
 export const NOISE_STANDARDS = [

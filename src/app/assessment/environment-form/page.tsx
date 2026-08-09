@@ -14,13 +14,12 @@ import { useAssessmentForm } from "@/hooks/use-assessment";
 import { LoadingState } from "@/components/ui";
 import {
   StepProgress,
-  ProfileStep,
-  WorkInfoStep,
+  InspectionDataStep,
   ReviewStep,
   EnvironmentStep,
 } from "@/components/assessment";
 
-const TOTAL_STEPS = 4; // 1: Profile, 2: Work Info, 3: Environment Measurement, 4: Review
+const TOTAL_STEPS = 3; // 1: Inspection Data, 2: Environment Measurement, 3: Review
 
 function EnvironmentFormContent() {
   const searchParams = useSearchParams();
@@ -91,13 +90,8 @@ function EnvironmentFormContent() {
     );
   }
 
-  const handleProfileNext = (data: any) => {
-    saveDraft({ profile: data });
-    nextStep();
-  };
-
-  const handleWorkInfoNext = (data: any) => {
-    saveDraft({ workInfo: data });
+  const handleInspectionDataNext = (data: any) => {
+    saveDraft({ inspectionData: data });
     nextStep();
   };
 
@@ -132,21 +126,13 @@ function EnvironmentFormContent() {
 
         <div className="mt-4 pb-8">
           {currentStep === 1 && (
-            <ProfileStep
-              defaultValues={draftData.profile}
-              onNext={handleProfileNext}
+            <InspectionDataStep
+              defaultValues={draftData.inspectionData}
+              onNext={handleInspectionDataNext}
             />
           )}
 
           {currentStep === 2 && (
-            <WorkInfoStep
-              defaultValues={draftData.workInfo}
-              onNext={handleWorkInfoNext}
-              onPrev={prevStep}
-            />
-          )}
-
-          {currentStep === 3 && (
             <EnvironmentStep
               category={category}
               defaultValues={draftData.answers as any}
@@ -155,7 +141,7 @@ function EnvironmentFormContent() {
             />
           )}
 
-          {currentStep === 4 && (
+          {currentStep === 3 && (
             <ReviewStep
               category={category}
               draftData={draftData}
