@@ -1,12 +1,13 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ROUTES } from "@/lib/constants";
+import { HomeFooter } from "@/components/layout/home-footer";
 import {
   ASSESSMENT_TYPE_LABELS,
   ASSESSMENT_TYPE_DESCRIPTIONS,
 } from "@/lib/constants";
 import type { AssessmentType } from "@/types";
 import {
-  ShieldCheck,
   ClipboardCheck,
   HeartPulse,
   Star,
@@ -51,8 +52,15 @@ export default function HomePage() {
         <div className="mx-auto max-w-[1200px]">
           {/* Hero Section */}
           <div className="mb-10 text-center md:text-left md:mb-12">
-            <div className="icon-container mx-auto mb-4 md:mx-0">
-              <ShieldCheck className="h-7 w-7" strokeWidth={2} />
+            <div className="mx-auto mb-4 md:mx-0 w-fit">
+              <Image
+                src="/assets/logo_savecheck.webp"
+                alt="SafeCheck Logo"
+                width={64}
+                height={64}
+                className="h-16 w-16 rounded-2xl object-contain drop-shadow-md"
+                priority
+              />
             </div>
             <h1 className="text-h2 md:text-h1 font-bold text-text-primary">
               SafeCheck
@@ -118,6 +126,9 @@ export default function HomePage() {
               <ChevronRight className="h-6 w-6 text-primary shrink-0 md:hidden" />
             </Link>
           </div>
+
+          {/* Copyright & Credits Footer */}
+          <HomeFooter />
         </div>
       </main>
     </div>

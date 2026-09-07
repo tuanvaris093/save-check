@@ -6,6 +6,8 @@ import { PageHeader } from "@/components/layout";
 import { ROUTES } from "@/lib/constants";
 import { useAssessmentForm } from "@/hooks/use-assessment";
 import { LoadingState } from "@/components/ui";
+import { createSubmission } from "@/lib/api";
+import { calculateSatisfactionResult } from "@/lib/satisfaction-schema";
 import {
   StepProgress,
   SatisfactionStep,
@@ -55,13 +57,55 @@ export default function SatisfactionFormPage() {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    // TODO: In Phase 10, call real API
-    setTimeout(() => {
-      clearDraft();
-      setIsSubmitting(false);
-      // Dummy submission ID for now
-      router.push(`${ROUTES.RESULT}?submissionId=SUB-20260629-7777`);
-    }, 1500);
+
+    const now = new Date();
+    const datePart = now.toISOString().slice(0, 10).replace(/-/g, "");
+    const randPart = Math.floor(1000 + Math.random() * 9000);
+    const submissionCode = `SUB-${datePart}-${randPart}`;
+
+    let overallAvg = 4.8;
+    if (draftData.answers) {
+      const res = calculateSatisfactionResult(draftData.answers as any);
+      overallAvg = res.overallAvg;
+    }
+
+    const newSubmission = {
+      id: Date.now(),
+      submission_code: submissionCode,
+      assessment_type: "satisfaction",
+      assessment_category: "general",
+      started_at: draftData.lastSavedAt || new Date().toISOString(),
+      completed_at: new Date().toISOString(),
+      status: "completed",
+      overall_score: overallAvg,
+      overall_level: "pass",
+      answers: draftData.answers,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    try {
+      // 1. Send to Cloudflare Workers Backend API
+      await createSubmission(newSubmission);
+    } catch (apiErr) {
+      console.warn("Backend API unavailable, continuing with local storage", apiErr);
+    }
+
+    try {
+      // 2. Persist to localStorage for offline cache
+      const stored = localStorage.getItem("save_check_submissions");
+      const list = stored ? JSON.parse(stored) : [];
+      localStorage.setItem(
+        "save_check_submissions",
+        JSON.stringify([newSubmission, ...list])
+      );
+    } catch (err) {
+      console.error("Failed to save satisfaction submission to localStorage", err);
+    }
+
+    clearDraft();
+    setIsSubmitting(false);
+    router.push(`${ROUTES.RESULT}?submissionId=${submissionCode}`);
   };
 
   return (

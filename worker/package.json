@@ -1,0 +1,26 @@
+{
+  "name": "save-check-worker",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "login": "wrangler login",
+    "worker:login": "wrangler login",
+    "typecheck": "tsc --noEmit",
+    "deploy": "wrangler deploy",
+    "worker:deploy": "wrangler deploy",
+    "db:create": "wrangler d1 create save-check-db",
+    "db:migrate:local": "wrangler d1 execute save-check-db --local --file=./src/db/schema.sql",
+    "db:seed:local": "wrangler d1 execute save-check-db --local --file=./src/db/seed.sql",
+    "db:migrate:remote": "wrangler d1 execute save-check-db --remote --file=./src/db/schema.sql",
+    "db:seed:remote": "wrangler d1 execute save-check-db --remote --file=./src/db/seed.sql"
+  },
+  "dependencies": {
+    "hono": "^4.7.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250224.0",
+    "typescript": "^5.8.3",
+    "wrangler": "^3.114.0"
+  }
+}

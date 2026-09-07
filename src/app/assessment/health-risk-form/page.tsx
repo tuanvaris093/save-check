@@ -10,6 +10,7 @@ import {
 } from "@/lib/constants";
 import { isValidCategory } from "@/lib/utils";
 import type { AssessmentCategory } from "@/types";
+import { createSubmission } from "@/lib/api";
 import { useAssessmentForm } from "@/hooks/use-assessment";
 import { LoadingState } from "@/components/ui";
 import {
@@ -19,6 +20,10 @@ import {
   ReviewStep,
 } from "@/components/assessment";
 import { HealthRiskStep } from "@/components/assessment/health-risk-step";
+import {
+  calculateHealthRiskScore,
+  evaluateHealthRiskResult,
+} from "@/lib/health-risk-schema";
 
 const TOTAL_STEPS = 4; // 1: Profile, 2: Work Info, 3: Questions, 4: Review
 
@@ -109,13 +114,59 @@ function HealthRiskFormContent() {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    // TODO: In Phase 10, call real API
-    setTimeout(() => {
-      clearDraft();
-      setIsSubmitting(false);
-      // Dummy submission ID for now
-      router.push(`${ROUTES.RESULT}?submissionId=SUB-20260629-9999`);
-    }, 1500);
+
+    const now = new Date();
+    const datePart = now.toISOString().slice(0, 10).replace(/-/g, "");
+    const randPart = Math.floor(1000 + Math.random() * 9000);
+    const submissionCode = `SUB-${datePart}-${randPart}`;
+
+    let score = 0;
+    let level: any = "pass";
+    if (draftData.answers) {
+      score = calculateHealthRiskScore(draftData.answers as any);
+      const evalResult = evaluateHealthRiskResult(score, category);
+      level = evalResult.level;
+    }
+
+    const newSubmission = {
+      id: Date.now(),
+      submission_code: submissionCode,
+      assessment_type: "health_risk",
+      assessment_category: category,
+      started_at: draftData.lastSavedAt || new Date().toISOString(),
+      completed_at: new Date().toISOString(),
+      status: "completed",
+      overall_score: score,
+      overall_level: level,
+      profile: draftData.profile,
+      workInfo: draftData.workInfo,
+      answers: draftData.answers,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    try {
+      // 1. Send to Cloudflare Workers Backend API
+      await createSubmission(newSubmission);
+    } catch (apiErr) {
+      console.warn("Backend API unavailable, continuing with local storage", apiErr);
+    }
+
+    try {
+      // 2. Persist to localStorage for offline cache
+      const stored = localStorage.getItem("save_check_submissions");
+      const list = stored ? JSON.parse(stored) : [];
+      localStorage.setItem(
+        "save_check_submissions",
+        JSON.stringify([newSubmission, ...list])
+      );
+    } catch (err) {
+      console.error("Failed to save health risk submission to localStorage", err);
+    }
+
+    clearDraft();
+    setIsSubmitting(false);
+    router.push(`${ROUTES.RESULT}?submissionId=${submissionCode}`);
   };
 
   return (

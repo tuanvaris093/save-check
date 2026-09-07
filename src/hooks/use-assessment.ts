@@ -20,9 +20,7 @@ export function useAssessmentForm({
 }: UseAssessmentFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [draftData, setDraftData] = useState<AssessmentDraftData>({
-    lastSavedAt: new Date().toISOString(),
-  });
+  const [draftData, setDraftData] = useState<AssessmentDraftData>({});
 
   const draftKey = getDraftKey(type, category);
 

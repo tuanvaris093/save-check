@@ -57,7 +57,7 @@ export const inspectionDataSchema = z
     inspection_location: z.string().min(2, "กรุณาระบุสถานที่ตรวจ"),
     inspection_date: z.string().min(1, "กรุณาระบุวันที่ทำการตรวจวัด"),
     equipment: z.string().min(2, "กรุณาระบุเครื่องมือที่ใช้ (เช่น Lux meter รุ่น: tm-204)"),
-    measurement_technique: z.string().min(1, "กรุณาเลือกเทคนิคการตรวจวัด"),
+    measurement_technique: z.string().optional(),
     start_time: z.string().min(1, "กรุณาระบุเวลาเริ่ม"),
     end_time: z.string().min(1, "กรุณาระบุเวลาสิ้นสุด"),
   })
@@ -99,6 +99,8 @@ export const workInfoSchema = z.object({
     .or(z.literal("")),
 });
 
+import type { LayoutFileInfo } from "@/types";
+
 export type WorkInfoFormValues = z.infer<typeof workInfoSchema>;
 
 // --- Helper type for the entire draft state ---
@@ -109,5 +111,6 @@ export interface AssessmentDraftData {
   inspectionData?: InspectionDataFormValues;
   answers?: Record<string, string | number>;
   measuredValues?: Record<string, string>;
-  lastSavedAt: string;
+  layoutFile?: LayoutFileInfo | null;
+  lastSavedAt?: string;
 }

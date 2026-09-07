@@ -17,6 +17,7 @@ interface SubmissionListItemProps {
   date: string;
   score?: number | null;
   level?: RiskLevel | null;
+  hasLayout?: boolean;
   className?: string;
 }
 
@@ -27,6 +28,7 @@ export function SubmissionListItem({
   date,
   score,
   level,
+  hasLayout,
   className,
 }: SubmissionListItemProps) {
   return (
@@ -39,11 +41,22 @@ export function SubmissionListItem({
     >
       <div className="flex items-center justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <h4 className="truncate text-small font-semibold text-text-primary group-hover:text-primary">
               {submissionId}
             </h4>
             {level && <StatusBadge status={level} />}
+            {type === "environment" && (
+              hasLayout ? (
+                <span className="rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 px-2 py-0.5 text-[10px] font-medium">
+                  มีผังห้อง
+                </span>
+              ) : (
+                <span className="rounded-full bg-amber-50 text-amber-700 border border-amber-200/60 px-2 py-0.5 text-[10px] font-medium">
+                  รอแนบผัง
+                </span>
+              )
+            )}
           </div>
           <p className="mt-1 truncate text-caption text-text-secondary">
             {ASSESSMENT_TYPE_LABELS[type]} •{" "}

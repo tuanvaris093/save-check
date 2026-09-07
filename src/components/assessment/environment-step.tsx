@@ -10,8 +10,6 @@ import {
   LIGHT_POINT_STANDARDS,
   HEAT_WORKLOADS,
   HEAT_STANDARDS,
-  NOISE_STANDARDS,
-  calculateAverage,
 } from "@/lib/environment-schema";
 import { FormInput, FormSelect } from "@/components/forms";
 import { Button } from "@/components/ui";
@@ -397,22 +395,6 @@ export function EnvironmentStep({
               <PlusCircle className="h-5 w-5" />
               เพิ่มจุดตรวจ
             </Button>
-            
-            <div className="mt-4 pt-4 border-t border-border">
-              <FormInput
-                label="ระดับเสียงเฉลี่ย TWA 8 ชั่วโมง (dBA)"
-                type="number"
-                inputMode="decimal"
-                step="0.1"
-                placeholder="ระบุค่า TWA สุทธิภาพรวม"
-                required
-                {...register("twa_8hr")}
-                error={errors.twa_8hr?.message}
-              />
-              <p className="text-caption text-text-secondary mt-1">
-                ผลประเมินรวมจะยึดจากค่า TWA 8 ชั่วโมง เพื่อเทียบกับมาตรฐานภาพรวม
-              </p>
-            </div>
           </div>
         )}
 

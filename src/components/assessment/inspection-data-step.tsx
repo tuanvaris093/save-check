@@ -1,33 +1,32 @@
 "use client";
 
-import { useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   inspectionDataSchema,
   type InspectionDataFormValues,
 } from "@/lib/schemas";
-import { FormInput, FormSelect } from "@/components/forms";
+import { FormInput, FileUpload } from "@/components/forms";
 import { Button } from "@/components/ui";
+import type { LayoutFileInfo } from "@/types";
 
 interface InspectionDataStepProps {
   defaultValues?: Partial<InspectionDataFormValues>;
-  onNext: (data: InspectionDataFormValues) => void;
+  layoutFile?: LayoutFileInfo | null;
+  onNext: (data: InspectionDataFormValues, layoutFile?: LayoutFileInfo | null) => void;
 }
-
-const MEASUREMENT_TECHNIQUES = [
-  { value: "Area Measurement", label: "Area Measurement" },
-  { value: "Spot Measurement", label: "Spot Measurement" },
-];
 
 export function InspectionDataStep({
   defaultValues,
+  layoutFile = null,
   onNext,
 }: InspectionDataStepProps) {
+  const [currentLayoutFile, setCurrentLayoutFile] = useState<LayoutFileInfo | null>(layoutFile);
+
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors },
     reset,
   } = useForm<InspectionDataFormValues>({
@@ -52,9 +51,19 @@ export function InspectionDataStep({
     }
   }, [defaultValues, reset]);
 
+  useEffect(() => {
+    if (layoutFile !== undefined) {
+      setCurrentLayoutFile(layoutFile);
+    }
+  }, [layoutFile]);
+
+  const onFormSubmit = (data: InspectionDataFormValues) => {
+    onNext(data, currentLayoutFile);
+  };
+
   return (
     <form
-      onSubmit={handleSubmit(onNext)}
+      onSubmit={handleSubmit(onFormSubmit)}
       className="flex flex-col gap-6 animate-fade-in"
       noValidate
     >
@@ -103,21 +112,6 @@ export function InspectionDataStep({
             error={errors.equipment?.message}
           />
 
-          <Controller
-            name="measurement_technique"
-            control={control}
-            render={({ field }) => (
-              <FormSelect
-                label="เทคนิคการตรวจวัด"
-                placeholder="เลือกเทคนิค"
-                options={MEASUREMENT_TECHNIQUES}
-                required
-                {...field}
-                error={errors.measurement_technique?.message}
-              />
-            )}
-          />
-
           <div className="grid grid-cols-2 gap-4">
             <FormInput
               label="เวลาเริ่ม"
@@ -135,6 +129,30 @@ export function InspectionDataStep({
             />
           </div>
         </div>
+      </div>
+
+      {/* Optional Room Layout Card */}
+      <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm">
+        <div className="mb-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-card-title font-semibold text-text-primary">
+              ผังพื้นที่ห้อง / Layout
+            </h3>
+            <span className="rounded-full bg-emerald-50 border border-emerald-200/60 px-2.5 py-0.5 text-[11px] font-medium text-emerald-700">
+              แนบทีหลังได้
+            </span>
+          </div>
+          <p className="mt-1 text-caption text-text-secondary">
+            แนบภาพผังห้องหรือไฟล์ PDF ของจุดตรวจวัด หากยังวาดไม่เสร็จสามารถกดข้ามเพื่อดูผลตรวจก่อน แล้วแนบในภายหลังได้
+          </p>
+        </div>
+
+        <FileUpload
+          value={currentLayoutFile}
+          onChange={setCurrentLayoutFile}
+          label=""
+          description="รองรับไฟล์ภาพ (JPG, PNG, WebP) หรือไฟล์เอกสาร PDF (สูงสุด 10MB)"
+        />
       </div>
 
       <div className="mt-2 pb-8">

@@ -16,6 +16,16 @@ export type SubmissionStatus =
   | "completed"
   | "cancelled";
 
+// --- Room Layout File ---
+
+export interface LayoutFileInfo {
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+  fileData: string; // Base64 data URL
+  uploadedAt: string;
+}
+
 // --- Submission ---
 
 export interface Submission {
@@ -28,6 +38,8 @@ export interface Submission {
   status: SubmissionStatus;
   overall_score: number | null;
   overall_level: RiskLevel | null;
+  has_layout?: boolean;
+  layout_file?: LayoutFileInfo | null;
   created_at: string;
   updated_at: string;
 }
@@ -162,5 +174,6 @@ export interface SubmissionListItem {
   assessment_category: AssessmentCategory;
   overall_score: number | null;
   overall_level: RiskLevel | null;
+  has_layout?: boolean;
   completed_at: string;
 }

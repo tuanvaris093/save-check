@@ -10,6 +10,7 @@ import {
 } from "@/lib/constants";
 import { isValidCategory } from "@/lib/utils";
 import type { AssessmentCategory } from "@/types";
+import { createSubmission } from "@/lib/api";
 import { useAssessmentForm } from "@/hooks/use-assessment";
 import { LoadingState } from "@/components/ui";
 import {
@@ -90,8 +91,8 @@ function EnvironmentFormContent() {
     );
   }
 
-  const handleInspectionDataNext = (data: any) => {
-    saveDraft({ inspectionData: data });
+  const handleInspectionDataNext = (data: any, layoutFile?: any) => {
+    saveDraft({ inspectionData: data, layoutFile });
     nextStep();
   };
 
@@ -103,12 +104,50 @@ function EnvironmentFormContent() {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    // TODO: In Phase 10, call real API
-    setTimeout(() => {
-      clearDraft();
-      setIsSubmitting(false);
-      router.push(`${ROUTES.RESULT}?submissionId=SUB-20260629-9999`);
-    }, 1500);
+
+    const now = new Date();
+    const datePart = now.toISOString().slice(0, 10).replace(/-/g, "");
+    const randPart = Math.floor(1000 + Math.random() * 9000);
+    const submissionCode = `SUB-${datePart}-${randPart}`;
+
+    const newSubmission = {
+      id: Date.now(),
+      submission_code: submissionCode,
+      assessment_type: "environment",
+      assessment_category: category,
+      started_at: draftData.lastSavedAt || new Date().toISOString(),
+      completed_at: new Date().toISOString(),
+      status: "completed",
+      inspectionData: draftData.inspectionData,
+      answers: draftData.answers,
+      layout_file: draftData.layoutFile || null,
+      has_layout: !!draftData.layoutFile,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    try {
+      // 1. Send to Cloudflare Workers Backend API
+      await createSubmission(newSubmission);
+    } catch (apiErr) {
+      console.warn("Backend API unavailable, continuing with local storage", apiErr);
+    }
+
+    try {
+      // 2. Persist to localStorage for offline cache
+      const stored = localStorage.getItem("save_check_submissions");
+      const list = stored ? JSON.parse(stored) : [];
+      localStorage.setItem(
+        "save_check_submissions",
+        JSON.stringify([newSubmission, ...list])
+      );
+    } catch (err) {
+      console.error("Failed to save submission to localStorage", err);
+    }
+
+    clearDraft();
+    setIsSubmitting(false);
+    router.push(`${ROUTES.RESULT}?submissionId=${submissionCode}`);
   };
 
   return (
@@ -128,6 +167,7 @@ function EnvironmentFormContent() {
           {currentStep === 1 && (
             <InspectionDataStep
               defaultValues={draftData.inspectionData}
+              layoutFile={draftData.layoutFile}
               onNext={handleInspectionDataNext}
             />
           )}

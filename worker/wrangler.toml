@@ -1,0 +1,14 @@
+name = "save-check-api"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+ENVIRONMENT = "development"
+FRONTEND_URL = "http://localhost:3000,http://localhost:3001"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "save-check-db"
+database_id = "ba75b7dc-092d-4b52-bcf6-3d2a02a1a4d7"
+migrations_dir = "src/db"

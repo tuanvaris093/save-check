@@ -155,11 +155,6 @@ export const LIGHT_POINT_STANDARDS = [
 
 export const NOISE_STANDARDS = [
   { value: 85, label: "85 dBA - ปฏิบัติงาน 8 ชั่วโมง" },
-  { value: 87, label: "87 dBA - ปฏิบัติงาน 6 ชั่วโมง" },
-  { value: 90, label: "90 dBA - ปฏิบัติงาน 4 ชั่วโมง" },
-  { value: 91, label: "91 dBA - ปฏิบัติงาน 3 ชั่วโมง" },
-  { value: 94, label: "94 dBA - ปฏิบัติงาน 2 ชั่วโมง" },
-  { value: 97, label: "97 dBA - ปฏิบัติงาน 1 ชั่วโมง" },
 ];
 
 export const HEAT_WORKLOADS = [

@@ -1,6 +1,6 @@
 /**
  * API client for Save Check
- * Centralized API calls to Cloudflare Workers backend
+ * Centralized API calls to Cloudflare Workers backend with offline localStorage support
  */
 
 import type { ApiResponse } from "@/types";
@@ -11,16 +11,22 @@ import { API_BASE_URL } from "./constants";
  */
 async function fetchApi<T>(
   endpoint: string,
-  options?: RequestInit,
+  options?: RequestInit
 ): Promise<ApiResponse<T>> {
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       headers: {
         "Content-Type": "application/json",
         ...options?.headers,
       },
+      signal: controller.signal,
       ...options,
     });
+
+    clearTimeout(timeoutId);
 
     const data = await response.json();
 
@@ -35,12 +41,12 @@ async function fetchApi<T>(
     }
 
     return data as ApiResponse<T>;
-  } catch (error) {
+  } catch (error: any) {
     return {
       success: false,
       error: {
         code: "NETWORK_ERROR",
-        message: "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบอินเทอร์เน็ต",
+        message: "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กำลังใช้ข้อมูลจากเครื่อง",
       },
     };
   }
@@ -48,80 +54,126 @@ async function fetchApi<T>(
 
 // --- Submission APIs ---
 
-export async function startSubmission(data: {
+export interface CreateSubmissionRequest {
+  submission_code?: string;
   assessment_type: string;
   assessment_category: string;
-}): Promise<ApiResponse<{ submission_id: number; submission_code: string }>> {
-  return fetchApi("/submissions/start", {
+  started_at?: string;
+  completed_at?: string;
+  status?: string;
+  overall_score?: number | null;
+  overall_level?: string;
+  has_layout?: boolean;
+  layout_file?: any;
+  inspectionData?: any;
+  profile?: any;
+  workInfo?: any;
+  answers?: any;
+}
+
+/**
+ * Submit full assessment payload to Cloudflare Workers API
+ */
+export async function createSubmission(
+  data: CreateSubmissionRequest
+): Promise<ApiResponse<{ id: number; submission_code: string; message: string }>> {
+  return fetchApi("/submissions", {
     method: "POST",
     body: JSON.stringify(data),
   });
 }
 
-export async function saveProfile(
-  submissionId: number,
-  data: Record<string, unknown>,
-): Promise<ApiResponse<{ id: number }>> {
-  return fetchApi(`/submissions/${submissionId}/profile`, {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-}
-
-export async function saveWorkInfo(
-  submissionId: number,
-  data: Record<string, unknown>,
-): Promise<ApiResponse<{ id: number }>> {
-  return fetchApi(`/submissions/${submissionId}/work-info`, {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-}
-
-export async function saveAnswers(
-  submissionId: number,
-  data: Record<string, unknown>,
-): Promise<ApiResponse<{ count: number }>> {
-  return fetchApi(`/submissions/${submissionId}/answers`, {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-}
-
-export async function completeSubmission(
-  submissionId: number,
-  data: Record<string, unknown>,
-): Promise<ApiResponse<{ submission_code: string }>> {
-  return fetchApi(`/submissions/${submissionId}/complete`, {
-    method: "POST",
-    body: JSON.stringify(data),
+/**
+ * Update or remove layout file for an existing submission
+ */
+export async function updateSubmissionLayout(
+  submissionCode: string,
+  layoutFile: any
+): Promise<ApiResponse<{ submission_code: string; has_layout: boolean; message: string }>> {
+  return fetchApi(`/submissions/${submissionCode}/layout`, {
+    method: "PATCH",
+    body: JSON.stringify({ layout_file: layoutFile }),
   });
 }
 
 // --- Result API ---
 
 export async function getResult(
-  submissionId: string,
-): Promise<ApiResponse<Record<string, unknown>>> {
-  return fetchApi(`/results/${submissionId}`);
+  submissionCode: string
+): Promise<ApiResponse<Record<string, any>>> {
+  return fetchApi(`/results/${submissionCode}`);
 }
 
 // --- Dashboard APIs ---
 
-export async function getDashboardSummary(): Promise<
-  ApiResponse<Record<string, unknown>>
-> {
-  return fetchApi("/dashboard/summary");
+export interface DashboardSummaryData {
+  total_submissions: number;
+  by_type: {
+    environment: number;
+    health_risk: number;
+    satisfaction: number;
+  };
+  by_category: {
+    light: number;
+    noise: number;
+    heat: number;
+    general: number;
+  };
+  by_level: {
+    pass: number;
+    medium: number;
+    high_risk: number;
+  };
+  satisfaction_avg: number;
 }
 
-export async function getDashboardSubmissions(): Promise<
-  ApiResponse<Record<string, unknown>[]>
-> {
-  return fetchApi("/dashboard/submissions");
+export async function getDashboardSummary(): Promise<ApiResponse<DashboardSummaryData>> {
+  return fetchApi<DashboardSummaryData>("/dashboard/summary");
 }
 
-export async function getDashboardByCategory(): Promise<
-  ApiResponse<Record<string, unknown>>
-> {
-  return fetchApi("/dashboard/by-category");
+export interface DashboardSubmissionsParams {
+  page?: number;
+  limit?: number;
+  type?: string;
+  category?: string;
+  search?: string;
+}
+
+export interface DashboardSubmissionsResponse {
+  items: Array<{
+    id: number;
+    submission_code: string;
+    assessment_type: string;
+    assessment_category: string;
+    status: string;
+    overall_score?: number | null;
+    overall_level?: string;
+    has_layout: boolean;
+    completed_at: string;
+    created_at: string;
+    inspector_name?: string;
+    location?: string;
+    profile_name?: string;
+    department?: string;
+  }>;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    total_pages: number;
+  };
+}
+
+export async function getDashboardSubmissions(
+  params?: DashboardSubmissionsParams
+): Promise<ApiResponse<DashboardSubmissionsResponse>> {
+  const query = new URLSearchParams();
+  if (params?.page) query.set("page", String(params.page));
+  if (params?.limit) query.set("limit", String(params.limit));
+  if (params?.type && params.type !== "all") query.set("type", params.type);
+  if (params?.category && params.category !== "all") query.set("category", params.category);
+  if (params?.search) query.set("search", params.search);
+
+  const qs = query.toString();
+  return fetchApi<DashboardSubmissionsResponse>(`/dashboard/submissions${qs ? `?${qs}` : ""}`);
 }

@@ -1,6 +1,17 @@
 "use client";
 
-import { CheckCircle2, XCircle, AlertTriangle, Star } from "lucide-react";
+import { useState } from "react";
+import {
+  CheckCircle2,
+  XCircle,
+  AlertTriangle,
+  Star,
+  FileText,
+  Eye,
+  ExternalLink,
+  Info,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui";
 import { AssessmentDraftData } from "@/lib/schemas";
 import {
@@ -17,7 +28,7 @@ import {
 } from "@/lib/health-risk-schema";
 import { calculateSatisfactionResult } from "@/lib/satisfaction-schema";
 import type { AssessmentCategory } from "@/types";
-import { cn } from "@/lib/utils";
+import { cn, formatFileSize } from "@/lib/utils";
 
 interface ReviewStepProps {
   type?: "environment" | "health_risk" | "satisfaction";
@@ -39,7 +50,10 @@ export function ReviewStep({
   const profile = draftData.profile;
   const workInfo = draftData.workInfo;
   const inspectionData = draftData.inspectionData;
+  const layoutFile = draftData.layoutFile;
   const answers = draftData.answers as any;
+
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   // Environment Evaluation Variables
   let envEvaluation = null;
@@ -134,24 +148,14 @@ export function ReviewStep({
             const sum = vals.reduce((acc, curr) => acc + curr, 0);
             envAverage = Number((sum / vals.length).toFixed(2));
             const allPass = totalPass === processedNoisePoints.length;
-            
-            let isOverallPass = allPass;
-            let overallAvg = envAverage;
-            
-            if (answers.twa_8hr !== undefined && answers.twa_8hr !== null && answers.twa_8hr !== "") {
-              overallAvg = Number(answers.twa_8hr);
-              if (answers.standard_value) {
-                isOverallPass = overallAvg <= Number(answers.standard_value);
-              }
-            }
 
             envEvaluation = {
-              isPass: isOverallPass,
+              isPass: allPass,
               score: 0,
-              message: isOverallPass
+              message: allPass
                 ? "ระดับเสียงภาพรวมผ่านเกณฑ์มาตรฐาน ควรรักษาสภาพแวดล้อมให้คงเดิม"
                 : "ระดับเสียงภาพรวมเกินมาตรฐานที่กำหนด ควรจัดหาอุปกรณ์ป้องกันเสียง (PPE) ให้พนักงานหรือลดแหล่งกำเนิดเสียง",
-              calculatedValue: overallAvg,
+              calculatedValue: envAverage,
             };
           }
         }
@@ -285,7 +289,7 @@ export function ReviewStep({
       }
     } else if (type === "health_risk" && answers.q1 !== undefined) {
       const score = calculateHealthRiskScore(answers);
-      hrEvaluation = evaluateHealthRiskResult(score);
+      hrEvaluation = evaluateHealthRiskResult(score, category);
     } else if (type === "satisfaction" && answers.q1 !== undefined) {
       satisfactionResult = calculateSatisfactionResult(answers);
     }
@@ -332,17 +336,90 @@ export function ReviewStep({
                   {inspectionData.equipment}
                 </span>
               </div>
-              <div className="flex justify-between border-b border-border py-2">
-                <span>เทคนิคการตรวจวัด</span>
-                <span className="font-medium text-text-primary">
-                  {inspectionData.measurement_technique}
-                </span>
-              </div>
               <div className="flex justify-between py-2">
                 <span>ช่วงเวลาที่ตรวจวัด</span>
                 <span className="font-medium text-text-primary">
                   {inspectionData.start_time} - {inspectionData.end_time} น.
                 </span>
+              </div>
+
+              {/* Room Layout Attachment Section */}
+              <div className="mt-3 border-t border-border pt-3">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium text-text-primary">ผังพื้นที่ห้อง (Layout)</span>
+                  {layoutFile ? (
+                    <span className="rounded-full bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 text-[11px] font-medium text-emerald-700">
+                      แนบแล้ว
+                    </span>
+                  ) : (
+                    <span className="rounded-full bg-amber-50 border border-amber-200/60 px-2 py-0.5 text-[11px] font-medium text-amber-700">
+                      ยังไม่ได้แนบ
+                    </span>
+                  )}
+                </div>
+
+                {layoutFile ? (
+                  <div className="flex items-center gap-3 rounded-lg border border-gray-200/80 bg-white/70 p-3">
+                    {layoutFile.fileType.startsWith("image/") ? (
+                      <div
+                        onClick={() => setPreviewImage(layoutFile.fileData)}
+                        className="relative h-12 w-12 shrink-0 cursor-pointer overflow-hidden rounded-md border border-gray-200 bg-gray-100 group"
+                        title="คลิกเพื่อดูรูปขยาย"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={layoutFile.fileData}
+                          alt={layoutFile.fileName}
+                          className="h-full w-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-red-50 text-red-500 border border-red-100">
+                        <FileText className="h-6 w-6" />
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-caption font-medium text-text-primary">
+                        {layoutFile.fileName}
+                      </p>
+                      <p className="text-[11px] text-text-tertiary">
+                        {formatFileSize(layoutFile.fileSize)}
+                      </p>
+                    </div>
+                    {layoutFile.fileType.startsWith("image/") ? (
+                      <button
+                        type="button"
+                        onClick={() => setPreviewImage(layoutFile.fileData)}
+                        className="inline-flex items-center gap-1 text-caption text-primary hover:underline"
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                        ดูรูป
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const win = window.open();
+                          if (win) {
+                            win.document.write(
+                              `<iframe src="${layoutFile.fileData}" frameborder="0" style="border:0; width:100%; height:100%;" allowfullscreen></iframe>`
+                            );
+                            win.document.title = layoutFile.fileName;
+                          }
+                        }}
+                        className="inline-flex items-center gap-1 text-caption text-primary hover:underline"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                        เปิดดู
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 rounded-lg bg-amber-50/70 border border-amber-200/60 p-2.5 text-caption text-amber-800">
+                    <Info className="h-4 w-4 shrink-0 text-amber-600" />
+                    <span>ยังไม่ได้แนบผังห้อง (สามารถอัปโหลดเพิ่มเติมในหน้ารายงานผลได้)</span>
+                  </div>
+                )}
               </div>
             </div>
           ) : (
@@ -614,7 +691,7 @@ export function ReviewStep({
               )}
             >
               <p className="text-caption text-text-secondary mb-1">
-                {category === "noise" ? "ระดับ TWA 8 ชม." : "ค่าที่วัดได้เฉลี่ยรวม"}
+                ค่าที่วัดได้เฉลี่ยรวม
               </p>
               <p
                 className={cn(
@@ -696,9 +773,33 @@ export function ReviewStep({
             <p className="text-small font-semibold text-text-primary mb-1">
               คำแนะนำเบื้องต้น
             </p>
-            <p className="text-small text-text-secondary bg-muted p-4 rounded-md leading-relaxed">
+            <p className="text-small text-text-secondary bg-muted p-4 rounded-md leading-relaxed mb-4">
               {hrEvaluation.message}
             </p>
+
+            {hrEvaluation.recommendations && hrEvaluation.recommendations.length > 0 && (
+              <div className="rounded-xl border border-primary/20 bg-primary-tint/30 p-4 animate-fade-in">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-xl">
+                    {category === "light" ? "💡" : category === "noise" ? "🔊" : "🌡️"}
+                  </span>
+                  <h4 className="text-small font-bold text-text-primary">
+                    ข้อเสนอแนะ — {category === "light" ? "ด้านแสงสว่าง (Illumination)" : category === "noise" ? "ด้านเสียง (Noise)" : "ด้านความร้อน (Heat)"}
+                  </h4>
+                  <span className="ml-auto rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-white/80 border border-border text-text-secondary">
+                    {hrEvaluation.levelLabel}
+                  </span>
+                </div>
+                <ul className="flex flex-col gap-2.5">
+                  {hrEvaluation.recommendations.map((rec: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-2.5 text-small text-text-secondary leading-relaxed">
+                      <span className="text-primary font-bold mt-0.5">•</span>
+                      <span>{rec}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -798,6 +899,40 @@ export function ReviewStep({
           บันทึกผล
         </Button>
       </div>
+
+      {/* Lightbox Modal */}
+      {previewImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm animate-fade-in"
+          onClick={() => setPreviewImage(null)}
+        >
+          <div
+            className="relative max-h-[90vh] max-w-[90vw] overflow-hidden rounded-2xl bg-white p-2 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-gray-100 px-3 py-2">
+              <span className="text-small font-medium text-text-primary">
+                ผังพื้นที่ห้อง (Layout)
+              </span>
+              <button
+                type="button"
+                onClick={() => setPreviewImage(null)}
+                className="rounded-full p-1 text-gray-500 hover:bg-gray-100 transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="max-h-[80vh] overflow-auto p-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={previewImage}
+                alt="ผังห้อง"
+                className="mx-auto h-auto max-h-[75vh] w-auto object-contain rounded-lg"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

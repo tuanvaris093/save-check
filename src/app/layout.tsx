@@ -44,8 +44,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th" className={`${notoSansThai.variable} ${inter.variable}`}>
-      <body className="min-h-dvh font-sans antialiased">
+    <html
+      lang="th"
+      className={`${notoSansThai.variable} ${inter.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="min-h-dvh font-sans antialiased" suppressHydrationWarning>
         <div className="flex min-h-dvh">
           {/* Desktop/Tablet Glass Sidebar */}
           <GlassSidebar />
