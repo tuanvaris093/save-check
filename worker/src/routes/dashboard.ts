@@ -116,7 +116,11 @@ dashboardRoute.get("/submissions", async (c) => {
 
   const typeFilter = url.searchParams.get("type");
   const categoryFilter = url.searchParams.get("category");
+  const startDate = url.searchParams.get("start_date")?.trim();
+  const endDate = url.searchParams.get("end_date")?.trim();
   const search = url.searchParams.get("search")?.trim();
+  const sortOrderParam = (url.searchParams.get("sort_order") || url.searchParams.get("order") || "desc").toLowerCase();
+  const sortOrder = sortOrderParam === "asc" ? "ASC" : "DESC";
 
   try {
     const conditions: string[] = [];
@@ -130,6 +134,16 @@ dashboardRoute.get("/submissions", async (c) => {
     if (categoryFilter && categoryFilter !== "all") {
       conditions.push(`s.assessment_category = ?`);
       params.push(categoryFilter);
+    }
+
+    if (startDate) {
+      conditions.push(`COALESCE(date(s.completed_at), date(s.created_at)) >= date(?)`);
+      params.push(startDate);
+    }
+
+    if (endDate) {
+      conditions.push(`COALESCE(date(s.completed_at), date(s.created_at)) <= date(?)`);
+      params.push(endDate);
     }
 
     if (search) {
@@ -181,7 +195,7 @@ dashboardRoute.get("/submissions", async (c) => {
       LEFT JOIN respondent_work_infos rw ON s.id = rw.submission_id
       ${whereClause}
       GROUP BY s.id
-      ORDER BY s.created_at DESC
+      ORDER BY COALESCE(s.completed_at, s.created_at) ${sortOrder}
       LIMIT ? OFFSET ?
     `;
 
@@ -227,6 +241,206 @@ dashboardRoute.get("/submissions", async (c) => {
         error: {
           code: "DB_ERROR",
           message: err.message || "Failed to fetch dashboard submissions",
+        },
+      },
+      500
+    );
+  }
+});
+
+/**
+ * GET /api/dashboard/export-data
+ * Retrieves comprehensive multi-table data for Excel Export
+ */
+dashboardRoute.get("/export-data", async (c) => {
+  const db = c.env.DB;
+  const url = new URL(c.req.url);
+
+  const typeFilter = url.searchParams.get("type");
+  const categoryFilter = url.searchParams.get("category");
+  const startDate = url.searchParams.get("start_date")?.trim();
+  const endDate = url.searchParams.get("end_date")?.trim();
+  const search = url.searchParams.get("search")?.trim();
+  const sortOrderParam = (url.searchParams.get("sort_order") || url.searchParams.get("order") || "desc").toLowerCase();
+  const sortOrder = sortOrderParam === "asc" ? "ASC" : "DESC";
+
+  try {
+    const conditions: string[] = [];
+    const params: any[] = [];
+
+    if (typeFilter && typeFilter !== "all") {
+      conditions.push(`s.assessment_type = ?`);
+      params.push(typeFilter);
+    }
+
+    if (categoryFilter && categoryFilter !== "all") {
+      conditions.push(`s.assessment_category = ?`);
+      params.push(categoryFilter);
+    }
+
+    if (startDate) {
+      conditions.push(`COALESCE(date(s.completed_at), date(s.created_at)) >= date(?)`);
+      params.push(startDate);
+    }
+
+    if (endDate) {
+      conditions.push(`COALESCE(date(s.completed_at), date(s.created_at)) <= date(?)`);
+      params.push(endDate);
+    }
+
+    if (search) {
+      conditions.push(
+        `(s.submission_code LIKE ? OR ei.inspector_name LIKE ? OR rp.full_name LIKE ? OR ei.inspection_location LIKE ?)`
+      );
+      const searchPattern = `%${search}%`;
+      params.push(searchPattern, searchPattern, searchPattern, searchPattern);
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+    const submissionsQuery = `
+      SELECT 
+        s.id,
+        s.submission_code,
+        s.assessment_type,
+        s.assessment_category,
+        s.status,
+        s.overall_score,
+        s.overall_level,
+        s.has_layout,
+        s.completed_at,
+        s.created_at,
+        ei.inspector_name,
+        ei.position as inspector_position,
+        ei.inspection_location,
+        ei.equipment,
+        ei.measurement_technique,
+        ei.inspection_date,
+        rp.full_name as profile_name,
+        rp.gender as profile_gender,
+        rp.age as profile_age,
+        rp.weight as profile_weight,
+        rp.height as profile_height,
+        rp.education_level as profile_education,
+        rp.marital_status as profile_marital,
+        rp.has_underlying_disease,
+        rp.underlying_disease_details as profile_disease,
+        rw.department as profile_department,
+        rw.position as profile_work_position,
+        rw.work_experience_years as profile_work_years,
+        rw.working_hours_per_day as profile_work_hours,
+        rw.working_days_per_week as profile_work_days,
+        rw.work_area as profile_work_area
+      FROM submissions s
+      LEFT JOIN environment_inspections ei ON s.id = ei.submission_id
+      LEFT JOIN respondent_profiles rp ON s.id = rp.submission_id
+      LEFT JOIN respondent_work_infos rw ON s.id = rw.submission_id
+      ${whereClause}
+      GROUP BY s.id
+      ORDER BY COALESCE(s.completed_at, s.created_at) ${sortOrder}
+    `;
+
+    const subRes = await db.prepare(submissionsQuery).bind(...params).all<any>();
+    const submissionsList = subRes.results || [];
+
+    if (submissionsList.length === 0) {
+      return c.json({
+        success: true,
+        data: {
+          submissions: [],
+          envPointsMap: {},
+          hrAnswersMap: {},
+          satAnswersMap: {},
+        },
+      });
+    }
+
+    // 2. Fetch Environment points
+    const envSubIds = submissionsList
+      .filter((s: any) => s.assessment_type === "environment")
+      .map((s: any) => s.id);
+
+    const envPointsMap: Record<number, any[]> = {};
+    if (envSubIds.length > 0) {
+      const placeholders = envSubIds.map(() => "?").join(",");
+      const pointsRes = await db
+        .prepare(
+          `SELECT * FROM environment_measurement_points WHERE submission_id IN (${placeholders}) ORDER BY submission_id, point_no ASC`
+        )
+        .bind(...envSubIds)
+        .all<any>();
+
+      for (const pt of pointsRes.results || []) {
+        if (!envPointsMap[pt.submission_id]) {
+          envPointsMap[pt.submission_id] = [];
+        }
+        envPointsMap[pt.submission_id].push(pt);
+      }
+    }
+
+    // 3. Fetch Health Risk scores
+    const hrSubIds = submissionsList
+      .filter((s: any) => s.assessment_type === "health_risk")
+      .map((s: any) => s.id);
+
+    const hrAnswersMap: Record<number, any[]> = {};
+    if (hrSubIds.length > 0) {
+      const placeholders = hrSubIds.map(() => "?").join(",");
+      const hrRes = await db
+        .prepare(
+          `SELECT * FROM health_risk_answers WHERE submission_id IN (${placeholders}) ORDER BY submission_id, question_no ASC`
+        )
+        .bind(...hrSubIds)
+        .all<any>();
+
+      for (const ans of hrRes.results || []) {
+        if (!hrAnswersMap[ans.submission_id]) {
+          hrAnswersMap[ans.submission_id] = [];
+        }
+        hrAnswersMap[ans.submission_id].push(ans);
+      }
+    }
+
+    // 4. Fetch Satisfaction ratings
+    const satSubIds = submissionsList
+      .filter((s: any) => s.assessment_type === "satisfaction")
+      .map((s: any) => s.id);
+
+    const satAnswersMap: Record<number, any[]> = {};
+    if (satSubIds.length > 0) {
+      const placeholders = satSubIds.map(() => "?").join(",");
+      const satRes = await db
+        .prepare(
+          `SELECT * FROM satisfaction_answers WHERE submission_id IN (${placeholders}) ORDER BY submission_id, id ASC`
+        )
+        .bind(...satSubIds)
+        .all<any>();
+
+      for (const ans of satRes.results || []) {
+        if (!satAnswersMap[ans.submission_id]) {
+          satAnswersMap[ans.submission_id] = [];
+        }
+        satAnswersMap[ans.submission_id].push(ans);
+      }
+    }
+
+    return c.json({
+      success: true,
+      data: {
+        submissions: submissionsList,
+        envPointsMap,
+        hrAnswersMap,
+        satAnswersMap,
+      },
+    });
+  } catch (err: any) {
+    console.error("Dashboard export error:", err);
+    return c.json(
+      {
+        success: false,
+        error: {
+          code: "DB_ERROR",
+          message: err.message || "Failed to fetch export data",
         },
       },
       500

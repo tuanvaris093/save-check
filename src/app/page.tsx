@@ -11,7 +11,6 @@ import {
   ClipboardCheck,
   HeartPulse,
   Star,
-  LayoutDashboard,
   ChevronRight,
 } from "lucide-react";
 
@@ -103,28 +102,6 @@ export default function HomePage() {
                 </Link>
               );
             })}
-          </div>
-
-          {/* Dashboard Link */}
-          <div className="mt-8 md:mt-10">
-            <Link
-              href={ROUTES.DASHBOARD}
-              className="glass-card glass-card-hover p-5 md:p-6 flex items-center gap-4 animate-slide-up group"
-              style={{ animationDelay: "200ms" }}
-            >
-              <div className="icon-container" style={{ background: "linear-gradient(135deg, rgba(220, 252, 231, 0.95), rgba(240, 253, 244, 0.8))" }}>
-                <LayoutDashboard className="h-6 w-6 text-success" strokeWidth={2} />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h2 className="text-card-title font-semibold text-text-primary group-hover:text-success transition-colors">
-                  ดูรายงานสรุปผล
-                </h2>
-                <p className="mt-1 text-small text-text-secondary">
-                  Dashboard ภาพรวมการประเมินทั้งหมด
-                </p>
-              </div>
-              <ChevronRight className="h-6 w-6 text-primary shrink-0 md:hidden" />
-            </Link>
           </div>
 
           {/* Copyright & Credits Footer */}

@@ -1,817 +1,256 @@
 # PROJECT_OVERVIEW.md
-# Web App ระบบแบบประเมินสภาพแวดล้อมในการทำงาน ความเสี่ยงสุขภาพ และความพึงพอใจ
 
-## 1. Project Summary
+# 🛡️ Save Check - ระบบประเมินสภาพแวดล้อมในการทำงาน ความเสี่ยงสุขภาพ และความพึงพอใจ
 
-โปรเจกต์นี้คือ Web App สำหรับทำแบบประเมินออนไลน์ผ่านมือถือหรือคอมพิวเตอร์ โดยผู้ใช้งานสามารถเปิดลิงก์หรือสแกน QR Code เพื่อเข้าใช้งานได้ทันที
+> **สถานะปัจจุบันของระบบ:** พัฒนาเสร็จสมบูรณ์ 100% พร้อมใช้งานบน Production (Cloudflare Pages + Workers + D1)
 
-ระบบนี้ออกแบบเป็น **Static Web App แบบไม่มี Login** เพื่อให้เหมาะกับงานวิจัย งานประเมิน และการเก็บข้อมูลภายในหน่วยงาน
+---
 
-แนวคิดหลักของระบบคือ:
+## 1. บทสรุปโครงการ (Project Summary)
+
+**Save Check** คือ Web Application สำหรับประเมินความปลอดภัย อาชีวอนามัย และสภาพแวดล้อมในการทำงาน รองรับการตรวจวัดแบบละเอียด คำนวณตามเกณฑ์กฎหมายความปลอดภัยอัตโนมัติ พร้อมหน้ารายงานผล, ระบบพิมพ์ PDF, ฟังก์ชันแนบและจัดการผังพื้นที่ห้อง, ระบบส่งออกรายงาน Excel แบบแยก Sheet และระบบ Dashboard จัดการข้อมูลแบบ Server-Side Realtime
+
+ระบบนี้ออกแบบเป็น **Assessment-first Web App แบบไม่มี Login** เพื่อให้ผู้ตรวจวัดหรือพนักงานสามารถเข้าใช้งานผ่านมือถือหรือคอมพิวเตอร์ได้สะดวกรวดเร็วผ่านลิงก์หรือสแกน QR Code
 
 ```text
-Assessment-first Flow
-```
-
-หมายความว่า ผู้ใช้เปิดเว็บมาแล้วเลือกแบบประเมินที่ต้องการทำก่อน จากนั้นระบบจึงให้กรอกข้อมูลผู้ประเมินภายในแบบประเมินครั้งนั้น ๆ
-
----
-
-## 2. Core Requirement
-
-ระบบต้องมีคุณสมบัติหลักดังนี้
-
-1. เป็น Web App ใช้งานผ่าน URL ได้
-2. รองรับการใช้งานผ่านมือถือเป็นหลัก
-3. ไม่มีระบบ Login
-4. หน้าแรกเลือกแบบประเมินได้ 3 ส่วน
-5. ผู้ใช้กรอกข้อมูลผู้ประเมินภายในแต่ละแบบประเมิน
-6. ระบบบันทึกข้อมูลเป็นรายครั้ง หรือ Submission
-7. มีหน้าสรุปผลหลังส่งแบบประเมิน
-8. มี Dashboard เบื้องต้นสำหรับดูรายการประเมินและผลรวม
-9. ใช้ Static Route และ Query String เท่านั้น
-10. ไม่ใช้ Dynamic Route
-11. Deploy บน Cloudflare Pages
-12. ใช้ Cloudflare Workers เป็น API
-13. ใช้ Cloudflare D1 เป็น Database
-
----
-
-## 3. Assessment Modules
-
-ระบบมีแบบประเมินหลัก 3 ส่วน
-
-### 3.1 ประเมินสภาพแวดล้อมในการทำงาน
-
-หัวข้อย่อย:
-
-- แสงสว่าง
-- เสียง
-- ความร้อน
-
-วัตถุประสงค์:
-
-- ใช้ประเมินข้อมูลหรือสภาพแวดล้อมในพื้นที่ทำงาน
-- เก็บข้อมูลพื้นที่ทำงาน
-- เก็บค่าหรือคำตอบที่เกี่ยวข้องกับแสง เสียง หรือความร้อน
-- สรุปผลการประเมินเบื้องต้น
-
----
-
-### 3.2 ประเมินความเสี่ยงต่อสุขภาพ
-
-หัวข้อย่อย:
-
-- ความเสี่ยงจากแสงสว่าง
-- ความเสี่ยงจากเสียง
-- ความเสี่ยงจากความร้อน
-
-วัตถุประสงค์:
-
-- ประเมินอาการหรือผลกระทบที่เกี่ยวข้องกับสภาพแวดล้อมในการทำงาน
-- ใช้คำถามแบบเป็นขั้นตอน
-- คำนวณคะแนนความเสี่ยงเบื้องต้น
-- แสดงระดับผล เช่น ผ่านเกณฑ์ / ปานกลาง / เสี่ยงสูง
-
----
-
-### 3.3 ประเมินความพึงพอใจในการใช้แอป
-
-หัวข้อประเมิน:
-
-- Accuracy
-- Design
-- Usability
-- Usefulness
-
-วัตถุประสงค์:
-
-- เก็บความคิดเห็นของผู้ใช้งาน
-- ประเมินความง่ายในการใช้งาน
-- ประเมินประโยชน์ของระบบ
-- ใช้ข้อมูลสำหรับปรับปรุงระบบหรือประกอบรายงาน
-
----
-
-## 4. User Flow
-
-### 4.1 Overall Flow
-
-```text
-User เปิด Web App
-↓
-หน้าแรกแสดงแบบประเมิน 3 ส่วน
-↓
-User เลือกประเภทแบบประเมิน
-↓
-User เลือกหัวข้อย่อย ถ้ามี
-↓
-ระบบเริ่มสร้าง Submission
-↓
-Step 1: กรอกข้อมูลผู้ประเมิน
-↓
-Step 2: กรอกข้อมูลการทำงาน / พื้นที่ที่เกี่ยวข้อง
-↓
-Step 3: ตอบคำถามแบบประเมิน
-↓
-Step 4: ระบบคำนวณผล
-↓
-Step 5: แสดงหน้าสรุปผล
-↓
-ข้อมูลแสดงใน Dashboard
+[ Assessment-first Flow ]
+เปิดหน้าแรก -> เลือกประเภทการประเมิน -> บันทึกข้อมูลและจุดตรวจวัด -> คำนวณผลตามเกณฑ์กฎหมาย -> แสดงหน้ารายงานผล / พิมพ์ PDF / จัดการบน Dashboard
 ```
 
 ---
 
-## 5. Page Structure
+## 2. เทคโนโลยีที่ใช้ (Tech Stack & Architecture)
 
-### 5.1 Home Page
-
-Path:
-
-```text
-/
-```
-
-หน้าที่:
-
-- แสดงชื่อระบบ
-- แสดงคำอธิบายสั้น ๆ
-- แสดง Card แบบประเมิน 3 ส่วน
-- มีปุ่มไปหน้า Dashboard
-
-Card ที่ต้องมี:
-
-1. ประเมินสภาพแวดล้อมในการทำงาน
-2. ประเมินความเสี่ยงต่อสุขภาพ
-3. ประเมินความพึงพอใจในการใช้แอป
+| ส่วนประกอบ             | เทคโนโลยี / เครื่องมือ           | รายละเอียดการใช้งาน                                                             |
+| ---------------------- | -------------------------------- | ------------------------------------------------------------------------------- |
+| **Frontend Framework** | **Next.js 15 (App Router)**      | Static Export / Fast Client Navigation (`/dashboard`, `/result`, `/assessment`) |
+| **Language**           | **TypeScript 5.8**               | Type-safe 100% ครอบคลุมทั้ง Frontend และ Worker Backend                         |
+| **Styling & UI**       | **Tailwind CSS v4**              | Glassmorphism Theme, Mobile-first Responsive, Print Media Optimization          |
+| **Form Management**    | **React Hook Form + Zod**        | Form Wizard State, Step Validation, LocalStorage Draft Cache                    |
+| **Excel Export**       | **SheetJS (`xlsx`)**             | ส่งออกข้อมูล Multi-Sheet Workbook (.xlsx) 4 Sheet ฝั่ง Client                   |
+| **Backend API**        | **Cloudflare Workers (Hono.js)** | Serverless REST API พร้อม CORS, Validation, Error Handling                      |
+| **Database**           | **Cloudflare D1 (SQLite)**       | ฐานข้อมูล Relational 8 ตาราง พร้อม Foreign Keys & Cascade Delete                |
+| **Package Manager**    | **Bun**                          | Runtime และ Package Manager ประสิทธิภาพสูง                                      |
+| **Production Hosting** | **Cloudflare Pages + Workers**   | Edge Hosting ทั่วโลก (Live API & Frontend)                                      |
 
 ---
 
-### 5.2 Environment Category Page
+## 3. ฟีเจอร์ที่พัฒนาเสร็จสมบูรณ์ (Implemented Features)
 
-Path:
+### 3.1 🌿 ตรวจวัดสภาพแวดล้อมในการทำงาน (Environment Assessment)
 
-```text
-/assessment/environment
-```
+- **แสงสว่าง (Light):** บันทึกจุดตรวจวัดหลายจุด (Multi-point) + เทียบค่ามาตรฐานความเข้มแสง (Lux) ตามประเภทพื้นที่ทำงาน (เช่น โต๊ะทำงาน, ทางเดิน, พื้นที่ผลิต)
+- **เสียง (Noise):** บันทึกค่าระดับเสียงต่ำสุด (Min), สูงสุด (Max) และเฉลี่ย (Avg) ในหน่วย dBA + ประเมินเกณฑ์ความปลอดภัย 85 dBA
+- **ความร้อน (Heat):** บันทึกอุณหภูมิกระเปาะแห้ง (Dry), กระเปาะเปียก (Wet), โกลบ (Globe) และคำนวณ **WBGT** อัตโนมัติ เทียบเกณฑ์ตามภาระงาน (เบา / ปานกลาง / หนัก)
+- **ระบบผังพื้นที่ห้อง (Room Layout Management):**
+  - รองรับการแนบไฟล์รูปภาพ (PNG, JPG, WebP) และเอกสาร PDF
+  - **Staged Save Flow:** เลือกไฟล์แล้วต้องกดยืนยัน "บันทึกผังห้อง" ก่อนส่งเข้าฐานข้อมูล
+  - **Fullscreen Lightbox Modal:** ดูภาพผังห้องขยายเต็มจอ 100vw × 100vh พร้อม Scroll Lock และปุ่มดาวน์โหลด
+  - **Delete Layout Confirm:** Modal ยืนยันก่อนลบไฟล์ผังห้องออกจากระบบ
 
-หน้าที่:
+### 3.2 🩺 ประเมินความเสี่ยงสุขภาพ (Health Risk Assessment)
 
-- ให้ผู้ใช้เลือกหัวข้อย่อยของสภาพแวดล้อม
-- แสดง Card 3 ใบ ได้แก่ แสงสว่าง เสียง ความร้อน
+- **ข้อมูลผู้รับการตรวจ:** ชื่อ-นามสกุล, เพศ, อายุ, น้ำหนัก, ส่วนสูง, คำนวณค่า **BMI** อัตโนมัติ, โรคประจำตัว
+- **ข้อมูลการทำงาน:** แผนก, ตำแหน่งงาน, ประสบการณ์การทำงาน, ชั่วโมงทำงานต่อวัน
+- **แบบประเมิน 3 มิติ (10 ข้อ):**
+  1. ด้านท่าทาง/การยศาสตร์ (Ergonomics & Posture)
+  2. ด้านสิ่งแวดล้อม/สารเคมี (Physical & Chemical Factors)
+  3. ด้านจิตใจ/ความเครียด (Psychosocial & Stress)
+- **ประเมินผลความเสี่ยง:** คำนวณคะแนนรวมและจัดระดับความเสี่ยง (ผ่านเกณฑ์ / เสี่ยงปานกลาง / เสี่ยงสูง)
 
-เมื่อเลือกหัวข้อให้ไปที่:
+### 3.3 ⭐ ประเมินความพึงพอใจในการใช้งาน (Satisfaction Assessment)
 
-```text
-/assessment/environment-form?category=light
-/assessment/environment-form?category=noise
-/assessment/environment-form?category=heat
-```
+- ประเมิน 4 มิติ: ความพร้อมสถานที่, สภาพแวดล้อมกายภาพ, ความปลอดภัย, การให้บริการ
+- คำนวณคะแนนเฉลี่ยรวม (เต็ม 5.0 ดาว) และช่องกรอกข้อเสนอแนะเพิ่มเติม
 
----
+### 3.4 📄 หน้ารายงานสรุปผลฉบับสมบูรณ์ (Result Page: `/result`)
 
-### 5.3 Environment Form Page
+- แสดงข้อมูลสรุปผลแบบ Interactive Status Badge, Progress Bar และตารางแจกแจงรายจุด
+- **พิมพ์ / ดาวน์โหลดรายงาน (Print & PDF):** ปรับแต่ง Print CSS ให้พอดีหน้ากระดาษ ตัดเมนู UI ออก และแสดงผังห้องเฉพาะรายงานสภาพแวดล้อม
+- **ลบรายการประเมิน (Delete Submission):** ปุ่มลบรายการคู่กับปุ่มพิมพ์ พร้อม Modal ยืนยัน และลบข้อมูลสัมพันธ์ทั้ง 8 ตารางใน DB แบบ Atomic Batch
+- **Loading & Error Feedback:** Minimal Spinner Loading สบายตาขณะดึงข้อมูล
 
-Path:
+### 3.5 📊 หน้า Dashboard & Data Management (`/dashboard`)
 
-```text
-/assessment/environment-form?category=light
-```
-
-หน้าที่:
-
-- อ่านค่า category จาก query string
-- เริ่มสร้าง submission
-- แสดงแบบฟอร์มเป็น step
-- บันทึกข้อมูลและแสดงผลลัพธ์
-
-Step ที่แนะนำ:
-
-1. ข้อมูลผู้ประเมิน
-2. ข้อมูลพื้นที่ / สถานที่
-3. คำถามหรือข้อมูลประเมินเฉพาะด้าน
-4. ตรวจสอบและส่งคำตอบ
-5. สรุปผล
-
----
-
-### 5.4 Health Risk Category Page
-
-Path:
-
-```text
-/assessment/health-risk
-```
-
-หน้าที่:
-
-- ให้ผู้ใช้เลือกหัวข้อย่อยของความเสี่ยงสุขภาพ
-- แสดง Card 3 ใบ ได้แก่ แสงสว่าง เสียง ความร้อน
-
-เมื่อเลือกหัวข้อให้ไปที่:
-
-```text
-/assessment/health-risk-form?category=light
-/assessment/health-risk-form?category=noise
-/assessment/health-risk-form?category=heat
-```
+- **KPI Summary Cards:** สรุปยอดรวมประเมิน, ตรวจสภาพแวดล้อม, ความเสี่ยงสุขภาพ, และความพึงพอใจเฉลี่ย
+- **Server-Side Query API:** ส่งพารามิเตอร์ Query ตรงเข้า Cloudflare Worker & D1 DB
+  - ค้นหารหัส, ชื่อผู้ตรวจ, สถานที่ (Debounce 350ms)
+  - กรองประเภทการประเมิน
+  - สลับการเรียงลำดับเวลา (ล่าสุด / เก่าสุด)
+  - แบ่งหน้า (Pagination) จากฐานข้อมูลจริง
+- **Date Range Filter & Quick Presets:** กรองตามช่วงเวลา "ทั้งหมด", "วันนี้", "7 วันล่าสุด", "30 วันล่าสุด" หรือเลือกวันที่เริ่มต้น - สิ้นสุดเอง
+- **ส่งออกรายงาน Excel (Multi-Sheet .xlsx):** ส่งออก 4 Sheet ในไฟล์เดียว (ภาพรวม, สภาพแวดล้อม, ความเสี่ยงสุขภาพ, ความพึงพอใจ) ตรงตามตัวกรองที่เลือกในตาราง
 
 ---
 
-### 5.5 Health Risk Form Page
-
-Path:
+## 4. โครงสร้างโปรเจกต์ (Project Directory Structure)
 
 ```text
-/assessment/health-risk-form?category=noise
-```
-
-หน้าที่:
-
-- อ่านค่า category จาก query string
-- เริ่มสร้าง submission
-- กรอกข้อมูลผู้ประเมิน
-- กรอกข้อมูลการทำงาน
-- ตอบคำถามสุขภาพแบบ step-by-step
-- คำนวณคะแนนและระดับความเสี่ยง
-- แสดงหน้าสรุปผล
-
----
-
-### 5.6 Satisfaction Page
-
-Path:
-
-```text
-/assessment/satisfaction
-```
-
-หน้าที่:
-
-- เริ่มสร้าง submission type satisfaction
-- กรอกข้อมูลผู้ประเมิน
-- ตอบแบบประเมินความพึงพอใจ
-- กรอกข้อเสนอแนะเพิ่มเติม
-- แสดงสรุปผล
-
----
-
-### 5.7 Result Page
-
-Path:
-
-```text
-/result?submissionId=SUB-0001
-```
-
-หน้าที่:
-
-- อ่าน submissionId จาก query string
-- ดึงผลลัพธ์จาก API
-- แสดงผลสรุป
-- มีปุ่มกลับหน้าแรก
-- มีปุ่มไป Dashboard
-
-ห้ามใช้:
-
-```text
-/result/[submissionId]
-```
-
-เพราะโปรเจกต์นี้ใช้ Static Export
-
----
-
-### 5.8 Dashboard Page
-
-Path:
-
-```text
-/dashboard
-```
-
-หน้าที่:
-
-- แสดงจำนวนรายการประเมินทั้งหมด
-- แสดงรายการประเมินล่าสุด
-- แสดงผลแยกตามประเภท
-- แสดงผลแยกตามหัวข้อ
-- แสดงสถานะผ่านเกณฑ์ / ปานกลาง / เสี่ยงสูง
-- แสดงกราฟหรือ summary card เบื้องต้น
-
-Dashboard เวอร์ชันแรกไม่ควรแสดงข้อมูลสุขภาพละเอียดหรือข้อมูลส่วนตัวที่อ่อนไหวมากเกินไป
-
----
-
-### 5.9 Complete Page
-
-Path:
-
-```text
-/complete
-```
-
-หน้าที่:
-
-- แสดงข้อความขอบคุณ
-- แจ้งว่าส่งข้อมูลเรียบร้อยแล้ว
-- มีปุ่มกลับหน้าแรก
-
----
-
-## 6. Routing Rules
-
-โปรเจกต์นี้ใช้ Static Export ดังนั้นต้องใช้ Static Route + Query String เท่านั้น
-
-### 6.1 Allowed Routes
-
-```text
-/
-/assessment/environment
-/assessment/environment-form?category=light
-/assessment/environment-form?category=noise
-/assessment/environment-form?category=heat
-/assessment/health-risk
-/assessment/health-risk-form?category=light
-/assessment/health-risk-form?category=noise
-/assessment/health-risk-form?category=heat
-/assessment/satisfaction
-/result?submissionId=SUB-0001
-/dashboard
-/complete
-```
-
-### 6.2 Forbidden Routes
-
-ห้ามใช้ Dynamic Route แบบนี้
-
-```text
-/result/[submissionId]
-/assessment/environment/[category]
-/assessment/health-risk/[category]
+save-check/
+├── public/                      # Static assets และรูปภาพ
+├── src/
+│   ├── app/                     # Next.js App Router (Pages & Layouts)
+│   │   ├── layout.tsx           # Root Layout & Navigation Bar
+│   │   ├── page.tsx             # หน้าแรก (Home Cards เลือกประเภทประเมิน)
+│   │   ├── dashboard/page.tsx   # หน้า Dashboard สรุปผลและตารางประวัติ
+│   │   ├── result/page.tsx      # หน้ารายงานผลการประเมิน (พิมพ์/ลบ/ดูผัง)
+│   │   ├── assessment/page.tsx  # หน้าทำแบบประเมิน (Multi-step Wizard)
+│   │   ├── category/page.tsx    # หน้าเลือกหมวดหมู่สภาพแวดล้อม (แสง/เสียง/ความร้อน)
+│   │   └── globals.css          # Design Tokens, Glassmorphism, Print Styles
+│   ├── components/              # UI Components แยกตามโมดูล
+│   │   ├── assessment/          # Steps ฟอร์มประเมิน (Environment, Health, Satisfaction)
+│   │   ├── dashboard/           # AssessmentDataTable, Filters, Export Button
+│   │   ├── forms/               # Input, Radio, Checkbox, Slider, FileUpload
+│   │   ├── layout/              # PageHeader, BottomNav, CreditsModal
+│   │   └── ui/                  # Badge, Card, Modal, ImageLightboxModal
+│   ├── lib/                     # Utilities & Business Logic
+│   │   ├── api.ts               # API Client ฟังก์ชันยิงเข้า Cloudflare Worker
+│   │   ├── constants.ts         # ค่าคงที่ Labels, Routes, Options
+│   │   ├── environment-schema.ts# เกณฑ์มาตรฐานกฎหมาย & WBGT Calculation
+│   │   ├── excel-export.ts      # Multi-Sheet Excel (.xlsx) Generator
+│   │   ├── health-risk-data.ts  # ชุดคำถามและเกณฑ์คำนวณความเสี่ยงสุขภาพ
+│   │   ├── schemas.ts           # Zod Schema Validation
+│   │   └── utils.ts             # จัดรูปแบบวันที่ไทย, Submission Code Generator
+│   └── types/                   # TypeScript Interfaces & Types ทั้งระบบ
+│       └── index.ts
+├── worker/                      # Cloudflare Workers Backend API
+│   ├── src/
+│   │   ├── db/
+│   │   │   ├── schema.sql       # โครงสร้างฐานข้อมูล D1 (8 ตาราง)
+│   │   │   └── seed.sql         # ข้อมูลจำลองสำหรับทดสอบ
+│   │   ├── routes/
+│   │   │   ├── submissions.ts   # API บันทึก/อัปเดตผังห้อง/ลบข้อมูล
+│   │   │   ├── results.ts       # API ดึงผลประเมินรายรหัส
+│   │   │   └── dashboard.ts     # API Summary, Query Submissions, Export Data
+│   │   ├── index.ts             # Hono App Entry, CORS & Error Handlers
+│   │   └── types.ts             # Worker Env Bindings & Types
+│   ├── wrangler.toml            # Cloudflare Worker & D1 Database Config
+│   └── package.json
+└── package.json                 # Frontend Dependencies & Scripts
 ```
 
 ---
 
-## 7. Frontend File Structure
+## 5. โครงสร้างฐานข้อมูล Cloudflare D1 (8 Tables)
 
-```text
-src/
-├── app/
-│   ├── page.tsx
-│   ├── assessment/
-│   │   ├── environment/
-│   │   │   └── page.tsx
-│   │   ├── environment-form/
-│   │   │   └── page.tsx
-│   │   ├── health-risk/
-│   │   │   └── page.tsx
-│   │   ├── health-risk-form/
-│   │   │   └── page.tsx
-│   │   └── satisfaction/
-│   │       └── page.tsx
-│   ├── result/
-│   │   └── page.tsx
-│   ├── dashboard/
-│   │   └── page.tsx
-│   └── complete/
-│       └── page.tsx
-├── components/
-│   ├── ui/
-│   ├── layout/
-│   ├── assessment/
-│   ├── dashboard/
-│   └── forms/
-├── features/
-│   ├── home/
-│   ├── environment-assessment/
-│   ├── health-risk/
-│   ├── satisfaction/
-│   └── dashboard/
-├── lib/
-│   ├── api.ts
-│   ├── constants.ts
-│   ├── scoring.ts
-│   └── utils.ts
-├── hooks/
-├── types/
-└── styles/
+```mermaid
+erDiagram
+    SUBMISSIONS ||--o{ RESPONDENT_PROFILES : has
+    SUBMISSIONS ||--o{ RESPONDENT_WORK_INFOS : has
+    SUBMISSIONS ||--o{ ENVIRONMENT_INSPECTIONS : has
+    SUBMISSIONS ||--o{ ENVIRONMENT_MEASUREMENT_POINTS : has
+    SUBMISSIONS ||--o{ HEALTH_RISK_ANSWERS : has
+    SUBMISSIONS ||--o{ SATISFACTION_ANSWERS : has
+    SUBMISSIONS ||--o{ ASSESSMENT_RESULTS : has
+
+    SUBMISSIONS {
+        int id PK
+        string submission_code UK
+        string assessment_type
+        string assessment_category
+        string status
+        float overall_score
+        string overall_level
+        int has_layout
+        text layout_file_data
+        string completed_at
+        string created_at
+    }
+```
+
+1. **`submissions`**: ตารางหัวเอกสารหลัก (รหัส `SUB-...`, ประเภท, หมวดหมู่, ผลรวม, ผังห้อง, วันที่)
+2. **`environment_inspections`**: ข้อมูลผู้ตรวจวัด, ตำแหน่ง, สถานที่, อุปกรณ์, เวลาตรวจ
+3. **`environment_measurement_points`**: จุดตรวจวัดสภาพแวดล้อมละเอียด (Lux / dBA Min-Max-Avg / WBGT Dry-Wet-Globe)
+4. **`respondent_profiles`**: ข้อมูลส่วนบุคคล (เพศ, อายุ, น้ำหนัก, ส่วนสูง, โรคประจำตัว)
+5. **`respondent_work_infos`**: ข้อมูลการทำงาน (แผนก, ตำแหน่ง, ประสบการณ์, ชั่วโมงงาน)
+6. **`health_risk_answers`**: คำตอบแบบประเมินความเสี่ยงสุขภาพรายข้อ
+7. **`satisfaction_answers`**: คะแนนประเมินความพึงพอใจรายมิติและข้อเสนอแนะ
+8. **`assessment_results`**: แคชผลการคำนวณและข้อเสนอแนะความปลอดภัย
+
+---
+
+## 6. รายการ API Endpoints (Cloudflare Worker)
+
+**Live Production API:** `https://save-check-api.ameenahroya.workers.dev`  
+**Local Development:** `http://localhost:8787`
+
+| Method   | Endpoint                        | คำอธิบาย                                                                                              |
+| -------- | ------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `POST`   | `/api/submissions`              | บันทึกผลการประเมินใหม่เข้าฐานข้อมูลสัมพันธ์ 8 ตาราง                                                   |
+| `GET`    | `/api/results/:code`            | ดึงข้อมูลผลการประเมินฉบับสมบูรณ์ตามรหัส `submission_code`                                             |
+| `PATCH`  | `/api/submissions/:code/layout` | บันทึก/แก้ไข/ลบไฟล์ผังพื้นที่ห้อง (Room Layout)                                                       |
+| `DELETE` | `/api/submissions/:code`        | ลบประวัติการประเมินและความสัมพันธ์ทั้งหมดใน DB (Atomic Batch)                                         |
+| `GET`    | `/api/dashboard/summary`        | สรุปยอดรวม KPI, แยกประเภท, แยกผลประเมิน, และคะแนนเฉลี่ย                                               |
+| `GET`    | `/api/dashboard/submissions`    | Query ตารางประวัติ (รองรับ `search`, `type`, `start_date`, `end_date`, `sort_order`, `page`, `limit`) |
+| `GET`    | `/api/dashboard/export-data`    | ดึงข้อมูลความสัมพันธ์ทั้งหมดสำหรับแปลงเป็น Excel Multi-Sheet                                          |
+
+---
+
+## 7. คู่มือคำสั่งสำหรับพัฒนาและใช้งานต่อ (Developer Guide)
+
+### 7.1 ติดตั้ง Dependencies
+
+```bash
+# ติดตั้ง Frontend
+bun install
+
+# ติดตั้ง Backend Worker
+cd worker && bun install && cd ..
+```
+
+### 7.2 รัน Development Server
+
+```bash
+# Terminal 1: รัน Next.js Frontend (http://localhost:3000)
+bun run dev
+
+# Terminal 2: รัน Cloudflare Worker API (http://localhost:8787)
+cd worker && bun run dev
+```
+
+### 7.3 คำสั่งจัดการฐานข้อมูล D1
+
+```bash
+# รัน Migration ในเครื่อง
+bun run db:migrate
+
+# เพิ่มข้อมูล Seed ทดสอบในเครื่อง
+bun run db:seed
+
+# รัน Migration ขึ้น Cloudflare D1 Production
+bun run db:migrate:remote
+```
+
+### 7.4 คำสั่งสำหรับแก้ไขและ Deploy หลังบ้าน (Backend & Database)
+
+#### 🔹 กรณีที่ 1: แก้เฉพาะโค้ด API (ไฟล์ใน `worker/src/`)
+รันคำสั่งเดียวจากโฟลเดอร์หลัก:
+```bash
+bunx wrangler deploy --config worker/wrangler.toml
+```
+
+#### 🔹 กรณีที่ 2: มีการแก้ไขโครงสร้าง Database (ไฟล์ `schema.sql`)
+รัน 2 ขั้นตอนเรียงกัน:
+```bash
+# 1. อัปเดตโครงสร้าง Database ขึ้น Cloudflare D1 (Production)
+bunx wrangler d1 execute save-check-db --remote --file=./worker/src/db/schema.sql --config worker/wrangler.toml
+
+# 2. Deploy โค้ด API ขึ้น Cloudflare Workers
+bunx wrangler deploy --config worker/wrangler.toml
 ```
 
 ---
 
-## 8. Backend API
+### 7.5 Build & Deploy หน้าบ้าน (Frontend)
 
-### 8.1 Submission APIs
+```bash
+# ตรวจสอบ Typescript
+bun run tsc --noEmit
 
-```text
-POST /api/submissions/start
-POST /api/submissions/:id/profile
-POST /api/submissions/:id/work-info
-POST /api/submissions/:id/answers
-POST /api/submissions/:id/complete
+# Build Static Export สำหรับ Cloudflare Pages (ได้โฟลเดอร์ out/)
+bun run build
+
+# (ตัวเลือก) Deploy Frontend ตรงขึ้น Cloudflare Pages ผ่าน CLI
+bunx wrangler pages deploy out --project-name=save-check
 ```
 
-### 8.2 Result APIs
-
-```text
-GET /api/results/:submissionId
-```
-
-### 8.3 Dashboard APIs
-
-```text
-GET /api/dashboard/summary
-GET /api/dashboard/submissions
-GET /api/dashboard/by-category
-```
-
-### 8.4 Future Export API
-
-```text
-GET /api/export/csv
-```
-
----
-
-## 9. Database Tables
-
-### 9.1 submissions
-
-เก็บหัวรายการการประเมิน 1 ครั้ง
-
-```text
-id
-submission_code
-assessment_type
-assessment_category
-started_at
-completed_at
-status
-overall_score
-overall_level
-created_at
-updated_at
-```
-
-assessment_type:
-
-```text
-environment
-health_risk
-satisfaction
-```
-
-assessment_category:
-
-```text
-light
-noise
-heat
-general
-```
-
-status:
-
-```text
-started
-in_progress
-completed
-cancelled
-```
-
----
-
-### 9.2 respondent_profiles
-
-เก็บข้อมูลผู้ประเมินของ submission นั้น
-
-```text
-id
-submission_id
-full_name
-gender
-age
-weight
-height
-education_level
-marital_status
-has_underlying_disease
-underlying_disease_details
-created_at
-```
-
----
-
-### 9.3 respondent_work_infos
-
-เก็บข้อมูลด้านการทำงานหรือพื้นที่
-
-```text
-id
-submission_id
-position_type
-department
-work_experience_years
-working_hours_per_day
-working_days_per_week
-work_area
-created_at
-```
-
----
-
-### 9.4 environment_answers
-
-เก็บคำตอบแบบประเมินสภาพแวดล้อม
-
-```text
-id
-submission_id
-category
-question_key
-question_text
-answer_value
-answer_score
-measured_value
-unit
-created_at
-```
-
----
-
-### 9.5 health_risk_answers
-
-เก็บคำตอบแบบประเมินความเสี่ยงสุขภาพ
-
-```text
-id
-submission_id
-category
-question_no
-question_text
-answer_value
-answer_score
-created_at
-```
-
----
-
-### 9.6 satisfaction_answers
-
-เก็บคำตอบแบบประเมินความพึงพอใจ
-
-```text
-id
-submission_id
-category
-question_no
-question_text
-rating
-created_at
-```
-
----
-
-### 9.7 assessment_results
-
-เก็บผลลัพธ์รวมของแต่ละ submission
-
-```text
-id
-submission_id
-assessment_type
-assessment_category
-total_score
-risk_level
-recommendation
-created_at
-```
-
-risk_level:
-
-```text
-pass
-medium
-high_risk
-```
-
----
-
-## 10. Scoring Rules
-
-### 10.1 Health Risk
-
-คำตอบ:
-
-```text
-ไม่เคย = 0
-บางครั้ง = 1
-เป็นประจำ = 2
-```
-
-ถ้ามี 10 ข้อต่อ 1 category:
-
-```text
-คะแนนเต็ม = 20
-```
-
-เกณฑ์เบื้องต้น:
-
-```text
-0 - 6 คะแนน   = pass / ความเสี่ยงต่ำ
-7 - 13 คะแนน  = medium / ความเสี่ยงปานกลาง
-14 - 20 คะแนน = high_risk / ความเสี่ยงสูง
-```
-
-หมายเหตุ: เกณฑ์นี้สามารถแก้ไขภายหลังตามผู้วิจัยกำหนด
-
----
-
-### 10.2 Satisfaction
-
-คำตอบ:
-
-```text
-5 = พึงพอใจมากที่สุด
-4 = พึงพอใจมาก
-3 = พึงพอใจปานกลาง
-2 = พึงพอใจน้อย
-1 = พึงพอใจน้อยที่สุด
-```
-
-ผลลัพธ์:
-
-```text
-overall_avg = ค่าเฉลี่ยรวม
-category_avg = ค่าเฉลี่ยรายด้าน
-```
-
----
-
-### 10.3 Environment
-
-การคำนวณ Environment จะกำหนดตามคำถามจริงอีกครั้ง
-
-ใน MVP ให้รองรับได้ทั้ง:
-
-- คำตอบแบบ choice
-- ค่าตัวเลข เช่น Lux, dBA, WBGT
-- คะแนนที่คำนวณจาก rule
-- ข้อเสนอแนะจาก risk level
-
----
-
-## 11. UI / UX Direction
-
-### 11.1 Mood
-
-```text
-Clean
-Calm
-Health & Safety
-Mobile App-like
-Friendly
-Research-ready
-```
-
-### 11.2 Color Palette
-
-```text
-Primary Blue: #0F63C7
-Deep Blue: #0B4FAE
-Soft Blue: #E0F2FE
-Sky Tint: #F0F9FF
-
-Green: #16A34A
-Soft Green: #DCFCE7
-
-Amber: #F59E0B
-Soft Amber: #FEF3C7
-
-Red: #EF4444
-Soft Red: #FEE2E2
-
-Background: #F8FAFC
-Surface: #FFFFFF
-Text Primary: #0F172A
-Text Secondary: #64748B
-Border: #E2E8F0
-```
-
----
-
-### 11.3 Typography
-
-ใช้ Font ภาษาไทยที่อ่านง่าย
-
-Recommended:
-
-```text
-Noto Sans Thai
-```
-
-หรือ
-
-```text
-LINE Seed Sans TH
-```
-
-Font size:
-
-```text
-Page Title: 24px
-Section Title: 20px
-Card Title: 17px
-Body: 16px
-Small: 14px
-Caption: 12px
-```
-
----
-
-### 11.4 Components
-
-Components ที่ควรมี:
-
-```text
-HomeAssessmentCard
-CategoryCard
-StepProgress
-ProfileFormCard
-QuestionCard
-ChoiceButton
-RatingGroup
-ResultSummaryCard
-DashboardSummaryCard
-DonutChartCard
-ProgressMetric
-SubmissionListItem
-StatusBadge
-PrimaryButton
-FormInput
-PageHeader
-BottomNav
-```
-
----
-
-## 12. MVP Scope
-
-### 12.1 Included
-
-```text
-Static Web App
-No Login
-Assessment-first Flow
-เลือกแบบประเมิน 3 ส่วน
-กรอกข้อมูลผู้ประเมินในแต่ละครั้ง
-บันทึกข้อมูลเป็น Submission
-บันทึกข้อมูลลง Cloudflare D1
-Dashboard เบื้องต้น
-Result Page
-Deploy ผ่าน Cloudflare Pages
-ใช้งานผ่าน URL / QR Code
-```
-
----
-
-### 12.2 Not Included
-
-```text
-Login
-Register
-Admin Role
-User Management
-Reset Password
-Dynamic Route
-Production-grade Permission System
-Export PDF แบบสมบูรณ์
-Excel Export แบบจัดรูปแบบ
-แก้ไขคำถามผ่านหน้า UI
-Dashboard เชิงลึกหลายมิติ
-Offline Mode เต็มรูปแบบ
-Mobile App บน App Store / Play Store
-```
-
----
-
-## 13. Acceptance Criteria
-
-ระบบจะถือว่าเสร็จสมบูรณ์ใน MVP เมื่อ:
-
-1. ผู้ใช้เปิดหน้าแรกได้
-2. ผู้ใช้เลือกแบบประเมินทั้ง 3 ส่วนได้
-3. ผู้ใช้เลือกหัวข้อย่อยได้ในหมวด Environment และ Health Risk
-4. ผู้ใช้กรอกข้อมูลผู้ประเมินได้
-5. ผู้ใช้ตอบคำถามได้
-6. ระบบสร้าง submission ได้
-7. ระบบบันทึกข้อมูลลง D1 ได้
-8. ระบบคำนวณคะแนนเบื้องต้นได้
-9. ระบบแสดงผลสรุปได้
-10. Dashboard แสดงรายการประเมินได้
-11. Dashboard แสดง summary เบื้องต้นได้
-12. ระบบใช้งานบนมือถือได้ดี
-13. ระบบไม่ใช้ Dynamic Route
-14. ระบบ Deploy เป็น Static Export ได้สำเร็จ

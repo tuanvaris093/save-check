@@ -2,7 +2,7 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useState } from "react";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, AlertCircle } from "lucide-react";
 import { PageHeader } from "@/components/layout";
 import { ROUTES } from "@/lib/constants";
 import {
@@ -12,7 +12,7 @@ import { isValidCategory } from "@/lib/utils";
 import type { AssessmentCategory } from "@/types";
 import { createSubmission } from "@/lib/api";
 import { useAssessmentForm } from "@/hooks/use-assessment";
-import { LoadingState } from "@/components/ui";
+import { LoadingState, SubmitLoadingOverlay } from "@/components/ui";
 import {
   StepProgress,
   ProfileStep,
@@ -32,6 +32,7 @@ function HealthRiskFormContent() {
   const router = useRouter();
   const categoryParam = searchParams.get("category");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Use the form wizard hook
   const {
@@ -110,10 +111,11 @@ function HealthRiskFormContent() {
   const handleHealthRiskNext = (data: any) => {
     saveDraft({ answers: data });
     nextStep();
-  }
+  };
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
+    setSubmitError(null);
 
     const now = new Date();
     const datePart = now.toISOString().slice(0, 10).replace(/-/g, "");
@@ -160,12 +162,13 @@ function HealthRiskFormContent() {
         "save_check_submissions",
         JSON.stringify([newSubmission, ...list])
       );
+
+      // Clean draft key from localStorage
+      localStorage.removeItem(`save_check_draft_health_risk_${category}`);
     } catch (err) {
       console.error("Failed to save health risk submission to localStorage", err);
     }
 
-    clearDraft();
-    setIsSubmitting(false);
     router.push(`${ROUTES.RESULT}?submissionId=${submissionCode}`);
   };
 
@@ -181,6 +184,13 @@ function HealthRiskFormContent() {
 
       <main className="flex-1 px-4 py-2 md:px-8 md:py-6 md:glass-card md:mt-4 md:mb-10">
         <StepProgress currentStep={currentStep} totalSteps={totalSteps} className="md:pt-0" />
+
+        {submitError && (
+          <div className="mt-4 flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 p-3.5 text-small text-red-700 animate-fade-in">
+            <AlertCircle className="h-5 w-5 shrink-0 text-red-500" />
+            <span>{submitError}</span>
+          </div>
+        )}
 
         <div className="mt-4 pb-8">
           {currentStep === 1 && (
@@ -219,6 +229,9 @@ function HealthRiskFormContent() {
           )}
         </div>
       </main>
+
+      {/* Fullscreen Loading Overlay during submission */}
+      <SubmitLoadingOverlay isOpen={isSubmitting} text="กำลังบันทึกข้อมูลผลการประเมิน..." />
     </div>
   );
 }

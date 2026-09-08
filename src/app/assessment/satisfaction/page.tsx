@@ -2,10 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { AlertCircle } from "lucide-react";
 import { PageHeader } from "@/components/layout";
 import { ROUTES } from "@/lib/constants";
 import { useAssessmentForm } from "@/hooks/use-assessment";
-import { LoadingState } from "@/components/ui";
+import { LoadingState, SubmitLoadingOverlay } from "@/components/ui";
 import { createSubmission } from "@/lib/api";
 import { calculateSatisfactionResult } from "@/lib/satisfaction-schema";
 import {
@@ -19,6 +20,7 @@ const TOTAL_STEPS = 2; // 1: Questions, 2: Review
 export default function SatisfactionFormPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Use the form wizard hook
   const {
@@ -57,6 +59,7 @@ export default function SatisfactionFormPage() {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
+    setSubmitError(null);
 
     const now = new Date();
     const datePart = now.toISOString().slice(0, 10).replace(/-/g, "");
@@ -99,12 +102,13 @@ export default function SatisfactionFormPage() {
         "save_check_submissions",
         JSON.stringify([newSubmission, ...list])
       );
+
+      // Clean draft key from localStorage
+      localStorage.removeItem("save_check_draft_satisfaction_general");
     } catch (err) {
       console.error("Failed to save satisfaction submission to localStorage", err);
     }
 
-    clearDraft();
-    setIsSubmitting(false);
     router.push(`${ROUTES.RESULT}?submissionId=${submissionCode}`);
   };
 
@@ -120,6 +124,13 @@ export default function SatisfactionFormPage() {
 
       <main className="flex-1 px-4 py-2 md:px-8 md:py-6 md:glass-card md:mt-4 md:mb-10">
         <StepProgress currentStep={currentStep} totalSteps={totalSteps} className="md:pt-0" />
+
+        {submitError && (
+          <div className="mt-4 flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 p-3.5 text-small text-red-700 animate-fade-in">
+            <AlertCircle className="h-5 w-5 shrink-0 text-red-500" />
+            <span>{submitError}</span>
+          </div>
+        )}
 
         <div className="mt-4 pb-8">
           {currentStep === 1 && (
@@ -141,6 +152,9 @@ export default function SatisfactionFormPage() {
           )}
         </div>
       </main>
+
+      {/* Fullscreen Loading Overlay during submission */}
+      <SubmitLoadingOverlay isOpen={isSubmitting} text="กำลังบันทึกข้อมูลผลการประเมิน..." />
     </div>
   );
 }

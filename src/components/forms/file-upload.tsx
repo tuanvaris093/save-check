@@ -9,14 +9,15 @@ import {
   Eye,
   RefreshCw,
   AlertCircle,
-  X,
 } from "lucide-react";
+import { ImageLightboxModal } from "@/components/ui";
 import type { LayoutFileInfo } from "@/types";
 import { formatFileSize } from "@/lib/utils";
 
 interface FileUploadProps {
   value?: LayoutFileInfo | null;
   onChange: (file: LayoutFileInfo | null) => void;
+  onDelete?: () => void;
   maxSizeMB?: number;
   label?: string;
   description?: string;
@@ -26,6 +27,7 @@ interface FileUploadProps {
 export function FileUpload({
   value,
   onChange,
+  onDelete,
   maxSizeMB = 10,
   label = "แนบผังพื้นที่ห้อง / Layout",
   description = "รองรับไฟล์ภาพ (JPG, PNG, WebP) หรือเอกสาร PDF ขนาดไม่เกิน 10MB",
@@ -258,8 +260,8 @@ export function FileUpload({
                 </button>
                 <button
                   type="button"
-                  onClick={handleRemove}
-                  className="inline-flex items-center gap-1 rounded px-2 py-1 text-caption text-red-500 hover:bg-red-50 transition-colors"
+                  onClick={onDelete || handleRemove}
+                  className="inline-flex items-center gap-1 rounded px-2 py-1 text-caption text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   ลบ
@@ -270,39 +272,15 @@ export function FileUpload({
         </div>
       )}
 
-      {/* Lightbox Modal for Image Preview */}
-      {isPreviewOpen && isImage && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm animate-fade-in"
-          onClick={() => setIsPreviewOpen(false)}
-        >
-          <div
-            className="relative max-h-[90vh] max-w-[90vw] overflow-hidden rounded-2xl bg-white p-2 shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between border-b border-gray-100 px-3 py-2">
-              <span className="truncate text-small font-medium text-text-primary">
-                {value?.fileName}
-              </span>
-              <button
-                type="button"
-                onClick={() => setIsPreviewOpen(false)}
-                className="rounded-full p-1 text-gray-500 hover:bg-gray-100 transition-colors"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <div className="max-h-[80vh] overflow-auto p-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={value?.fileData}
-                alt={value?.fileName}
-                className="mx-auto h-auto max-h-[75vh] w-auto object-contain rounded-lg"
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Fullscreen Lightbox Modal for Image Preview */}
+      <ImageLightboxModal
+        isOpen={isPreviewOpen && !!isImage}
+        onClose={() => setIsPreviewOpen(false)}
+        src={value?.fileData}
+        fileName={value?.fileName}
+        fileSize={value?.fileSize}
+        title="ผังพื้นที่ห้อง (Room Layout)"
+      />
     </div>
   );
 }

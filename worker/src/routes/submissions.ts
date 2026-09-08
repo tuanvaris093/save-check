@@ -408,3 +408,66 @@ submissionsRoute.patch("/:code/layout", async (c) => {
     );
   }
 });
+
+/**
+ * DELETE /api/submissions/:code
+ * Deletes a submission and all its associated child table records
+ */
+submissionsRoute.delete("/:code", async (c) => {
+  const db = c.env.DB;
+  const code = c.req.param("code");
+
+  try {
+    const sub = await db
+      .prepare("SELECT id FROM submissions WHERE submission_code = ?")
+      .bind(code)
+      .first<{ id: number }>();
+
+    if (!sub || !sub.id) {
+      return c.json(
+        {
+          success: false,
+          error: {
+            code: "NOT_FOUND",
+            message: `ไม่พบรายการประเมินรหัส ${code}`,
+          },
+        },
+        404
+      );
+    }
+
+    const subId = sub.id;
+
+    // Delete child records first, then the main submission
+    await db.batch([
+      db.prepare("DELETE FROM environment_measurement_points WHERE submission_id = ?").bind(subId),
+      db.prepare("DELETE FROM environment_inspections WHERE submission_id = ?").bind(subId),
+      db.prepare("DELETE FROM respondent_profiles WHERE submission_id = ?").bind(subId),
+      db.prepare("DELETE FROM respondent_work_infos WHERE submission_id = ?").bind(subId),
+      db.prepare("DELETE FROM health_risk_answers WHERE submission_id = ?").bind(subId),
+      db.prepare("DELETE FROM satisfaction_answers WHERE submission_id = ?").bind(subId),
+      db.prepare("DELETE FROM assessment_results WHERE submission_id = ?").bind(subId),
+      db.prepare("DELETE FROM submissions WHERE id = ?").bind(subId),
+    ]);
+
+    return c.json({
+      success: true,
+      data: {
+        submission_code: code,
+        message: `ลบรายการประเมินรหัส ${code} เรียบร้อยแล้ว`,
+      },
+    });
+  } catch (err: any) {
+    console.error("Error deleting submission:", err);
+    return c.json(
+      {
+        success: false,
+        error: {
+          code: "DB_ERROR",
+          message: err.message || "เกิดข้อผิดพลาดในการลบข้อมูล",
+        },
+      },
+      500
+    );
+  }
+});

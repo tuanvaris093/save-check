@@ -29,7 +29,7 @@ export function GlassSidebar() {
   return (
     <>
       <aside
-        className="hidden md:flex md:flex-col md:shrink-0"
+        className="hidden md:flex md:flex-col md:shrink-0 print:hidden"
         style={{
           width: "260px",
           minHeight: "calc(100vh - 32px)",

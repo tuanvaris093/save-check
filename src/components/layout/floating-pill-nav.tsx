@@ -24,7 +24,7 @@ export function FloatingPillNav() {
 
   return (
     <nav
-      className="fixed left-1/2 z-50 -translate-x-1/2 md:hidden"
+      className="fixed left-1/2 z-50 -translate-x-1/2 md:hidden print:hidden"
       style={{
         bottom: "calc(16px + env(safe-area-inset-bottom, 0px))",
         width: "min(88vw, 420px)",

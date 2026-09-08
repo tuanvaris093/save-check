@@ -14,53 +14,41 @@ import {
   type AssessmentRecord,
 } from "@/components/dashboard";
 import { ROUTES } from "@/lib/constants";
-import { getDashboardSubmissions } from "@/lib/api";
+import {
+  getDashboardSummary,
+  getDashboardSubmissions,
+  type DashboardSummaryData,
+} from "@/lib/api";
 
 export default function DashboardPage() {
-  const [submissions, setSubmissions] = useState<AssessmentRecord[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [summary, setSummary] = useState<DashboardSummaryData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let hasLocal = false;
-    // 1. Check localStorage first for instant display
-    try {
-      const stored = localStorage.getItem("save_check_submissions");
-      if (stored) {
-        const list = JSON.parse(stored);
-        if (Array.isArray(list) && list.length > 0) {
-          setSubmissions(list);
-          setIsLoaded(true);
-          hasLocal = true;
-        }
-      }
-    } catch (err) {
-      console.error("Failed to load dashboard submissions from localStorage", err);
-    }
+    setIsLoading(true);
 
-    // 2. Fetch fresh submissions from Cloudflare Workers API
-    getDashboardSubmissions({ limit: 50 })
-      .then((res) => {
-        if (res.success && res.data?.items && res.data.items.length > 0) {
-          setSubmissions(res.data.items as any);
-          setIsLoaded(true);
-        } else if (!hasLocal) {
-          setSubmissions([]);
-          setIsLoaded(true);
+    getDashboardSummary()
+      .then((summaryRes) => {
+        if (summaryRes.success && summaryRes.data) {
+          setSummary(summaryRes.data);
         }
       })
       .catch((err) => {
-        console.warn("API unavailable, using local dashboard cache", err);
-        if (!hasLocal) {
-          setSubmissions([]);
-        }
-        setIsLoaded(true);
+        console.error("Failed to load dashboard summary from API", err);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }, []);
 
-  const totalCount = submissions.length;
-  const envCount = submissions.filter((s) => s.assessment_type === "environment").length;
-  const healthCount = submissions.filter((s) => s.assessment_type === "health_risk").length;
-  const satCount = submissions.filter((s) => s.assessment_type === "satisfaction").length;
+  const totalCount = summary ? summary.total_submissions : 0;
+  const envCount = summary ? summary.by_type.environment : 0;
+  const healthCount = summary ? summary.by_type.health_risk : 0;
+  const satCount = summary ? summary.by_type.satisfaction : 0;
+  const satAvg =
+    summary && summary.satisfaction_avg > 0
+      ? `${summary.satisfaction_avg.toFixed(1)} / 5`
+      : "—";
 
   return (
     <div className="flex min-h-dvh flex-col pb-safe-nav">
@@ -78,7 +66,7 @@ export default function DashboardPage() {
                 ประเมินทั้งหมด
               </p>
               <p className="mt-1 text-page-title font-bold text-text-primary">
-                {isLoaded ? totalCount : "—"}
+                {!isLoading ? totalCount : "—"}
               </p>
             </div>
             <div className="glass-card p-4 animate-fade-in">
@@ -86,7 +74,7 @@ export default function DashboardPage() {
                 ตรวจวัดสภาพแวดล้อม
               </p>
               <p className="mt-1 text-page-title font-bold text-emerald-600">
-                {isLoaded ? envCount : "—"}
+                {!isLoading ? envCount : "—"}
               </p>
             </div>
             <div className="glass-card p-4 animate-fade-in">
@@ -94,7 +82,7 @@ export default function DashboardPage() {
                 ความเสี่ยงสุขภาพ
               </p>
               <p className="mt-1 text-page-title font-bold text-primary">
-                {isLoaded ? healthCount : "—"}
+                {!isLoading ? healthCount : "—"}
               </p>
             </div>
             <div className="glass-card p-4 animate-fade-in">
@@ -102,7 +90,7 @@ export default function DashboardPage() {
                 ความพึงพอใจเฉลี่ย
               </p>
               <p className="mt-1 text-page-title font-bold text-text-primary">
-                4.8 / 5
+                {!isLoading ? satAvg : "—"}
               </p>
             </div>
           </div>
@@ -134,7 +122,7 @@ export default function DashboardPage() {
                       </span>
                     </div>
                     <span className="text-small font-medium text-text-secondary">
-                      {isLoaded ? item.count : 0} รายการ
+                      {!isLoading ? item.count : 0} รายการ
                     </span>
                   </div>
                 );
@@ -144,25 +132,7 @@ export default function DashboardPage() {
 
           {/* Assessment Data Table Section */}
           <div className="mb-8 pb-20 md:pb-6">
-            <div className="flex items-center justify-between gap-2 mb-3">
-              <div className="min-w-0 flex-1">
-                <h2 className="text-card-title font-semibold text-text-primary">
-                  รายการประเมินล่าสุด
-                </h2>
-                <p className="text-caption text-text-secondary truncate">
-                  รายงานผลประเมิน พร้อมค้นหาและแบ่งหน้า
-                </p>
-              </div>
-              <Link
-                href={ROUTES.HOME}
-                className="inline-flex items-center gap-1 rounded-button bg-primary px-3 py-1.5 text-caption font-medium text-white hover:bg-primary-deep shadow-sm active:scale-95 transition-all whitespace-nowrap shrink-0"
-              >
-                <Plus className="h-3.5 w-3.5 shrink-0" />
-                <span>ประเมินใหม่</span>
-              </Link>
-            </div>
-
-            <AssessmentDataTable data={submissions} initialPageSize={5} />
+            <AssessmentDataTable initialPageSize={10} />
           </div>
         </div>
       </main>

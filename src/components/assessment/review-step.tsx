@@ -12,7 +12,7 @@ import {
   Info,
   X,
 } from "lucide-react";
-import { Button } from "@/components/ui";
+import { Button, ImageLightboxModal } from "@/components/ui";
 import { AssessmentDraftData } from "@/lib/schemas";
 import {
   calculateAverage,
@@ -900,39 +900,15 @@ export function ReviewStep({
         </Button>
       </div>
 
-      {/* Lightbox Modal */}
-      {previewImage && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm animate-fade-in"
-          onClick={() => setPreviewImage(null)}
-        >
-          <div
-            className="relative max-h-[90vh] max-w-[90vw] overflow-hidden rounded-2xl bg-white p-2 shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between border-b border-gray-100 px-3 py-2">
-              <span className="text-small font-medium text-text-primary">
-                ผังพื้นที่ห้อง (Layout)
-              </span>
-              <button
-                type="button"
-                onClick={() => setPreviewImage(null)}
-                className="rounded-full p-1 text-gray-500 hover:bg-gray-100 transition-colors"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <div className="max-h-[80vh] overflow-auto p-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={previewImage}
-                alt="ผังห้อง"
-                className="mx-auto h-auto max-h-[75vh] w-auto object-contain rounded-lg"
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Fullscreen Lightbox Modal */}
+      <ImageLightboxModal
+        isOpen={!!previewImage}
+        onClose={() => setPreviewImage(null)}
+        src={previewImage}
+        fileName={layoutFile?.fileName}
+        fileSize={layoutFile?.fileSize}
+        title="ผังพื้นที่ห้อง (Room Layout)"
+      />
     </div>
   );
 }

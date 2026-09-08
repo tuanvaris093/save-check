@@ -232,3 +232,71 @@ body {
     padding-bottom: 2rem;
   }
 }
+
+/* --- Print Media Styles --- */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm;
+  }
+
+  body {
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    font-size: 11pt !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Force hide navigation bars, floating buttons, toasts, sidebars */
+  nav,
+  aside,
+  header.glass-surface,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  .pb-safe-nav {
+    padding-bottom: 0 !important;
+  }
+
+  /* Reset glass effects to clean printable borders without clipping */
+  .glass-card {
+    background: #FFFFFF !important;
+    box-shadow: none !important;
+    border: 1px solid #CBD5E1 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    margin-bottom: 12pt !important;
+    padding: 14pt !important;
+  }
+
+  /* Page break utilities for print */
+  .print-page-break-before,
+  .print\:break-before-page {
+    break-before: page !important;
+    page-break-before: always !important;
+  }
+
+  .print-break-inside-avoid,
+  .print\:break-inside-avoid {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  table {
+    page-break-inside: auto !important;
+  }
+
+  tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+}
+

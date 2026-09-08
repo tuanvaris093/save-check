@@ -1,11 +1,14 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import {
   AlertTriangle,
-  BarChart3,
+  AlertCircle,
+  Save,
+  Trash2,
   Home,
   CheckCircle2,
   XCircle,
@@ -24,11 +27,16 @@ import {
   X,
   Star,
   FileText,
+  RotateCcw,
+  Loader2,
+  ArrowLeft,
+  Download,
 } from "lucide-react";
 import { PageHeader } from "@/components/layout";
 import { FileUpload } from "@/components/forms";
+import { ImageLightboxModal } from "@/components/ui";
 import { ROUTES, ASSESSMENT_CATEGORY_LABELS } from "@/lib/constants";
-import { getResult, updateSubmissionLayout } from "@/lib/api";
+import { getResult, updateSubmissionLayout, deleteSubmission } from "@/lib/api";
 import type { LayoutFileInfo, AssessmentCategory } from "@/types";
 import {
   calculateAverage,
@@ -50,21 +58,41 @@ import { calculateSatisfactionResult } from "@/lib/satisfaction-schema";
 import { cn, formatFileSize } from "@/lib/utils";
 
 function ResultContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const submissionId = searchParams.get("submissionId");
 
   const [submission, setSubmission] = useState<any | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [layoutFile, setLayoutFile] = useState<LayoutFileInfo | null>(null);
+  const [stagedLayoutFile, setStagedLayoutFile] = useState<LayoutFileInfo | null>(null);
+  const [isSavingLayout, setIsSavingLayout] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleteLayoutModalOpen, setIsDeleteLayoutModalOpen] = useState(false);
+  const [isDeletingLayout, setIsDeletingLayout] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
 
-  // Load submission from API with localStorage fallback
   useEffect(() => {
-    if (!submissionId) return;
+    setMounted(true);
+  }, []);
 
-    let hasLocalFound = false;
+  // Load submission function with loading & error handling
+  const loadSubmissionData = async () => {
+    if (!submissionId) {
+      setIsLoading(false);
+      return;
+    }
 
-    // 1. Check localStorage for instant response
+    setIsLoading(true);
+    setFetchError(null);
+
+    let localData: any = null;
+
+    // 1. Check localStorage for fast cache
     try {
       const stored = localStorage.getItem("save_check_submissions");
       if (stored) {
@@ -75,9 +103,10 @@ function ResultContent() {
             String(item.id) === submissionId
         );
         if (found) {
+          localData = found;
           setSubmission(found);
           setLayoutFile(found.layout_file || null);
-          hasLocalFound = true;
+          setStagedLayoutFile(found.layout_file || null);
         }
       }
     } catch (err) {
@@ -85,95 +114,199 @@ function ResultContent() {
     }
 
     // 2. Fetch fresh data from Cloudflare Workers API
-    getResult(submissionId)
-      .then((res) => {
-        if (res.success && res.data) {
-          setSubmission(res.data);
-          setLayoutFile(res.data.layout_file || null);
-        } else if (!hasLocalFound) {
-          // If neither API nor localStorage found, use default fallback
-          setSubmission({
-            submission_code: submissionId,
-            assessment_type: "environment",
-            assessment_category: "light",
-            created_at: new Date().toISOString(),
-            inspectionData: {
-              inspector_name: "ผู้ตรวจประเมิน",
-              position: "เจ้าหน้าที่ความปลอดภัย (จป.)",
-              inspection_location: "พื้นที่ปฏิบัติงาน",
-              inspection_date: new Date().toISOString().slice(0, 10),
-              equipment: "เครื่องมือตรวจวัดมาตรฐาน (Lux Meter)",
-              start_time: "09:00",
-              end_time: "10:30",
-            },
-            answers: {
-              light_areas: [
-                {
-                  location_desc: "โต๊ะปฏิบัติงาน 1",
-                  measure: 500,
-                  standard_value: 400,
-                  remark: "แสงสว่างเหมาะสม",
-                },
-              ],
-            },
-            has_layout: false,
-            layout_file: null,
-          });
+    try {
+      const res = await getResult(submissionId);
+      if (res.success) {
+        setSubmission(res.data);
+        setLayoutFile(res.data.layout_file || null);
+        setStagedLayoutFile(res.data.layout_file || null);
+        setFetchError(null);
+      } else {
+        if (!localData) {
+          setSubmission(null);
+          setFetchError(
+            res.error?.message ||
+              "ไม่พบข้อมูลผลการประเมินนี้ในระบบ หรือรหัสเอกสารไม่ถูกต้อง"
+          );
         }
-      })
-      .catch((err) => {
-        console.warn("API unavailable, relying on localStorage", err);
-      });
+      }
+    } catch (err: any) {
+      console.warn("API error fetching submission", err);
+      if (!localData) {
+        setSubmission(null);
+        setFetchError(
+          "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองใหม่อีกครั้ง"
+        );
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadSubmissionData();
   }, [submissionId]);
 
-  // Handle upload or removal of layout file
-  const handleLayoutChange = (newFile: LayoutFileInfo | null) => {
-    setLayoutFile(newFile);
+  // Lock background scroll when modal is open
+  useEffect(() => {
+    if (isDeleteModalOpen || isDeleteLayoutModalOpen || !!previewImage) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
 
-    // 1. Sync to Cloudflare Workers Backend API
-    if (submissionId) {
-      updateSubmissionLayout(submissionId, newFile).catch((apiErr) => {
-        console.warn("Failed to sync layout to backend API", apiErr);
-      });
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          if (previewImage) setPreviewImage(null);
+          if (isDeleteModalOpen && !isDeleting) setIsDeleteModalOpen(false);
+          if (isDeleteLayoutModalOpen && !isDeletingLayout) setIsDeleteLayoutModalOpen(false);
+        }
+      };
+
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        window.removeEventListener("keydown", handleKeyDown);
+      };
     }
+  }, [isDeleteModalOpen, isDeleteLayoutModalOpen, previewImage, isDeleting, isDeletingLayout]);
 
-    // 2. Update localStorage cache
+  // Check if there are newly uploaded/changed layout files waiting to be saved
+  const hasLayoutChanges =
+    stagedLayoutFile !== null &&
+    JSON.stringify(layoutFile?.fileData || null) !==
+    JSON.stringify(stagedLayoutFile?.fileData || null);
+
+  // Handle explicit save of newly uploaded/changed layout file to DB
+  const handleSaveLayout = async () => {
+    if (!submissionId || !stagedLayoutFile) return;
+    setIsSavingLayout(true);
     try {
-      const stored = localStorage.getItem("save_check_submissions");
-      const list = stored ? JSON.parse(stored) : [];
-      const foundIndex = list.findIndex(
-        (item: any) => item.submission_code === submissionId
-      );
+      await updateSubmissionLayout(submissionId, stagedLayoutFile);
+      setLayoutFile(stagedLayoutFile);
 
-      if (foundIndex >= 0) {
-        list[foundIndex] = {
-          ...list[foundIndex],
-          layout_file: newFile,
-          has_layout: !!newFile,
-          updated_at: new Date().toISOString(),
-        };
-      } else if (submission) {
-        list.unshift({
-          ...submission,
-          layout_file: newFile,
-          has_layout: !!newFile,
-          updated_at: new Date().toISOString(),
-        });
+      // Update localStorage cache
+      try {
+        const stored = localStorage.getItem("save_check_submissions");
+        const list = stored ? JSON.parse(stored) : [];
+        const foundIndex = list.findIndex(
+          (item: any) => item.submission_code === submissionId
+        );
+
+        if (foundIndex >= 0) {
+          list[foundIndex] = {
+            ...list[foundIndex],
+            layout_file: stagedLayoutFile,
+            has_layout: true,
+            updated_at: new Date().toISOString(),
+          };
+        } else if (submission) {
+          list.unshift({
+            ...submission,
+            layout_file: stagedLayoutFile,
+            has_layout: true,
+            updated_at: new Date().toISOString(),
+          });
+        }
+
+        localStorage.setItem("save_check_submissions", JSON.stringify(list));
+      } catch (err) {
+        console.error("Failed to update layout in localStorage", err);
       }
 
-      localStorage.setItem("save_check_submissions", JSON.stringify(list));
-
-      if (newFile) {
-        setFeedbackMessage("บันทึกไฟล์ผังพื้นที่ห้อง (Layout) เรียบร้อยแล้ว");
-      } else {
-        setFeedbackMessage("ลบไฟล์ผังพื้นที่ห้องแล้ว");
-      }
+      setFeedbackMessage("บันทึกไฟล์ผังพื้นที่ห้อง (Layout) ลงระบบเรียบร้อยแล้ว");
 
       setTimeout(() => {
         setFeedbackMessage(null);
       }, 3500);
     } catch (err) {
-      console.error("Failed to update layout in localStorage", err);
+      console.error("Failed to save layout to backend API", err);
+      setFeedbackMessage("เกิดข้อผิดพลาดในการบันทึกไฟล์ผังห้อง กรุณาลองใหม่อีกครั้ง");
+      setTimeout(() => {
+        setFeedbackMessage(null);
+      }, 4000);
+    } finally {
+      setIsSavingLayout(false);
+    }
+  };
+
+  // Handle delete layout file directly after modal confirmation
+  const handleConfirmDeleteLayout = async () => {
+    if (!submissionId) return;
+    setIsDeletingLayout(true);
+    try {
+      await updateSubmissionLayout(submissionId, null);
+      setLayoutFile(null);
+      setStagedLayoutFile(null);
+
+      // Update localStorage cache
+      try {
+        const stored = localStorage.getItem("save_check_submissions");
+        const list = stored ? JSON.parse(stored) : [];
+        const foundIndex = list.findIndex(
+          (item: any) => item.submission_code === submissionId
+        );
+
+        if (foundIndex >= 0) {
+          list[foundIndex] = {
+            ...list[foundIndex],
+            layout_file: null,
+            has_layout: false,
+            updated_at: new Date().toISOString(),
+          };
+          localStorage.setItem("save_check_submissions", JSON.stringify(list));
+        }
+      } catch (err) {
+        console.error("Failed to update layout in localStorage", err);
+      }
+
+      setIsDeleteLayoutModalOpen(false);
+      setFeedbackMessage("ลบไฟล์ผังพื้นที่ห้องออกจากระบบเรียบร้อยแล้ว");
+
+      setTimeout(() => {
+        setFeedbackMessage(null);
+      }, 3500);
+    } catch (err) {
+      console.error("Failed to delete layout file from backend API", err);
+      setFeedbackMessage("เกิดข้อผิดพลาดในการลบไฟล์ผังห้อง กรุณาลองใหม่อีกครั้ง");
+      setTimeout(() => {
+        setFeedbackMessage(null);
+      }, 4000);
+    } finally {
+      setIsDeletingLayout(false);
+    }
+  };
+
+  // Handle delete submission
+  const handleDeleteSubmission = async () => {
+    if (!submissionId) return;
+    setIsDeleting(true);
+    try {
+      await deleteSubmission(submissionId);
+
+      // Remove from localStorage
+      try {
+        const stored = localStorage.getItem("save_check_submissions");
+        if (stored) {
+          const list = JSON.parse(stored);
+          const filtered = list.filter(
+            (item: any) =>
+              item.submission_code !== submissionId &&
+              String(item.id) !== submissionId
+          );
+          localStorage.setItem("save_check_submissions", JSON.stringify(filtered));
+        }
+      } catch (err) {
+        console.error("Failed to update localStorage after delete", err);
+      }
+
+      router.push(ROUTES.DASHBOARD);
+    } catch (err) {
+      console.error("Failed to delete submission", err);
+      setIsDeleting(false);
+      setIsDeleteModalOpen(false);
+      setFeedbackMessage("เกิดข้อผิดพลาดในการลบข้อมูล กรุณาลองใหม่อีกครั้ง");
+      setTimeout(() => {
+        setFeedbackMessage(null);
+      }, 4000);
     }
   };
 
@@ -184,9 +317,9 @@ function ResultContent() {
   if (!submissionId) {
     return (
       <div className="flex min-h-dvh flex-col pb-safe-nav">
-        <PageHeader title="ผลการประเมิน" showBack backHref={ROUTES.HOME} />
+        <PageHeader title="ผลการประเมิน" showBack />
         <main className="flex flex-1 flex-col items-center justify-center px-4 py-10">
-          <div className="text-center">
+          <div className="w-full max-w-md mx-auto text-center glass-card p-8 animate-scale-up">
             <div
               className="icon-container mx-auto mb-4"
               style={{
@@ -196,19 +329,92 @@ function ResultContent() {
             >
               <AlertTriangle className="h-7 w-7 text-warning" strokeWidth={2} />
             </div>
-            <h2 className="text-section-title font-semibold text-text-primary">
-              ไม่พบข้อมูลการประเมิน
+            <h2 className="text-section-title font-bold text-text-primary">
+              ไม่ระบุรหัสการประเมิน
             </h2>
             <p className="mt-2 text-small text-text-secondary">
-              กรุณาระบุรหัสการประเมิน (submissionId) ให้ถูกต้อง
+              กรุณาระบุรหัสการประเมิน (submissionId) ใน URL ให้ถูกต้อง
             </p>
-            <Link
-              href={ROUTES.HOME}
-              className="mt-6 inline-flex items-center gap-2 btn-primary-gradient px-6 py-3 text-small font-medium"
+            <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+              <Link
+                href={ROUTES.DASHBOARD}
+                className="inline-flex items-center justify-center gap-2 btn-primary-gradient px-5 py-2.5 text-small font-medium"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                ประวัติการประเมิน
+              </Link>
+              <Link
+                href={ROUTES.HOME}
+                className="inline-flex items-center justify-center gap-2 rounded-button border border-border bg-white/80 px-4 py-2.5 text-small font-medium text-text-primary hover:bg-white shadow-xs transition-colors"
+              >
+                <Home className="h-4 w-4" />
+                กลับหน้าแรก
+              </Link>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // 1. Loading state (clean & minimal spinner)
+  if (isLoading && !submission) {
+    return (
+      <div className="flex min-h-dvh flex-col items-center justify-center">
+        <div className="flex flex-col items-center gap-3 animate-fade-in">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-small font-medium text-text-secondary">
+            กำลังโหลด...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Error / Not Found state (when fetch failed or submission not found)
+  if (fetchError || !submission) {
+    return (
+      <div className="flex min-h-dvh flex-col pb-safe-nav">
+        <PageHeader title="ผลการประเมิน" showBack />
+        <main className="flex flex-1 flex-col items-center justify-center px-4 py-10">
+          <div className="w-full max-w-md mx-auto text-center glass-card p-8 animate-scale-up shadow-lg">
+            <div
+              className="icon-container mx-auto mb-4"
+              style={{
+                background:
+                  "linear-gradient(135deg, rgba(254, 242, 242, 0.95), rgba(254, 226, 226, 0.8))",
+              }}
             >
-              <Home className="h-4 w-4" />
-              กลับหน้าแรก
-            </Link>
+              <AlertCircle className="h-8 w-8 text-danger" strokeWidth={2} />
+            </div>
+            <h2 className="text-section-title font-bold text-text-primary">
+              ดึงข้อมูลไม่สำเร็จ
+            </h2>
+            <p className="mt-2 text-small text-text-secondary leading-relaxed">
+              {fetchError || "ไม่พบข้อมูลผลการประเมินในระบบ กรุณาตรวจสอบรหัสเอกสารอีกครั้ง"}
+            </p>
+            {submissionId && (
+              <div className="mt-3 inline-flex items-center gap-1 rounded-md bg-red-50 border border-red-100 px-3 py-1 font-mono text-caption text-red-600">
+                รหัส: {submissionId}
+              </div>
+            )}
+            <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                type="button"
+                onClick={loadSubmissionData}
+                className="inline-flex items-center justify-center gap-2 btn-primary-gradient px-5 py-2.5 text-small font-medium cursor-pointer"
+              >
+                <RotateCcw className="h-4 w-4" />
+                ลองใหม่อีกครั้ง
+              </button>
+              <Link
+                href={ROUTES.DASHBOARD}
+                className="inline-flex items-center justify-center gap-2 rounded-button border border-border bg-white/80 px-4 py-2.5 text-small font-medium text-text-primary hover:bg-white shadow-xs transition-colors"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                ประวัติการประเมิน
+              </Link>
+            </div>
           </div>
         </main>
       </div>
@@ -499,7 +705,6 @@ function ResultContent() {
         title="ผลการประเมิน"
         subtitle={`รหัส: ${submissionId}`}
         showBack
-        backHref={ROUTES.HOME}
         className="print:hidden"
       />
 
@@ -1348,7 +1553,7 @@ function ResultContent() {
 
           {/* Health Risk 10 Questions Responses Breakdown */}
           {isHealthRisk && hrQuestions.length > 0 && answers && (
-            <div className="glass-card p-6 animate-fade-in print:shadow-none print:border-gray-300 print:bg-white">
+            <div className="glass-card p-6 animate-fade-in print:shadow-none print:border-gray-300 print:bg-white print:break-before-page">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h3 className="text-card-title font-semibold text-text-primary flex items-center gap-2">
@@ -1378,7 +1583,7 @@ function ResultContent() {
                   return (
                     <div
                       key={q.id}
-                      className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                      className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 print:break-inside-avoid"
                     >
                       <div className="flex items-start gap-2.5 max-w-xl">
                         <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary-tint text-[11px] font-bold text-primary mt-0.5">
@@ -1422,7 +1627,11 @@ function ResultContent() {
                 <div>
                   <h3 className="text-card-title font-semibold text-text-primary flex items-center gap-2">
                     ผังพื้นที่ห้อง (Room Layout)
-                    {layoutFile ? (
+                    {hasLayoutChanges ? (
+                      <span className="rounded-full bg-blue-100 text-blue-800 px-2.5 py-0.5 text-[11px] font-semibold">
+                        ยังไม่ได้บันทึก
+                      </span>
+                    ) : layoutFile ? (
                       <span className="rounded-full bg-emerald-100 text-emerald-800 px-2.5 py-0.5 text-[11px] font-semibold">
                         แนบแล้ว
                       </span>
@@ -1441,7 +1650,7 @@ function ResultContent() {
               </div>
 
               {/* Notice Banner when no layout is attached */}
-              {!layoutFile && (
+              {!layoutFile && !stagedLayoutFile && (
                 <div className="mb-4 flex items-start gap-3 rounded-lg bg-amber-50/80 border border-amber-200/80 p-3.5 text-small text-amber-900 print:hidden">
                   <Info className="h-5 w-5 shrink-0 text-amber-600 mt-0.5" />
                   <div>
@@ -1454,168 +1663,254 @@ function ResultContent() {
                 </div>
               )}
 
-              {/* Layout Preview for Screen */}
-              {layoutFile && (
-                <div className="mb-4 rounded-xl border border-border bg-white/70 p-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3 min-w-0">
-                      {layoutFile.fileType.startsWith("image/") ? (
-                        <div
-                          onClick={() => setPreviewImage(layoutFile.fileData)}
-                          className="relative h-14 w-14 shrink-0 cursor-pointer overflow-hidden rounded-lg border border-gray-200 bg-gray-100 group"
-                          title="คลิกเพื่อดูรูปขยาย"
-                        >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={layoutFile.fileData}
-                            alt={layoutFile.fileName}
-                            className="h-full w-full object-cover group-hover:scale-105 transition-transform"
-                          />
-                        </div>
-                      ) : (
-                        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-500 border border-red-100">
-                          <FileText className="h-7 w-7" />
-                        </div>
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-small font-medium text-text-primary">
-                          {layoutFile.fileName}
-                        </p>
-                        <p className="text-[11px] text-text-tertiary">
-                          {formatFileSize(layoutFile.fileSize)}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 print:hidden">
-                      {layoutFile.fileType.startsWith("image/") ? (
-                        <button
-                          type="button"
-                          onClick={() => setPreviewImage(layoutFile.fileData)}
-                          className="inline-flex items-center gap-1 text-small text-primary hover:underline font-medium px-2 py-1 cursor-pointer"
-                        >
-                          <Eye className="h-4 w-4" />
-                          ดูรูป
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const win = window.open();
-                            if (win) {
-                              win.document.write(
-                                `<iframe src="${layoutFile.fileData}" frameborder="0" style="border:0; width:100%; height:100%;" allowfullscreen></iframe>`
-                              );
-                              win.document.title = layoutFile.fileName;
-                            }
-                          }}
-                          className="inline-flex items-center gap-1 text-small text-primary hover:underline font-medium px-2 py-1 cursor-pointer"
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                          เปิดดู
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Uploader Component */}
               <div className="print:hidden">
                 <FileUpload
-                  value={layoutFile}
-                  onChange={handleLayoutChange}
+                  value={stagedLayoutFile}
+                  onChange={setStagedLayoutFile}
+                  onDelete={() => setIsDeleteLayoutModalOpen(true)}
                   label=""
                   description="รองรับไฟล์ภาพ (JPG, PNG, WebP) หรือไฟล์ PDF ขนาดไม่เกิน 10MB"
                 />
+
+                {/* Unsaved Changes Action Bar (shown ONLY when a new/different file is selected) */}
+                {hasLayoutChanges && (
+                  <div className="mt-3 flex flex-col sm:flex-row items-center justify-between gap-2.5 rounded-xl bg-blue-50/90 border border-blue-200 p-3.5 animate-fade-in shadow-xs">
+                    <div className="flex items-center gap-2 text-small text-blue-900">
+                      <AlertCircle className="h-4 w-4 shrink-0 text-primary" />
+                      <span className="font-medium">
+                        เลือกไฟล์ผังห้องใหม่เรียบร้อยแล้ว กรุณากดบันทึกเพื่อจัดเก็บลงฐานข้อมูล
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => setStagedLayoutFile(layoutFile)}
+                        disabled={isSavingLayout}
+                        className="rounded-lg px-3 py-1.5 text-caption font-medium text-gray-600 hover:bg-white hover:text-gray-900 transition-colors cursor-pointer"
+                      >
+                        ยกเลิก
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleSaveLayout}
+                        disabled={isSavingLayout}
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-1.5 text-caption font-semibold text-white shadow-sm hover:bg-primary-deep active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                      >
+                        {isSavingLayout ? (
+                          <>
+                            <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                            <span>กำลังบันทึก...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Save className="h-3.5 w-3.5" />
+                            <span>บันทึกผังห้อง</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
 
-          {/* Printable Layout Preview Frame (for report printing) */}
-          <div className="glass-card p-6 print:block hidden print:shadow-none print:border-gray-300 print:bg-white">
-            <h3 className="text-card-title font-semibold mb-3">ผังพื้นที่ห้อง</h3>
-            {layoutFile ? (
-              layoutFile.fileType.startsWith("image/") ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={layoutFile.fileData}
-                  alt={layoutFile.fileName}
-                  className="max-h-[360px] w-auto mx-auto object-contain rounded border"
-                />
+          {/* Printable Layout Preview Frame (for report printing - ONLY for environment) */}
+          {isEnvironment && (
+            <div className="glass-card p-6 print:block hidden print:shadow-none print:border-gray-300 print:bg-white print:break-before-page">
+              <h3 className="text-card-title font-semibold mb-3">ผังพื้นที่ห้อง (Room Layout)</h3>
+              {layoutFile ? (
+                layoutFile.fileType.startsWith("image/") ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={layoutFile.fileData}
+                    alt={layoutFile.fileName}
+                    className="max-h-[500px] w-auto mx-auto object-contain rounded border"
+                  />
+                ) : (
+                  <div className="p-6 border rounded text-center text-small">
+                    [ แนบไฟล์เอกสาร PDF: {layoutFile.fileName} ]
+                  </div>
+                )
               ) : (
-                <div className="p-4 border rounded text-center text-small">
-                  [ แนบไฟล์เอกสาร PDF: {layoutFile.fileName} ]
+                <div className="h-56 border-2 border-dashed border-gray-300 rounded flex items-center justify-center text-text-tertiary text-small">
+                  [ เว้นพื้นที่สำหรับผังห้อง / ไม่ได้แนบผังพื้นที่ ]
                 </div>
-              )
-            ) : (
-              <div className="h-48 border-2 border-dashed border-gray-300 rounded flex items-center justify-center text-text-tertiary text-small">
-                [ เว้นพื้นที่สำหรับผังห้อง / ไม่ได้แนบผังพื้นที่ ]
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 print:hidden">
             <button
               type="button"
               onClick={handlePrint}
-              className="flex-1 inline-flex items-center justify-center gap-2 btn-primary-gradient px-6 py-3 text-small font-medium cursor-pointer"
+              className="flex-1 inline-flex items-center justify-center gap-2 btn-primary-gradient px-6 py-3 text-small font-medium cursor-pointer shadow-sm active:scale-[0.99] transition-all"
             >
               <Printer className="h-4 w-4" />
-              พิมพ์ / ดาวน์โหลดรายงาน
+              <span>พิมพ์ / ดาวน์โหลดรายงาน</span>
             </button>
-            <Link
-              href={ROUTES.DASHBOARD}
-              className="flex-1 inline-flex items-center justify-center gap-2 btn-secondary-glass px-6 py-3 text-small font-medium"
+
+            <button
+              type="button"
+              onClick={() => setIsDeleteModalOpen(true)}
+              className="flex-1 inline-flex items-center justify-center gap-2 rounded-button border border-red-200 bg-red-50/60 hover:bg-red-100/70 text-red-600 px-6 py-3 text-small font-medium cursor-pointer shadow-xs active:scale-[0.99] transition-all"
             >
-              <BarChart3 className="h-4 w-4" />
-              ดู Dashboard
-            </Link>
-            <Link
-              href={ROUTES.HOME}
-              className="inline-flex items-center justify-center gap-2 rounded-button border border-border bg-white/50 px-5 py-3 text-small font-medium text-text-primary hover:bg-white/80 transition-colors"
-            >
-              <Home className="h-4 w-4" />
-              หน้าแรก
-            </Link>
+              <Trash2 className="h-4 w-4" />
+              <span>ลบรายการประเมินนี้</span>
+            </button>
           </div>
         </div>
       </main>
 
-      {/* Lightbox Modal for Room Layout image zoom */}
-      {previewImage && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm animate-fade-in print:hidden"
-          onClick={() => setPreviewImage(null)}
-        >
+      {/* Delete Confirmation Modal (Rendered to document.body via Portal) */}
+      {mounted &&
+        isDeleteModalOpen &&
+        createPortal(
           <div
-            className="relative max-h-[90vh] max-w-[90vw] overflow-hidden rounded-2xl bg-white p-2 shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs animate-fade-in print:hidden w-screen h-screen top-0 left-0"
+            onClick={() => !isDeleting && setIsDeleteModalOpen(false)}
           >
-            <div className="flex items-center justify-between border-b border-gray-100 px-3 py-2">
-              <span className="text-small font-medium text-text-primary">
-                ผังพื้นที่ห้อง (Layout)
-              </span>
-              <button
-                type="button"
-                onClick={() => setPreviewImage(null)}
-                className="rounded-full p-1 text-gray-500 hover:bg-gray-100 transition-colors"
-              >
-                <X className="h-5 w-5" />
-              </button>
+            <div
+              className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl animate-scale-up"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex flex-col items-center text-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-100 text-red-600 mb-4">
+                  <AlertTriangle className="h-7 w-7" />
+                </div>
+
+                <h3 className="text-card-title font-bold text-gray-900">
+                  ยืนยันการลบรายการประเมิน?
+                </h3>
+
+                <p className="mt-2 text-small text-gray-600 leading-relaxed">
+                  คุณแน่ใจหรือไม่ว่าต้องการลบรายการประเมินรหัส{" "}
+                  <strong className="font-mono text-gray-900">{submissionId}</strong>?
+                  <br />
+                  <span className="text-caption text-red-500 mt-1 block font-medium">
+                    ข้อมูลจุดตรวจวัดและการประเมินทั้งหมดจะถูกลบออกจากฐานข้อมูลอย่างถาวร
+                  </span>
+                </p>
+
+                <div className="mt-6 flex w-full gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsDeleteModalOpen(false)}
+                    disabled={isDeleting}
+                    className="flex-1 rounded-xl border border-gray-200 bg-white py-2.5 text-small font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
+                    ยกเลิก
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDeleteSubmission}
+                    disabled={isDeleting}
+                    className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 py-2.5 text-small font-semibold text-white hover:bg-red-700 shadow-sm active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    {isDeleting ? (
+                      <>
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                        <span>กำลังลบ...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="h-4 w-4" />
+                        <span>ยืนยันการลบ</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className="max-h-[80vh] overflow-auto p-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={previewImage}
-                alt="ผังห้อง"
-                className="mx-auto h-auto max-h-[75vh] w-auto object-contain rounded-lg"
-              />
+          </div>,
+          document.body
+        )}
+
+      {/* Delete Layout Confirmation Modal (Rendered to document.body via Portal) */}
+      {mounted &&
+        isDeleteLayoutModalOpen &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs animate-fade-in print:hidden w-screen h-screen top-0 left-0"
+            onClick={() => !isDeletingLayout && setIsDeleteLayoutModalOpen(false)}
+          >
+            <div
+              className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl animate-scale-up"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex flex-col items-center text-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-100 text-red-600 mb-4">
+                  <Trash2 className="h-7 w-7" />
+                </div>
+
+                <h3 className="text-card-title font-bold text-gray-900">
+                  ยืนยันการลบไฟล์ผังห้อง?
+                </h3>
+
+                <p className="mt-2 text-small text-gray-600 leading-relaxed">
+                  คุณแน่ใจหรือไม่ว่าต้องการลบไฟล์ผังห้อง
+                  {layoutFile?.fileName && (
+                    <>
+                      {" "}
+                      (
+                      <strong className="font-medium text-gray-900 truncate inline-block max-w-[220px] align-bottom">
+                        {layoutFile.fileName}
+                      </strong>
+                      )
+                    </>
+                  )}{" "}
+                  ออกจากระบบ?
+                  <br />
+                  <span className="text-caption text-red-500 mt-1.5 block font-medium">
+                    ไฟล์จะถูกลบออกจากฐานข้อมูลและเล่มรายงานทันที
+                  </span>
+                </p>
+
+                <div className="mt-6 flex w-full gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsDeleteLayoutModalOpen(false)}
+                    disabled={isDeletingLayout}
+                    className="flex-1 rounded-xl border border-gray-200 bg-white py-2.5 text-small font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
+                    ยกเลิก
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleConfirmDeleteLayout}
+                    disabled={isDeletingLayout}
+                    className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 py-2.5 text-small font-semibold text-white hover:bg-red-700 shadow-sm active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    {isDeletingLayout ? (
+                      <>
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                        <span>กำลังลบ...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="h-4 w-4" />
+                        <span>ยืนยันการลบไฟล์</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
+
+      {/* Fullscreen Lightbox Modal for Room Layout image zoom */}
+      <ImageLightboxModal
+        isOpen={!!previewImage}
+        onClose={() => setPreviewImage(null)}
+        src={previewImage}
+        fileName={layoutFile?.fileName}
+        fileSize={layoutFile?.fileSize}
+        title="ผังพื้นที่ห้อง (Room Layout)"
+      />
     </div>
   );
 }
@@ -1624,8 +1919,13 @@ export default function ResultPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-dvh items-center justify-center">
-          <p className="text-text-secondary">กำลังโหลดผลการประเมิน...</p>
+        <div className="flex min-h-dvh flex-col items-center justify-center">
+          <div className="flex flex-col items-center gap-3 animate-fade-in">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-small font-medium text-text-secondary">
+              กำลังโหลด...
+            </p>
+          </div>
         </div>
       }
     >

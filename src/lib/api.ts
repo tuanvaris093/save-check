@@ -96,6 +96,17 @@ export async function updateSubmissionLayout(
   });
 }
 
+/**
+ * Delete a submission and all its associated data
+ */
+export async function deleteSubmission(
+  submissionCode: string
+): Promise<ApiResponse<{ submission_code: string; message: string }>> {
+  return fetchApi(`/submissions/${submissionCode}`, {
+    method: "DELETE",
+  });
+}
+
 // --- Result API ---
 
 export async function getResult(
@@ -137,6 +148,9 @@ export interface DashboardSubmissionsParams {
   type?: string;
   category?: string;
   search?: string;
+  start_date?: string;
+  end_date?: string;
+  sort_order?: "asc" | "desc";
 }
 
 export interface DashboardSubmissionsResponse {
@@ -173,7 +187,32 @@ export async function getDashboardSubmissions(
   if (params?.type && params.type !== "all") query.set("type", params.type);
   if (params?.category && params.category !== "all") query.set("category", params.category);
   if (params?.search) query.set("search", params.search);
+  if (params?.start_date) query.set("start_date", params.start_date);
+  if (params?.end_date) query.set("end_date", params.end_date);
+  if (params?.sort_order) query.set("sort_order", params.sort_order);
 
   const qs = query.toString();
   return fetchApi<DashboardSubmissionsResponse>(`/dashboard/submissions${qs ? `?${qs}` : ""}`);
+}
+
+export interface ExportDataResponse {
+  submissions: Array<any>;
+  envPointsMap: Record<number, any[]>;
+  hrAnswersMap: Record<number, any[]>;
+  satAnswersMap: Record<number, any[]>;
+}
+
+export async function getExportData(
+  params?: DashboardSubmissionsParams
+): Promise<ApiResponse<ExportDataResponse>> {
+  const query = new URLSearchParams();
+  if (params?.type && params.type !== "all") query.set("type", params.type);
+  if (params?.category && params.category !== "all") query.set("category", params.category);
+  if (params?.search) query.set("search", params.search);
+  if (params?.start_date) query.set("start_date", params.start_date);
+  if (params?.end_date) query.set("end_date", params.end_date);
+  if (params?.sort_order) query.set("sort_order", params.sort_order);
+
+  const qs = query.toString();
+  return fetchApi<ExportDataResponse>(`/dashboard/export-data${qs ? `?${qs}` : ""}`);
 }

@@ -1,5 +1,54 @@
 # DEVELOPMENT_PLAN.md
-# แผนการพัฒนา Web App ระบบแบบประเมิน
+# แผนการพัฒนา Web App ระบบแบบประเมิน (Save Check)
+
+> **สถานะปัจจุบัน (Status Update):** ✅ **Phase 0 - 13 พัฒนาและ Deploy เรียบร้อยสมบูรณ์ 100%** (เหลือจัดทำเอกสารคู่มือการใช้งานในอนาคต)
+> **Backend API Live:** `https://save-check-api.ameenahroya.workers.dev` (Cloudflare Workers + D1)
+> **Frontend Web App:** Deployed บน Cloudflare Pages เรียบร้อยแล้ว
+
+## 📊 สรุปความคืบหน้ารวมทุก Phase
+
+| Phase | หัวข้อ | สถานะ | รายละเอียด |
+|---|---|:---:|---|
+| **Phase 0** | Project Initialization | ✅ 100% | Next.js 15, TypeScript, Tailwind CSS, โครงสร้างโฟลเดอร์ |
+| **Phase 1** | Static Routing & Layout | ✅ 100% | Static routes ทั้งหมด, Query strings, Glassmorphism Header & Nav |
+| **Phase 2** | Design System & UI Components | ✅ 100% | UI Components, Buttons, Badges, Modals, Fullscreen Lightbox |
+| **Phase 3** | Home & Category Pages | ✅ 100% | หน้าแรก, เมนูเลือกหมวดหมู่ แสง/เสียง/ความร้อน พร้อม Animation |
+| **Phase 4** | Form State & Assessment Flow | ✅ 100% | `useAssessmentForm`, LocalStorage Draft, Step Wizard |
+| **Phase 5** | Environment Assessment | ✅ 100% | ตรวจวัด แสง/เสียง/ความร้อน ละเอียดหลายจุด + คำนวณ WBGT + ผังห้อง |
+| **Phase 6** | Health Risk Assessment | ✅ 100% | คำถามประเมินความเสี่ยงสุขภาพ 3 หมวด + ตัดเกรด Pass/Medium/High |
+| **Phase 7** | Satisfaction Assessment | ✅ 100% | แบบประเมินความพึงพอใจ 4 ด้าน + ค่าเฉลี่ยรวม + ข้อเสนอแนะ |
+| **Phase 8** | Cloudflare Workers API | ✅ 100% | Hono API, CORS, Submissions, Layout Update, Delete API, Dashboard |
+| **Phase 9** | Cloudflare D1 Database | ✅ 100% | D1 Schema 8 ตาราง, Relations, Foreign Keys, Seed Data |
+| **Phase 10** | Result Page | ✅ 100% | สรุปผลละเอียด, รายงานพิมพ์/PDF, Fullscreen Lightbox, ลบรายการ |
+| **Phase 11** | Dashboard | ✅ 100% | สรุปภาพรวม Metrics, ตารางประวัติการประเมิน, ค้นหา/กรอง, Pagination |
+| **Phase 12** | Testing & QA | ✅ 100% | Typecheck ผ่าน 0 errors, ทดสอบ Flow ครบทุกรูปแบบ |
+| **Phase 13** | Deployment & Handover | ✅ 100% | Frontend (Cloudflare Pages) & Backend (Workers + D1) Live ใช้งานได้จริง *(เอกสารคู่มือบันทึกไว้สำหรับทำเพิ่มเติมในอนาคต)* |
+
+---
+
+## 🚀 ฟีเจอร์เพิ่มเติมที่พัฒนาเพิ่มเติมนอกเหนือจากแผนเดิม (Enhanced Features)
+
+1. **ตารางบันทึกผลการตรวจวัดสภาพแวดล้อมแบบละเอียดหลายจุด (Multi-point Inspections):**
+   - ตรวจวัดแสงสว่าง (Lux + เทียบค่ามาตรฐานตามกฎหมาย)
+   - ตรวจวัดระดับเสียง (Min, Max, Avg dBA + เทียบค่ามาตรฐาน)
+   - ตรวจวัดความร้อน (DB, WB, GT + คำนวณค่าเฉลี่ย WBGT และระดับภาระงาน)
+2. **ระบบแนบและจัดการผังพื้นที่ห้อง (Room Layout Management):**
+   - รองรับทั้งไฟล์รูปภาพ (PNG, JPG, WebP) และเอกสาร PDF
+   - ระบบ Staged Changes: กดเลือกไฟล์แล้วต้องกดยืนยัน **"บันทึกผังห้อง"** ก่อนส่งเข้า DB
+   - **Shared Fullscreen Lightbox Modal:** ดูภาพขยายแบบเต็มจอจริง 100vw × 100vh พร้อม Scroll Lock และปุ่มดาวน์โหลด
+   - **Modal Confirm ลบผังห้อง:** ยืนยันก่อนลบไฟล์ออกจาก Database และ LocalStorage
+3. **ระบบลบประวัติการประเมิน (Delete Submission):**
+   - API `DELETE /api/submissions/:code` ลบข้อมูลสัมพันธ์ครอบคลุมทั้ง 8 ตารางใน D1 Database
+   - Modal ยืนยันการลบแบบ Production ป้องกันการเผลอกดลบ
+4. **ระบบพิมพ์และดาวน์โหลดรายงาน (Print / PDF Report Optimization):**
+   - จัดหน้ากระดาษและ Page Break ให้พอดีสวยงาม
+   - ซ่อน Navigation Bar และส่วนตกแต่งเวลาสั่งพิมพ์
+   - แสดงผังห้องเฉพาะในเล่มรายงานสภาพแวดล้อม
+5. **Loading & Feedback UX:**
+   - Spinner Loading สไตล์ Minimal สบายตาในหน้าผลลัพธ์
+   - `SubmitLoadingOverlay` เต็มหน้าจอระหว่างกดบันทึกผล ป้องกันการแสดงสถานะว่างเปล่า
+
+---
 
 ## 1. Development Overview
 
