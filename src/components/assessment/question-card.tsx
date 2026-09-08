@@ -21,7 +21,7 @@ export function QuestionCard({
   return (
     <div
       className={cn(
-        "rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm transition-colors",
+        "form-section-card p-5 transition-colors",
         error ? "border-danger" : "border-border",
         className,
       )}
@@ -32,7 +32,7 @@ export function QuestionCard({
             ข้อที่ {questionNo}
           </span>
         )}
-        <h3 className="text-card-title font-medium text-text-primary leading-relaxed">
+        <h3 className="text-card-title font-semibold text-text-primary leading-relaxed">
           {questionText}
         </h3>
         {description && (

@@ -11,7 +11,7 @@ import { API_BASE_URL } from "./constants";
  */
 async function fetchApi<T>(
   endpoint: string,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<ApiResponse<T>> {
   try {
     const controller = new AbortController();
@@ -75,10 +75,25 @@ export interface CreateSubmissionRequest {
  * Submit full assessment payload to Cloudflare Workers API
  */
 export async function createSubmission(
-  data: CreateSubmissionRequest
-): Promise<ApiResponse<{ id: number; submission_code: string; message: string }>> {
+  data: CreateSubmissionRequest,
+): Promise<
+  ApiResponse<{ id: number; submission_code: string; message: string }>
+> {
   return fetchApi("/submissions", {
     method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+/** Update an existing assessment while preserving its document code. */
+export async function updateSubmission(
+  submissionCode: string,
+  data: CreateSubmissionRequest,
+): Promise<
+  ApiResponse<{ id: number; submission_code: string; message: string }>
+> {
+  return fetchApi(`/submissions/${submissionCode}`, {
+    method: "PATCH",
     body: JSON.stringify(data),
   });
 }
@@ -88,8 +103,10 @@ export async function createSubmission(
  */
 export async function updateSubmissionLayout(
   submissionCode: string,
-  layoutFile: any
-): Promise<ApiResponse<{ submission_code: string; has_layout: boolean; message: string }>> {
+  layoutFile: any,
+): Promise<
+  ApiResponse<{ submission_code: string; has_layout: boolean; message: string }>
+> {
   return fetchApi(`/submissions/${submissionCode}/layout`, {
     method: "PATCH",
     body: JSON.stringify({ layout_file: layoutFile }),
@@ -100,7 +117,7 @@ export async function updateSubmissionLayout(
  * Delete a submission and all its associated data
  */
 export async function deleteSubmission(
-  submissionCode: string
+  submissionCode: string,
 ): Promise<ApiResponse<{ submission_code: string; message: string }>> {
   return fetchApi(`/submissions/${submissionCode}`, {
     method: "DELETE",
@@ -110,7 +127,7 @@ export async function deleteSubmission(
 // --- Result API ---
 
 export async function getResult(
-  submissionCode: string
+  submissionCode: string,
 ): Promise<ApiResponse<Record<string, any>>> {
   return fetchApi(`/results/${submissionCode}`);
 }
@@ -138,7 +155,9 @@ export interface DashboardSummaryData {
   satisfaction_avg: number;
 }
 
-export async function getDashboardSummary(): Promise<ApiResponse<DashboardSummaryData>> {
+export async function getDashboardSummary(): Promise<
+  ApiResponse<DashboardSummaryData>
+> {
   return fetchApi<DashboardSummaryData>("/dashboard/summary");
 }
 
@@ -179,20 +198,23 @@ export interface DashboardSubmissionsResponse {
 }
 
 export async function getDashboardSubmissions(
-  params?: DashboardSubmissionsParams
+  params?: DashboardSubmissionsParams,
 ): Promise<ApiResponse<DashboardSubmissionsResponse>> {
   const query = new URLSearchParams();
   if (params?.page) query.set("page", String(params.page));
   if (params?.limit) query.set("limit", String(params.limit));
   if (params?.type && params.type !== "all") query.set("type", params.type);
-  if (params?.category && params.category !== "all") query.set("category", params.category);
+  if (params?.category && params.category !== "all")
+    query.set("category", params.category);
   if (params?.search) query.set("search", params.search);
   if (params?.start_date) query.set("start_date", params.start_date);
   if (params?.end_date) query.set("end_date", params.end_date);
   if (params?.sort_order) query.set("sort_order", params.sort_order);
 
   const qs = query.toString();
-  return fetchApi<DashboardSubmissionsResponse>(`/dashboard/submissions${qs ? `?${qs}` : ""}`);
+  return fetchApi<DashboardSubmissionsResponse>(
+    `/dashboard/submissions${qs ? `?${qs}` : ""}`,
+  );
 }
 
 export interface ExportDataResponse {
@@ -203,16 +225,19 @@ export interface ExportDataResponse {
 }
 
 export async function getExportData(
-  params?: DashboardSubmissionsParams
+  params?: DashboardSubmissionsParams,
 ): Promise<ApiResponse<ExportDataResponse>> {
   const query = new URLSearchParams();
   if (params?.type && params.type !== "all") query.set("type", params.type);
-  if (params?.category && params.category !== "all") query.set("category", params.category);
+  if (params?.category && params.category !== "all")
+    query.set("category", params.category);
   if (params?.search) query.set("search", params.search);
   if (params?.start_date) query.set("start_date", params.start_date);
   if (params?.end_date) query.set("end_date", params.end_date);
   if (params?.sort_order) query.set("sort_order", params.sort_order);
 
   const qs = query.toString();
-  return fetchApi<ExportDataResponse>(`/dashboard/export-data${qs ? `?${qs}` : ""}`);
+  return fetchApi<ExportDataResponse>(
+    `/dashboard/export-data${qs ? `?${qs}` : ""}`,
+  );
 }

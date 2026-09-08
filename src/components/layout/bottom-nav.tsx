@@ -29,8 +29,8 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="sticky bottom-0 z-10 border-t border-border bg-surface/95 backdrop-blur-sm">
-      <div className="flex items-center justify-around">
+    <nav className="sticky bottom-0 z-10 px-4 pb-[env(safe-area-inset-bottom)]">
+      <div className="flex items-center justify-around rounded-[26px] border border-white/75 bg-white/90 p-2 shadow-[0_16px_36px_rgba(37,99,235,.12)] backdrop-blur-xl">
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -38,9 +38,9 @@ export function BottomNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-1 flex-col items-center gap-0.5 px-2 py-2.5 text-caption transition-colors",
+                "flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-[20px] px-2 py-2 text-caption transition-all",
                 isActive
-                  ? "font-medium text-primary"
+                  ? "bg-[linear-gradient(135deg,#2563EB,#4F6BFF,#8B5CF6)] font-semibold text-white shadow-[0_8px_18px_rgba(79,107,255,.25)]"
                   : "text-text-secondary hover:text-text-primary",
               )}
               aria-current={isActive ? "page" : undefined}

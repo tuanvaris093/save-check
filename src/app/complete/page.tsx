@@ -4,9 +4,9 @@ import { ROUTES } from "@/lib/constants";
 
 export default function CompletePage() {
   return (
-    <div className="flex min-h-dvh flex-col pb-safe-nav">
+    <div className="app-mobile-shell flex min-h-dvh flex-col pb-safe-nav">
       <main className="flex flex-1 flex-col items-center justify-center px-4 py-10">
-        <div className="animate-slide-up text-center max-w-md">
+        <div className="result-overview-card glass-card animate-slide-up w-full max-w-md p-7 text-center">
           <div className="icon-container mx-auto mb-6" style={{ width: '64px', height: '64px', borderRadius: '20px', background: 'linear-gradient(135deg, rgba(220, 252, 231, 0.95), rgba(240, 253, 244, 0.8))' }}>
             <CheckCircle2 className="h-8 w-8 text-success" strokeWidth={2} />
           </div>

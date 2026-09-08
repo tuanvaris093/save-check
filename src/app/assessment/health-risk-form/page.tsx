@@ -5,12 +5,10 @@ import { Suspense, useState } from "react";
 import { AlertTriangle, AlertCircle } from "lucide-react";
 import { PageHeader } from "@/components/layout";
 import { ROUTES } from "@/lib/constants";
-import {
-  ASSESSMENT_CATEGORY_LABELS,
-} from "@/lib/constants";
+import { ASSESSMENT_CATEGORY_LABELS } from "@/lib/constants";
 import { isValidCategory } from "@/lib/utils";
 import type { AssessmentCategory } from "@/types";
-import { createSubmission } from "@/lib/api";
+import { createSubmission, updateSubmission } from "@/lib/api";
 import { useAssessmentForm } from "@/hooks/use-assessment";
 import { LoadingState, SubmitLoadingOverlay } from "@/components/ui";
 import {
@@ -31,6 +29,7 @@ function HealthRiskFormContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const categoryParam = searchParams.get("category");
+  const editCode = searchParams.get("edit");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -40,6 +39,7 @@ function HealthRiskFormContent() {
     totalSteps,
     isLoaded,
     draftData,
+    loadError,
     nextStep,
     prevStep,
     saveDraft,
@@ -48,6 +48,7 @@ function HealthRiskFormContent() {
     type: "health_risk",
     category: categoryParam as AssessmentCategory,
     totalSteps: TOTAL_STEPS,
+    editCode,
   });
 
   // Validate category query string
@@ -61,18 +62,24 @@ function HealthRiskFormContent() {
         />
         <main className="flex flex-1 flex-col items-center justify-center px-4 py-10">
           <div className="text-center">
-            <div className="icon-container mx-auto mb-4" style={{ background: 'linear-gradient(135deg, rgba(254, 243, 199, 0.95), rgba(255, 251, 235, 0.8))' }}>
-              <AlertTriangle className="h-7 w-7 text-warning" strokeWidth={2} />
+            <div
+              className="icon-container mx-auto mb-4"
+              style={{
+                background:
+                  "linear-gradient(135deg, rgba(254, 243, 199, 0.95), rgba(255, 251, 235, 0.8))",
+              }}
+            >
+              <AlertTriangle className="text-warning h-7 w-7" strokeWidth={2} />
             </div>
-            <h2 className="text-section-title font-semibold text-text-primary">
+            <h2 className="text-section-title text-text-primary font-semibold">
               ไม่พบหัวข้อที่เลือก
             </h2>
-            <p className="mt-2 text-small text-text-secondary">
+            <p className="text-small text-text-secondary mt-2">
               กรุณาเลือกหัวข้อจากหน้าประเมินความเสี่ยงสุขภาพ
             </p>
             <a
               href={ROUTES.HEALTH_RISK}
-              className="mt-6 inline-block rounded-button bg-primary px-6 py-3 text-small font-medium text-white transition-colors hover:bg-primary-deep active:scale-[0.98]"
+              className="btn-primary-gradient text-small mt-6 inline-block px-6 py-3 font-semibold"
             >
               กลับไปเลือกหัวข้อ
             </a>
@@ -94,6 +101,17 @@ function HealthRiskFormContent() {
           backHref={ROUTES.HEALTH_RISK}
         />
         <LoadingState text="กำลังเตรียมแบบประเมิน..." />
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="flex min-h-dvh flex-col">
+        <PageHeader title="ไม่พบข้อมูลที่ต้องการแก้ไข" showBack />
+        <main className="text-danger flex flex-1 items-center justify-center px-4 text-center">
+          {loadError}
+        </main>
       </div>
     );
   }
@@ -120,22 +138,26 @@ function HealthRiskFormContent() {
     const now = new Date();
     const datePart = now.toISOString().slice(0, 10).replace(/-/g, "");
     const randPart = Math.floor(1000 + Math.random() * 9000);
-    const submissionCode = `SUB-${datePart}-${randPart}`;
+    const submissionCode = editCode || `SUB-${datePart}-${randPart}`;
+    const original = draftData.editingSubmission;
 
     let score = 0;
     let level: any = "pass";
     if (draftData.answers) {
       score = calculateHealthRiskScore(draftData.answers as any);
       const evalResult = evaluateHealthRiskResult(score, category);
-      level = evalResult.level;
+      level = evalResult.level === "high" ? "high_risk" : evalResult.level;
     }
 
     const newSubmission = {
-      id: Date.now(),
+      id: original?.id || Date.now(),
       submission_code: submissionCode,
       assessment_type: "health_risk",
       assessment_category: category,
-      started_at: draftData.lastSavedAt || new Date().toISOString(),
+      started_at:
+        original?.started_at ||
+        draftData.lastSavedAt ||
+        new Date().toISOString(),
       completed_at: new Date().toISOString(),
       status: "completed",
       overall_score: score,
@@ -143,50 +165,86 @@ function HealthRiskFormContent() {
       profile: draftData.profile,
       workInfo: draftData.workInfo,
       answers: draftData.answers,
-      created_at: new Date().toISOString(),
+      created_at: original?.created_at || new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
 
     try {
       // 1. Send to Cloudflare Workers Backend API
-      await createSubmission(newSubmission);
-    } catch (apiErr) {
-      console.warn("Backend API unavailable, continuing with local storage", apiErr);
+      const response = editCode
+        ? await updateSubmission(editCode, newSubmission)
+        : await createSubmission(newSubmission);
+      if (!response.success && response.error.code !== "NETWORK_ERROR") {
+        throw new Error(response.error.message);
+      }
+    } catch (apiErr: any) {
+      if (editCode) {
+        setSubmitError(
+          apiErr?.message || "บันทึกการแก้ไขไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
+        );
+        setIsSubmitting(false);
+        return;
+      }
+      console.warn(
+        "Backend API unavailable, continuing with local storage",
+        apiErr,
+      );
     }
 
     try {
       // 2. Persist to localStorage for offline cache
       const stored = localStorage.getItem("save_check_submissions");
       const list = stored ? JSON.parse(stored) : [];
+      const remaining = editCode
+        ? list.filter((item: any) => item.submission_code !== editCode)
+        : list;
       localStorage.setItem(
         "save_check_submissions",
-        JSON.stringify([newSubmission, ...list])
+        JSON.stringify([newSubmission, ...remaining]),
       );
-
-      // Clean draft key from localStorage
-      localStorage.removeItem(`save_check_draft_health_risk_${category}`);
+      sessionStorage.removeItem(`save_check_edit_source_${submissionCode}`);
+      clearDraft();
     } catch (err) {
-      console.error("Failed to save health risk submission to localStorage", err);
+      console.error(
+        "Failed to save health risk submission to localStorage",
+        err,
+      );
     }
 
-    router.push(`${ROUTES.RESULT}?submissionId=${submissionCode}`);
+    const resultHref = `${ROUTES.RESULT}?submissionId=${submissionCode}`;
+    if (editCode) {
+      router.replace(resultHref);
+    } else {
+      router.push(resultHref);
+    }
   };
 
   return (
-    <div className="flex min-h-dvh flex-col pb-safe-nav max-w-[800px] mx-auto w-full md:px-8 md:py-6">
+    <div className="app-mobile-shell pb-safe-nav mx-auto flex min-h-dvh w-full max-w-[800px] flex-col md:px-8 md:py-6">
       <PageHeader
         title={`ความเสี่ยงสุขภาพ — ${ASSESSMENT_CATEGORY_LABELS[category]}`}
-        subtitle="ตอบคำถามตามขั้นตอน"
+        subtitle={
+          editCode ? `แก้ไขรหัสเอกสาร: ${editCode}` : "ตอบคำถามตามขั้นตอน"
+        }
         showBack
-        backHref={ROUTES.HEALTH_RISK}
-        className="md:px-0 md:bg-transparent md:backdrop-blur-none border-none md:border-none"
+        replaceBack={!!editCode}
+        backHref={
+          editCode
+            ? `${ROUTES.RESULT}?submissionId=${encodeURIComponent(editCode)}`
+            : ROUTES.HEALTH_RISK
+        }
+        className="border-none md:border-none md:bg-transparent md:px-0 md:backdrop-blur-none"
       />
 
-      <main className="flex-1 px-4 py-2 md:px-8 md:py-6 md:glass-card md:mt-4 md:mb-10">
-        <StepProgress currentStep={currentStep} totalSteps={totalSteps} className="md:pt-0" />
+      <main className="md:glass-card flex-1 px-4 py-2 md:mt-4 md:mb-10 md:px-8 md:py-6">
+        <StepProgress
+          currentStep={currentStep}
+          totalSteps={totalSteps}
+          className="md:pt-0"
+        />
 
         {submitError && (
-          <div className="mt-4 flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 p-3.5 text-small text-red-700 animate-fade-in">
+          <div className="text-small animate-fade-in mt-4 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-3.5 text-red-700">
             <AlertCircle className="h-5 w-5 shrink-0 text-red-500" />
             <span>{submitError}</span>
           </div>
@@ -231,7 +289,14 @@ function HealthRiskFormContent() {
       </main>
 
       {/* Fullscreen Loading Overlay during submission */}
-      <SubmitLoadingOverlay isOpen={isSubmitting} text="กำลังบันทึกข้อมูลผลการประเมิน..." />
+      <SubmitLoadingOverlay
+        isOpen={isSubmitting}
+        text={
+          editCode
+            ? "กำลังบันทึกการแก้ไข..."
+            : "กำลังบันทึกข้อมูลผลการประเมิน..."
+        }
+      />
     </div>
   );
 }

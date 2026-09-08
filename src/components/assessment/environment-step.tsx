@@ -264,7 +264,7 @@ export function EnvironmentStep({
       noValidate
     >
       {category === "noise" && (
-        <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm">
+        <div className="form-section-card p-5">
           <h3 className="mb-4 text-card-title font-semibold text-text-primary">
             แบบฟอร์มบันทึกการตรวจวัด ({ASSESSMENT_CATEGORY_LABELS[category]})
           </h3>
@@ -291,7 +291,7 @@ export function EnvironmentStep({
         </div>
       )}
 
-      <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm">
+      <div className="form-section-card p-5">
         <h3 className="mb-4 text-card-title font-semibold text-text-primary flex items-center justify-between">
           <span>ค่าที่ตรวจวัดได้ ({unitLabel})</span>
           {category !== "noise" && average !== null && (

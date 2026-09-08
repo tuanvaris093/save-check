@@ -19,7 +19,7 @@ const FormTextarea = React.forwardRef<HTMLTextAreaElement, FormTextareaProps>(
         {label && (
           <label
             htmlFor={textareaId}
-            className="text-small font-medium text-text-primary"
+            className="text-small font-semibold text-text-primary"
           >
             {label}
             {props.required && <span className="ml-1 text-danger">*</span>}
@@ -29,9 +29,9 @@ const FormTextarea = React.forwardRef<HTMLTextAreaElement, FormTextareaProps>(
           id={textareaId}
           ref={ref}
           className={cn(
-            "flex min-h-[100px] w-full resize-y rounded-input border bg-surface px-4 py-3 text-body transition-colors",
-            "placeholder:text-text-secondary/50",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary",
+            "glass-input flex min-h-[108px] w-full resize-y px-4 py-3 text-body",
+            "placeholder:text-[#A3B1C4]",
+            "focus-visible:outline-none focus-visible:ring-0",
             "disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-50",
             error ? "border-danger focus-visible:ring-danger" : "border-border",
             className,

@@ -29,12 +29,24 @@ function Badge({ className, variant = "default", ...props }: BadgeProps) {
 }
 
 interface StatusBadgeProps extends Omit<BadgeProps, "variant"> {
-  status: RiskLevel;
+  status: RiskLevel | string;
 }
 
 export function StatusBadge({ status, className, ...props }: StatusBadgeProps) {
-  // Mapping RiskLevel to visual style
-  const riskStyles = RISK_LEVEL_COLORS[status];
+  // Older health-risk records used "high" before the shared RiskLevel adopted "high_risk".
+  const normalizedStatus: RiskLevel | null =
+    status === "high"
+      ? "high_risk"
+      : status in RISK_LEVEL_COLORS
+        ? (status as RiskLevel)
+        : null;
+  const riskStyles = normalizedStatus
+    ? RISK_LEVEL_COLORS[normalizedStatus]
+    : {
+        bg: "bg-muted",
+        text: "text-text-secondary",
+        border: "border-border",
+      };
 
   return (
     <div
@@ -47,7 +59,7 @@ export function StatusBadge({ status, className, ...props }: StatusBadgeProps) {
       )}
       {...props}
     >
-      {RISK_LEVEL_LABELS[status]}
+      {normalizedStatus ? RISK_LEVEL_LABELS[normalizedStatus] : status || "ไม่ระบุ"}
     </div>
   );
 }

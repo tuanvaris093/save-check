@@ -10,16 +10,46 @@ export interface FormInputProps
 }
 
 const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
-  ({ className, label, error, helperText, id, ...props }, ref) => {
+  (
+    {
+      className,
+      label,
+      error,
+      helperText,
+      id,
+      type,
+      onWheel,
+      onKeyDown,
+      ...props
+    },
+    ref,
+  ) => {
     const defaultId = React.useId();
     const inputId = id || defaultId;
+
+    const handleWheel = (event: React.WheelEvent<HTMLInputElement>) => {
+      onWheel?.(event);
+      if (type === "number" && !event.defaultPrevented) {
+        event.currentTarget.blur();
+      }
+    };
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (
+        type === "number" &&
+        (event.key === "ArrowUp" || event.key === "ArrowDown")
+      ) {
+        event.preventDefault();
+      }
+      onKeyDown?.(event);
+    };
 
     return (
       <div className="flex w-full flex-col gap-1.5">
         {label && (
           <label
             htmlFor={inputId}
-            className="text-small font-medium text-text-primary"
+            className="text-small font-semibold text-text-primary"
           >
             {label}
             {props.required && <span className="ml-1 text-danger">*</span>}
@@ -28,12 +58,15 @@ const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
         <input
           id={inputId}
           ref={ref}
+          type={type}
+          onWheel={handleWheel}
+          onKeyDown={handleKeyDown}
           className={cn(
-            "flex h-12 w-full rounded-input border bg-surface px-4 py-2 text-body transition-colors",
-            "file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-text-secondary/50",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary",
+            "glass-input flex w-full px-4 py-2 text-body",
+            "file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[#A3B1C4]",
+            "focus-visible:outline-none focus-visible:ring-0",
             "disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-50",
-            error ? "border-danger focus-visible:ring-danger" : "border-border",
+            error ? "border-danger shadow-[0_0_0_3px_rgba(239,68,68,.08)]" : "border-border",
             className,
           )}
           {...props}

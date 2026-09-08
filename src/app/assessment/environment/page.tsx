@@ -13,15 +13,15 @@ const CATEGORY_ICONS: Record<Exclude<AssessmentCategory, "general">, React.Compo
 
 const CATEGORY_STYLES: Record<Exclude<AssessmentCategory, "general">, { bg: string; color: string }> = {
   light: {
-    bg: "linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05))",
-    color: "text-amber-600",
+    bg: "linear-gradient(135deg, #FFF5DB, #FFFBEB)",
+    color: "text-amber-500",
   },
   noise: {
-    bg: "linear-gradient(135deg, rgba(20, 184, 166, 0.15), rgba(20, 184, 166, 0.05))",
-    color: "text-teal-600",
+    bg: "linear-gradient(135deg, #E8FAF5, #ECFDF5)",
+    color: "text-emerald-600",
   },
   heat: {
-    bg: "linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05))",
+    bg: "linear-gradient(135deg, #FFF0F1, #FFF1F2)",
     color: "text-danger",
   },
 };
@@ -46,7 +46,7 @@ const ENVIRONMENT_CATEGORIES: {
 
 export default function EnvironmentPage() {
   return (
-    <div className="flex min-h-dvh flex-col pb-safe-nav max-w-[800px] mx-auto w-full">
+    <div className="app-mobile-shell mx-auto flex min-h-dvh w-full max-w-[800px] flex-col pb-safe-nav">
       <PageHeader
         title="ประเมินสภาพแวดล้อมในการทำงาน"
         subtitle="เลือกหัวข้อที่ต้องการประเมิน"
@@ -63,7 +63,7 @@ export default function EnvironmentPage() {
               <Link
                 key={item.category}
                 href={`${ROUTES.ENVIRONMENT_FORM}?category=${item.category}`}
-                className="glass-card glass-card-hover p-5 animate-slide-up block"
+                className="category-card glass-card glass-card-hover block p-5 animate-slide-up"
                 style={{ animationDelay: `${index * 60}ms` }}
               >
                 <div className="flex items-center gap-4">
@@ -78,7 +78,7 @@ export default function EnvironmentPage() {
                       {item.description}
                     </p>
                   </div>
-                  <ChevronRight className="h-5 w-5 text-text-muted shrink-0" />
+                  <ChevronRight className="h-5 w-5 shrink-0 text-primary" />
                 </div>
               </Link>
             );

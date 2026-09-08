@@ -23,12 +23,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref,
   ) => {
     const baseStyles =
-      "inline-flex items-center justify-center whitespace-nowrap rounded-button text-small font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]";
+      "inline-flex items-center justify-center whitespace-nowrap rounded-button text-small font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-45 disabled:shadow-none active:scale-[0.99]";
 
     const variants = {
       primary: "btn-primary-gradient border-none text-white",
       secondary:
-        "bg-primary-soft text-primary hover:bg-primary-soft/80 shadow-sm",
+        "bg-primary-tint text-primary hover:bg-primary-soft/70 shadow-sm",
       outline:
         "btn-secondary-glass",
       ghost: "hover:bg-muted hover:text-text-primary text-text-secondary",

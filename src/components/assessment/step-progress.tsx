@@ -22,13 +22,13 @@ export function StepProgress({
         <span className="text-primary">
           ขั้นตอนที่ {safeCurrent} จาก {totalSteps}
         </span>
-        <span className="text-text-secondary">
+        <span className="font-semibold text-primary-deep">
           {Math.round(progressPercentage)}%
         </span>
       </div>
-      <div className="h-3 w-full overflow-hidden rounded-full border border-primary/25 bg-white/70 shadow-sm backdrop-blur-md">
+      <div className="h-[7px] w-full overflow-hidden rounded-full bg-[#E6EDF8]">
         <div
-          className="h-full rounded-full bg-primary transition-all duration-300 ease-out"
+          className="h-full rounded-full bg-[linear-gradient(90deg,#2563EB,#4F6BFF,#7C3AED)] transition-all duration-300 ease-out"
           style={{ width: `${progressPercentage}%` }}
         />
       </div>

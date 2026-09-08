@@ -217,26 +217,35 @@ bun run db:migrate
 # เพิ่มข้อมูล Seed ทดสอบในเครื่อง
 bun run db:seed
 
+# ล้างข้อมูลทั้งหมดในเครื่อง (ไม่ลบตาราง)
+bun run db:truncate
+
 # รัน Migration ขึ้น Cloudflare D1 Production
 bun run db:migrate:remote
+
+# ล้างข้อมูลทั้งหมดบน Cloudflare D1 Production (ไม่ลบตาราง)
+bun run db:truncate:remote
 ```
 
 ### 7.4 คำสั่งสำหรับแก้ไขและ Deploy หลังบ้าน (Backend & Database)
 
-#### 🔹 กรณีที่ 1: แก้เฉพาะโค้ด API (ไฟล์ใน `worker/src/`)
-รันคำสั่งเดียวจากโฟลเดอร์หลัก:
+#### 🔸 แบบที่ 1: รันจากโฟลเดอร์หลัก (`/save-check/`)
 ```bash
+# กรณีแก้เฉพาะโค้ด API:
+bunx wrangler deploy --config worker/wrangler.toml
+
+# กรณีแก้ไขโครงสร้าง Database ด้วย:
+bun run db:migrate:remote
 bunx wrangler deploy --config worker/wrangler.toml
 ```
 
-#### 🔹 กรณีที่ 2: มีการแก้ไขโครงสร้าง Database (ไฟล์ `schema.sql`)
-รัน 2 ขั้นตอนเรียงกัน:
+#### 🔸 แบบที่ 2: รันจากข้างในโฟลเดอร์ Worker (`/save-check/worker/`)
 ```bash
-# 1. อัปเดตโครงสร้าง Database ขึ้น Cloudflare D1 (Production)
-bunx wrangler d1 execute save-check-db --remote --file=./worker/src/db/schema.sql --config worker/wrangler.toml
+# 1. อัปเดต Database ขึ้น Cloudflare D1
+bunx wrangler d1 execute save-check-db --remote --file=./src/db/schema.sql
 
-# 2. Deploy โค้ด API ขึ้น Cloudflare Workers
-bunx wrangler deploy --config worker/wrangler.toml
+# 2. Deploy API ขึ้น Cloudflare Workers
+bunx wrangler deploy
 ```
 
 ---

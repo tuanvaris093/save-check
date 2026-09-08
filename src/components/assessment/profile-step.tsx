@@ -60,7 +60,7 @@ export function ProfileStep({ defaultValues, onNext }: ProfileStepProps) {
       className="flex flex-col gap-6 animate-fade-in"
       noValidate
     >
-      <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm">
+      <div className="form-section-card p-5">
         <h3 className="mb-4 text-card-title font-semibold text-text-primary">
           ข้อมูลส่วนตัว
         </h3>
@@ -149,7 +149,7 @@ export function ProfileStep({ defaultValues, onNext }: ProfileStepProps) {
         </div>
       </div>
 
-      <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm">
+      <div className="form-section-card p-5">
         <h3 className="mb-4 text-card-title font-semibold text-text-primary">
           ข้อมูลสุขภาพ
         </h3>

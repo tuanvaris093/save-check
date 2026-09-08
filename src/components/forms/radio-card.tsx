@@ -24,10 +24,10 @@ const RadioCard = React.forwardRef<HTMLInputElement, RadioCardProps>(
         <label
           htmlFor={inputId}
           className={cn(
-            "flex min-h-16 w-full cursor-pointer items-center gap-3 rounded-card border border-border bg-surface px-4 py-3 transition-all",
-            "hover:bg-muted active:scale-[0.98]",
+            "flex min-h-16 w-full cursor-pointer items-center gap-3 rounded-2xl border border-border bg-white/95 px-4 py-3 shadow-[0_4px_14px_rgba(37,99,235,.04)] transition-all",
+            "hover:border-primary/30 hover:bg-primary-tint/30 active:scale-[0.99]",
             "peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2",
-            "peer-checked:border-primary peer-checked:bg-primary-tint peer-checked:shadow-sm",
+            "peer-checked:border-primary peer-checked:bg-primary-tint peer-checked:shadow-[0_8px_20px_rgba(79,107,255,.12)]",
             "peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
             "peer-checked:[&_.radio-icon]:text-primary",
             "peer-checked:[&_.radio-label]:text-primary",

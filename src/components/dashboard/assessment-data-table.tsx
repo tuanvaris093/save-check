@@ -249,7 +249,7 @@ export function AssessmentDataTable({
   const startIndex = (currentPage - 1) * pageSize;
 
   return (
-    <div className={cn("flex flex-col gap-3", className)}>
+    <div className={cn("dashboard-history flex flex-col gap-3", className)}>
       {/* Section Header with Export Excel Action Button */}
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0 flex-1">
@@ -266,7 +266,7 @@ export function AssessmentDataTable({
           onClick={handleExportExcel}
           disabled={isExporting || totalItems === 0}
           title="ส่งออกรายงาน Excel (แยกตามประเภทการประเมิน)"
-          className="inline-flex items-center gap-1.5 rounded-button bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 text-caption font-medium shadow-sm active:scale-95 transition-all whitespace-nowrap shrink-0 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          className="success-cta inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-button px-3 py-1.5 text-caption font-semibold text-white transition-all hover:brightness-105 active:scale-[.99] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isExporting ? (
             <>
@@ -283,7 +283,7 @@ export function AssessmentDataTable({
       </div>
 
       {/* Search & Filter Controls Card */}
-      <div className="rounded-xl border border-gray-200 bg-white p-3 shadow-xs space-y-2.5">
+      <div className="space-y-2.5 rounded-xl border border-gray-200 bg-white p-3 shadow-xs">
         {/* Row 1: Search, Type Filter & Sort */}
         <div className="flex flex-wrap items-center justify-between gap-2">
           {/* Search Input */}
@@ -297,7 +297,7 @@ export function AssessmentDataTable({
                 setCurrentPage(1);
               }}
               placeholder="ค้นหารหัส เช่น SUB-..."
-              className="h-8.5 w-full rounded-lg border border-gray-200 bg-gray-50/50 pl-8 pr-3 text-[12px] text-gray-800 placeholder:text-gray-400 focus:border-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all"
+            className="h-11 w-full rounded-[14px] border border-gray-200 bg-white/95 pl-9 pr-3 text-[12px] text-gray-800 placeholder:text-[#A3B1C4] focus:border-primary focus:bg-white focus:outline-none transition-all"
             />
           </div>
 
@@ -359,9 +359,9 @@ export function AssessmentDataTable({
                   type="button"
                   onClick={() => handlePresetChange(preset.id as DatePreset)}
                   className={cn(
-                    "px-2.5 py-1 rounded-md font-medium whitespace-nowrap transition-all cursor-pointer",
+                    "cursor-pointer whitespace-nowrap rounded-full px-3 py-1.5 font-medium transition-all",
                     isActive
-                      ? "bg-primary text-white shadow-xs"
+                      ? "bg-[linear-gradient(135deg,#2563EB,#4F6BFF)] text-white shadow-[0_6px_14px_rgba(79,107,255,.22)]"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200/70 hover:text-gray-900"
                   )}
                 >

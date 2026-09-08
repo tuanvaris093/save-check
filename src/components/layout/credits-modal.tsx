@@ -45,7 +45,7 @@ export function CreditsModal({ isOpen, onClose }: CreditsModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 animate-fade-in">
+    <div className="animate-fade-in fixed inset-0 z-50 flex items-center justify-center px-4 pt-4 pb-[calc(104px+env(safe-area-inset-bottom,0px))] md:p-6">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity"
@@ -55,7 +55,7 @@ export function CreditsModal({ isOpen, onClose }: CreditsModalProps) {
 
       {/* Modal Dialog Card */}
       <div
-        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-[28px] border border-white/60 bg-white/95 p-6 sm:p-8 shadow-2xl backdrop-blur-xl animate-scale-in"
+        className="animate-scale-in relative max-h-full w-full max-w-lg overflow-y-auto overscroll-contain rounded-[28px] border border-white/60 bg-white/95 p-6 shadow-2xl backdrop-blur-xl sm:p-8 md:max-h-[90dvh]"
         style={{
           boxShadow:
             "0 25px 60px -15px rgba(15, 99, 199, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.8)",

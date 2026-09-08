@@ -48,7 +48,7 @@ export function HealthRiskStep({
 
   return (
     <form onSubmit={handleSubmit(onNext)} className="flex flex-col gap-6 animate-fade-in" noValidate>
-      <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm">
+      <div className="form-section-card p-5">
         <h3 className="mb-2 text-card-title font-semibold text-text-primary">
           แบบประเมินความเสี่ยงสุขภาพ ({ASSESSMENT_CATEGORY_LABELS[category]})
         </h3>

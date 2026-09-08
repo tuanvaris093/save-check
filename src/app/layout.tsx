@@ -18,6 +18,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  applicationName: "SafeCheck",
   title: "SafeCheck - ระบบประเมินสภาพแวดล้อมและสุขภาพ",
   description:
     "ระบบแบบประเมินออนไลน์สำหรับประเมินสภาพแวดล้อมในการทำงาน ความเสี่ยงต่อสุขภาพ และความพึงพอใจในการใช้แอป",
@@ -28,6 +29,10 @@ export const metadata: Metadata = {
     "ความพึงพอใจ",
     "อาชีวอนามัย",
   ],
+  icons: {
+    icon: "/icon.png",
+    apple: "/apple-icon.png",
+  },
 };
 
 export const viewport: Viewport = {
@@ -35,7 +40,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#0F63C7",
+  themeColor: "#4F6BFF",
 };
 
 export default function RootLayout({

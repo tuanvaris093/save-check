@@ -6,7 +6,7 @@ var __publicField = (obj, key, value) => {
   return value;
 };
 
-// .wrangler/tmp/bundle-I3Gbe0/strip-cf-connecting-ip-header.js
+// .wrangler/tmp/bundle-S1MhLo/strip-cf-connecting-ip-header.js
 function stripCfConnectingIPHeader(input, init) {
   const request = new Request(input, init);
   request.headers.delete("CF-Connecting-IP");
@@ -3176,7 +3176,7 @@ submissionsRoute.post("/", async (c) => {
       body.assessment_category,
       status,
       body.overall_score ?? null,
-      body.overall_level ?? null,
+      body.overall_level === "high" ? "high_risk" : body.overall_level ?? null,
       hasLayout,
       layoutFileName,
       layoutFileType,
@@ -3398,6 +3398,293 @@ submissionsRoute.post("/", async (c) => {
     );
   }
 });
+submissionsRoute.patch("/:code", async (c) => {
+  const db = c.env.DB;
+  const code = c.req.param("code");
+  const body = await c.req.json();
+  if (!body.assessment_type || !body.assessment_category) {
+    return c.json(
+      {
+        success: false,
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "assessment_type and assessment_category are required"
+        }
+      },
+      400
+    );
+  }
+  try {
+    const existing = await db.prepare(
+      "SELECT id, layout_file_name, layout_file_type, layout_file_size, layout_file_data, has_layout FROM submissions WHERE submission_code = ?"
+    ).bind(code).first();
+    if (!existing?.id) {
+      return c.json(
+        {
+          success: false,
+          error: {
+            code: "NOT_FOUND",
+            message: `\u0E44\u0E21\u0E48\u0E1E\u0E1A\u0E23\u0E32\u0E22\u0E01\u0E32\u0E23\u0E1B\u0E23\u0E30\u0E40\u0E21\u0E34\u0E19\u0E23\u0E2B\u0E31\u0E2A ${code}`
+          }
+        },
+        404
+      );
+    }
+    const submissionId = existing.id;
+    const nowIso = (/* @__PURE__ */ new Date()).toISOString();
+    const layout = body.layout_file === void 0 ? existing.has_layout ? {
+      fileName: existing.layout_file_name,
+      fileType: existing.layout_file_type,
+      fileSize: existing.layout_file_size,
+      fileData: existing.layout_file_data
+    } : null : body.layout_file;
+    const statements = [
+      db.prepare(
+        `UPDATE submissions SET
+          assessment_type = ?, assessment_category = ?, status = ?,
+          overall_score = ?, overall_level = ?, has_layout = ?,
+          layout_file_name = ?, layout_file_type = ?, layout_file_size = ?, layout_file_data = ?,
+          completed_at = ?, updated_at = ?
+         WHERE id = ?`
+      ).bind(
+        body.assessment_type,
+        body.assessment_category,
+        body.status || "completed",
+        body.overall_score ?? null,
+        body.overall_level === "high" ? "high_risk" : body.overall_level ?? null,
+        layout ? 1 : 0,
+        layout?.fileName || null,
+        layout?.fileType || null,
+        layout?.fileSize || null,
+        layout?.fileData || null,
+        body.completed_at || nowIso,
+        nowIso,
+        submissionId
+      ),
+      db.prepare(
+        "DELETE FROM environment_measurement_points WHERE submission_id = ?"
+      ).bind(submissionId),
+      db.prepare("DELETE FROM environment_inspections WHERE submission_id = ?").bind(submissionId),
+      db.prepare("DELETE FROM respondent_profiles WHERE submission_id = ?").bind(submissionId),
+      db.prepare("DELETE FROM respondent_work_infos WHERE submission_id = ?").bind(submissionId),
+      db.prepare("DELETE FROM health_risk_answers WHERE submission_id = ?").bind(submissionId),
+      db.prepare("DELETE FROM satisfaction_answers WHERE submission_id = ?").bind(submissionId),
+      db.prepare("DELETE FROM assessment_results WHERE submission_id = ?").bind(submissionId)
+    ];
+    if (body.assessment_type === "environment" && body.inspectionData) {
+      statements.push(
+        db.prepare(
+          `INSERT INTO environment_inspections (
+            submission_id, inspector_name, position, inspection_location,
+            inspection_date, equipment, measurement_technique, start_time, end_time, created_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        ).bind(
+          submissionId,
+          body.inspectionData.inspector_name,
+          body.inspectionData.position || "",
+          body.inspectionData.inspection_location,
+          body.inspectionData.inspection_date,
+          body.inspectionData.equipment || "",
+          body.inspectionData.measurement_technique || "",
+          body.inspectionData.start_time || "",
+          body.inspectionData.end_time || "",
+          nowIso
+        )
+      );
+    }
+    if (body.assessment_type === "environment" && body.answers) {
+      const ans = body.answers;
+      if (body.assessment_category === "light" && Array.isArray(ans.light_areas)) {
+        ans.light_areas.forEach((point, index) => {
+          const measure = Number(point.measure) || 0;
+          const standard = Number(point.standard_value) || 0;
+          statements.push(
+            db.prepare(
+              `INSERT INTO environment_measurement_points (
+                submission_id, category, point_no, location_desc, measure_value,
+                standard_value, standard_display, is_pass, remark, created_at
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+            ).bind(
+              submissionId,
+              "light",
+              index + 1,
+              point.location_desc || "-",
+              measure,
+              standard,
+              String(standard),
+              measure >= standard ? 1 : 0,
+              point.remark || "",
+              nowIso
+            )
+          );
+        });
+      } else if (body.assessment_category === "noise" && Array.isArray(ans.noise_areas)) {
+        const standard = Number(ans.standard_value) || 85;
+        ans.noise_areas.forEach((point, index) => {
+          const average = Number(point.avg_dBA) || 0;
+          statements.push(
+            db.prepare(
+              `INSERT INTO environment_measurement_points (
+                submission_id, category, point_no, location_desc, measure_value,
+                min_value, max_value, standard_value, standard_display, is_pass, remark, created_at
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+            ).bind(
+              submissionId,
+              "noise",
+              index + 1,
+              point.location_desc || "-",
+              average,
+              Number(point.min_dBA) || 0,
+              Number(point.max_dBA) || 0,
+              standard,
+              String(standard),
+              average <= standard ? 1 : 0,
+              point.remark || "",
+              nowIso
+            )
+          );
+        });
+      } else if (body.assessment_category === "heat" && Array.isArray(ans.heat_areas)) {
+        ans.heat_areas.forEach((point, index) => {
+          const average = Number(point.wbgt_avg) || 0;
+          const standard = Number(point.standard_value) || 30;
+          statements.push(
+            db.prepare(
+              `INSERT INTO environment_measurement_points (
+                submission_id, category, point_no, location_desc, measure_value,
+                standard_value, standard_display, workload, temp_db, temp_wb, temp_gt,
+                temp_wbgt, wbgt_type, start_time, end_time, total_time, is_pass, remark, created_at
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+            ).bind(
+              submissionId,
+              "heat",
+              index + 1,
+              point.location_desc || "-",
+              average,
+              standard,
+              String(standard),
+              point.workload || "",
+              Number(point.db_temp) || null,
+              Number(point.wb_temp) || null,
+              Number(point.gt_temp) || null,
+              Number(point.wbgt_in) || null,
+              point.wbgt_type || "in",
+              point.start_time || "",
+              point.end_time || "",
+              point.total_time || "",
+              average <= standard ? 1 : 0,
+              point.remark || "",
+              nowIso
+            )
+          );
+        });
+      }
+    }
+    if (body.assessment_type === "health_risk" && body.profile) {
+      statements.push(
+        db.prepare(
+          `INSERT INTO respondent_profiles (
+            submission_id, full_name, gender, age, weight, height, education_level,
+            marital_status, has_underlying_disease, underlying_disease_details, created_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        ).bind(
+          submissionId,
+          body.profile.full_name || "",
+          body.profile.gender || "",
+          body.profile.age || null,
+          body.profile.weight || null,
+          body.profile.height || null,
+          body.profile.education_level || null,
+          body.profile.marital_status || null,
+          body.profile.has_underlying_disease ? 1 : 0,
+          body.profile.underlying_disease_details || null,
+          nowIso
+        )
+      );
+    }
+    if (body.assessment_type === "health_risk" && body.workInfo) {
+      statements.push(
+        db.prepare(
+          `INSERT INTO respondent_work_infos (
+            submission_id, position_type, department, position, work_experience_years,
+            working_hours_per_day, working_days_per_week, work_area, created_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        ).bind(
+          submissionId,
+          body.workInfo.position_type || "",
+          body.workInfo.department || "",
+          body.workInfo.position || "",
+          body.workInfo.work_experience_years || null,
+          body.workInfo.working_hours_per_day || null,
+          body.workInfo.working_days_per_week || null,
+          body.workInfo.work_area || "",
+          nowIso
+        )
+      );
+    }
+    if (body.assessment_type === "health_risk" && body.answers) {
+      for (let i = 1; i <= 10; i++) {
+        const questionId = `q${i}`;
+        if (body.answers[questionId] !== void 0) {
+          statements.push(
+            db.prepare(
+              `INSERT INTO health_risk_answers (
+                submission_id, category, question_id, question_no, score, created_at
+              ) VALUES (?, ?, ?, ?, ?, ?)`
+            ).bind(
+              submissionId,
+              body.assessment_category,
+              questionId,
+              i,
+              Number(body.answers[questionId]) || 0,
+              nowIso
+            )
+          );
+        }
+      }
+    }
+    if (body.assessment_type === "satisfaction" && body.answers) {
+      for (const [questionId, value] of Object.entries(body.answers)) {
+        if (questionId.startsWith("q")) {
+          statements.push(
+            db.prepare(
+              `INSERT INTO satisfaction_answers (
+                submission_id, question_id, rating, suggestion, created_at
+              ) VALUES (?, ?, ?, ?, ?)`
+            ).bind(
+              submissionId,
+              questionId,
+              Number(value) || 0,
+              body.answers.suggestion || null,
+              nowIso
+            )
+          );
+        }
+      }
+    }
+    await db.batch(statements);
+    return c.json({
+      success: true,
+      data: {
+        id: submissionId,
+        submission_code: code,
+        message: "\u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01\u0E01\u0E32\u0E23\u0E41\u0E01\u0E49\u0E44\u0E02\u0E40\u0E23\u0E35\u0E22\u0E1A\u0E23\u0E49\u0E2D\u0E22\u0E41\u0E25\u0E49\u0E27"
+      }
+    });
+  } catch (err) {
+    console.error("Error updating submission:", err);
+    return c.json(
+      {
+        success: false,
+        error: {
+          code: "DB_ERROR",
+          message: err.message || "\u0E40\u0E01\u0E34\u0E14\u0E02\u0E49\u0E2D\u0E1C\u0E34\u0E14\u0E1E\u0E25\u0E32\u0E14\u0E43\u0E19\u0E01\u0E32\u0E23\u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01\u0E01\u0E32\u0E23\u0E41\u0E01\u0E49\u0E44\u0E02"
+        }
+      },
+      500
+    );
+  }
+});
 submissionsRoute.patch("/:code/layout", async (c) => {
   const db = c.env.DB;
   const code = c.req.param("code");
@@ -3476,7 +3763,9 @@ submissionsRoute.delete("/:code", async (c) => {
     }
     const subId = sub.id;
     await db.batch([
-      db.prepare("DELETE FROM environment_measurement_points WHERE submission_id = ?").bind(subId),
+      db.prepare(
+        "DELETE FROM environment_measurement_points WHERE submission_id = ?"
+      ).bind(subId),
       db.prepare("DELETE FROM environment_inspections WHERE submission_id = ?").bind(subId),
       db.prepare("DELETE FROM respondent_profiles WHERE submission_id = ?").bind(subId),
       db.prepare("DELETE FROM respondent_work_infos WHERE submission_id = ?").bind(subId),
@@ -4119,7 +4408,7 @@ var jsonError = /* @__PURE__ */ __name(async (request, env2, _ctx, middlewareCtx
 }, "jsonError");
 var middleware_miniflare3_json_error_default = jsonError;
 
-// .wrangler/tmp/bundle-I3Gbe0/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-S1MhLo/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default,
   middleware_miniflare3_json_error_default
@@ -4151,7 +4440,7 @@ function __facade_invoke__(request, env2, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// .wrangler/tmp/bundle-I3Gbe0/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-S1MhLo/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;

@@ -13,7 +13,7 @@ export function HomeFooter() {
         <button
           type="button"
           onClick={() => setIsCreditsOpen(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 hover:bg-white border border-slate-200/80 shadow-xs text-text-secondary hover:text-primary transition-all active:scale-95 group mb-3"
+          className="mb-3 inline-flex min-h-11 items-center gap-2 rounded-2xl border border-primary/10 bg-primary-tint/80 px-4 py-2 text-text-secondary shadow-sm transition-all hover:border-primary/20 hover:bg-white hover:text-primary active:scale-95 group"
         >
           <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-soft text-primary">
             <Info className="h-3.5 w-3.5" />

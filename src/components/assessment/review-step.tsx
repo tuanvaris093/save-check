@@ -27,6 +27,12 @@ import {
   evaluateHealthRiskResult,
 } from "@/lib/health-risk-schema";
 import { calculateSatisfactionResult } from "@/lib/satisfaction-schema";
+import {
+  EDUCATION_LEVEL_OPTIONS,
+  GENDER_OPTIONS,
+  MARITAL_STATUS_OPTIONS,
+  POSITION_TYPE_OPTIONS,
+} from "@/lib/constants";
 import type { AssessmentCategory } from "@/types";
 import { cn, formatFileSize } from "@/lib/utils";
 
@@ -52,6 +58,11 @@ export function ReviewStep({
   const inspectionData = draftData.inspectionData;
   const layoutFile = draftData.layoutFile;
   const answers = draftData.answers as any;
+
+  const optionLabel = (
+    options: readonly { value: string; label: string }[],
+    value?: string,
+  ) => options.find((option) => option.value === value)?.label || value || "-";
 
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
@@ -298,9 +309,11 @@ export function ReviewStep({
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
       {type !== "satisfaction" && (
-        <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm">
+        <div className="form-section-card p-5">
         <h3 className="mb-4 text-card-title font-semibold text-text-primary">
-          ข้อมูลการตรวจวัด
+          {type === "health_risk"
+            ? "ข้อมูลผู้ตอบแบบประเมิน"
+            : "ข้อมูลการตรวจวัด"}
         </h3>
 
         {type === "environment" ? (
@@ -426,19 +439,87 @@ export function ReviewStep({
             <p className="text-small text-danger">ข้อมูลไม่สมบูรณ์</p>
           )
         ) : profile && workInfo ? (
-          <div className="flex flex-col gap-2 text-small text-text-secondary">
-            <div className="flex justify-between border-b border-border py-2">
-              <span>ชื่อ-นามสกุล</span>
-              <span className="font-medium text-text-primary">
-                {profile.full_name}
-              </span>
-            </div>
-            <div className="flex justify-between border-b border-border py-2">
-              <span>แผนก/ฝ่าย</span>
-              <span className="font-medium text-text-primary">
-                {workInfo.department}
-              </span>
-            </div>
+          <div className="text-small text-text-secondary flex flex-col gap-5">
+            <section>
+              <h4 className="text-text-primary mb-1 font-semibold">
+                ข้อมูลส่วนตัวและสุขภาพ
+              </h4>
+              {[
+                ["ชื่อ-นามสกุล", profile.full_name],
+                ["เพศ", optionLabel(GENDER_OPTIONS, profile.gender)],
+                ["อายุ", profile.age ? `${profile.age} ปี` : "-"],
+                ["น้ำหนัก", profile.weight ? `${profile.weight} กก.` : "-"],
+                ["ส่วนสูง", profile.height ? `${profile.height} ซม.` : "-"],
+                [
+                  "ระดับการศึกษา",
+                  optionLabel(EDUCATION_LEVEL_OPTIONS, profile.education_level),
+                ],
+                [
+                  "สถานภาพ",
+                  optionLabel(MARITAL_STATUS_OPTIONS, profile.marital_status),
+                ],
+                [
+                  "โรคประจำตัว",
+                  profile.has_underlying_disease
+                    ? profile.underlying_disease_details || "มี"
+                    : "ไม่มี",
+                ],
+              ].map(([label, value]) => (
+                <div
+                  key={label}
+                  className="border-border flex items-start justify-between gap-4 border-b py-2 last:border-b-0"
+                >
+                  <span>{label}</span>
+                  <span className="text-text-primary max-w-[62%] text-right font-medium break-words">
+                    {value || "-"}
+                  </span>
+                </div>
+              ))}
+            </section>
+
+            <section>
+              <h4 className="text-text-primary mb-1 font-semibold">
+                ข้อมูลการปฏิบัติงาน
+              </h4>
+              {[
+                [
+                  "ประเภทบุคลากร",
+                  optionLabel(POSITION_TYPE_OPTIONS, workInfo.position_type),
+                ],
+                ["คณะ / แผนก / ฝ่าย", workInfo.department],
+                [
+                  "อายุงาน",
+                  workInfo.work_experience_years !== "" &&
+                  workInfo.work_experience_years !== undefined
+                    ? `${workInfo.work_experience_years} ปี`
+                    : "-",
+                ],
+                [
+                  "เวลาทำงาน",
+                  workInfo.working_hours_per_day !== "" &&
+                  workInfo.working_hours_per_day !== undefined
+                    ? `${workInfo.working_hours_per_day} ชั่วโมง/วัน`
+                    : "-",
+                ],
+                [
+                  "วันทำงาน",
+                  workInfo.working_days_per_week !== "" &&
+                  workInfo.working_days_per_week !== undefined
+                    ? `${workInfo.working_days_per_week} วัน/สัปดาห์`
+                    : "-",
+                ],
+              ].map(([label, value]) => (
+                <div
+                  key={label}
+                  className="border-border flex items-start justify-between gap-4 border-b py-2 last:border-b-0"
+                >
+                  <span>{label}</span>
+                  <span className="text-text-primary max-w-[62%] text-right font-medium break-words">
+                    {value || "-"}
+                  </span>
+                </div>
+              ))}
+            </section>
           </div>
         ) : (
           <p className="text-small text-danger">ข้อมูลไม่สมบูรณ์</p>
@@ -448,7 +529,7 @@ export function ReviewStep({
 
       {/* Light Assessment Detailed Report Table */}
       {type === "environment" && category === "light" && processedLightPoints.length > 0 && (
-        <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm overflow-hidden">
+        <div className="form-section-card overflow-hidden p-5">
           <h3 className="mb-4 text-card-title font-semibold text-text-primary">
             รายงานผลการตรวจวัดระดับแสงสว่าง
           </h3>
@@ -509,7 +590,7 @@ export function ReviewStep({
 
       {/* Noise Assessment Detailed Report Table */}
       {type === "environment" && category === "noise" && processedNoisePoints.length > 0 && (
-        <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm overflow-hidden">
+        <div className="form-section-card overflow-hidden p-5">
           <h3 className="mb-4 text-card-title font-semibold text-text-primary">
             รายงานผลการตรวจวัดระดับเสียง
           </h3>
@@ -572,7 +653,7 @@ export function ReviewStep({
 
       {/* Heat Assessment Detailed Report Table */}
       {type === "environment" && category === "heat" && processedHeatPoints.length > 0 && (
-        <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm overflow-hidden">
+        <div className="form-section-card overflow-hidden p-5">
           <h3 className="mb-4 text-card-title font-semibold text-text-primary">
             รายงานผลการตรวจวัดระดับความร้อน
           </h3>
@@ -663,7 +744,7 @@ export function ReviewStep({
 
       {/* Environment Assessment Overall Summary Card */}
       {type === "environment" && envEvaluation && answers && (
-        <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm text-center">
+        <div className="form-section-card p-5 text-center">
           <div className="flex justify-center mb-3">
             {envEvaluation.isPass ? (
               <CheckCircle2 className="h-16 w-16 text-success animate-scale-in" />
@@ -728,7 +809,7 @@ export function ReviewStep({
 
       {/* Health Risk Assessment Result */}
       {type === "health_risk" && hrEvaluation && answers && (
-        <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm text-center">
+        <div className="form-section-card p-5 text-center">
           <div className="flex justify-center mb-3">
             {hrEvaluation.level === "pass" ? (
               <CheckCircle2 className="h-16 w-16 text-success animate-scale-in" />
@@ -806,7 +887,7 @@ export function ReviewStep({
 
       {/* Satisfaction Assessment Result */}
       {type === "satisfaction" && satisfactionResult && (
-        <div className="rounded-card border border-white/40 bg-white/60 backdrop-blur-md p-5 shadow-sm text-center">
+        <div className="form-section-card p-5 text-center">
           <div className="flex justify-center mb-3">
             <Star className="h-16 w-16 text-warning fill-warning animate-scale-in" />
           </div>

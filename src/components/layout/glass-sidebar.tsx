@@ -36,12 +36,12 @@ export function GlassSidebar() {
           margin: "16px",
           borderRadius: "32px",
           background:
-            "linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(240, 249, 255, 0.72))",
+            "linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(238, 244, 255, 0.82))",
           backdropFilter: "blur(22px)",
           WebkitBackdropFilter: "blur(22px)",
           border: "1px solid rgba(148, 163, 184, 0.20)",
           boxShadow:
-            "0 24px 60px rgba(15, 99, 199, 0.12), 0 8px 24px rgba(15, 23, 42, 0.06)",
+            "0 24px 60px rgba(79, 107, 255, 0.14), 0 8px 24px rgba(15, 23, 42, 0.06)",
         }}
       >
         {/* Brand Panel */}
@@ -49,7 +49,7 @@ export function GlassSidebar() {
           <div
             className="flex items-center gap-3 rounded-[24px] px-5 py-4"
             style={{
-              background: "linear-gradient(135deg, #0F63C7, #1EA7FF)",
+              background: "linear-gradient(135deg, #2563EB, #4F6BFF 55%, #7C3AED)",
             }}
           >
             <Image
@@ -82,15 +82,15 @@ export function GlassSidebar() {
                   className={cn(
                     "flex items-center gap-3 rounded-[999px] px-4 py-3 text-[14px] font-medium transition-all",
                     isActive
-                      ? "text-primary"
+                      ? "text-white"
                       : "text-text-secondary hover:text-text-primary hover:bg-white/50",
                   )}
                   style={
                     isActive
                       ? {
-                          background: "rgba(224, 242, 254, 0.95)",
+                          background: "linear-gradient(135deg, #2563EB, #4F6BFF 58%, #8B5CF6)",
                           boxShadow:
-                            "inset 0 0 0 1px rgba(14, 165, 233, 0.14)",
+                            "0 10px 22px rgba(79, 107, 255, 0.22)",
                         }
                       : undefined
                   }

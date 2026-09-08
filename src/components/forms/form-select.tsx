@@ -34,7 +34,7 @@ const FormSelect = React.forwardRef<HTMLSelectElement, FormSelectProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className="text-small font-medium text-text-primary"
+            className="text-small font-semibold text-text-primary"
           >
             {label}
             {props.required && <span className="ml-1 text-danger">*</span>}
@@ -45,8 +45,8 @@ const FormSelect = React.forwardRef<HTMLSelectElement, FormSelectProps>(
             id={selectId}
             ref={ref}
             className={cn(
-              "flex h-12 w-full appearance-none rounded-input border bg-surface px-4 py-2 pr-10 text-body transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary",
+              "glass-input flex w-full appearance-none px-4 py-2 pr-10 text-body",
+              "focus-visible:outline-none focus-visible:ring-0",
               "disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-50",
               error
                 ? "border-danger focus-visible:ring-danger"

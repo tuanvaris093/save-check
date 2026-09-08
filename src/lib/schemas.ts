@@ -56,7 +56,9 @@ export const inspectionDataSchema = z
     position: z.string().min(2, "กรุณาระบุตำแหน่ง"),
     inspection_location: z.string().min(2, "กรุณาระบุสถานที่ตรวจ"),
     inspection_date: z.string().min(1, "กรุณาระบุวันที่ทำการตรวจวัด"),
-    equipment: z.string().min(2, "กรุณาระบุเครื่องมือที่ใช้ (เช่น Lux meter รุ่น: tm-204)"),
+    equipment: z
+      .string()
+      .min(2, "กรุณาระบุเครื่องมือที่ใช้ (เช่น Lux meter รุ่น: tm-204)"),
     measurement_technique: z.string().optional(),
     start_time: z.string().min(1, "กรุณาระบุเวลาเริ่ม"),
     end_time: z.string().min(1, "กรุณาระบุเวลาสิ้นสุด"),
@@ -70,7 +72,7 @@ export const inspectionDataSchema = z
     {
       message: "เวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม",
       path: ["end_time"],
-    }
+    },
   );
 
 export type InspectionDataFormValues = z.infer<typeof inspectionDataSchema>;
@@ -112,5 +114,11 @@ export interface AssessmentDraftData {
   answers?: Record<string, string | number>;
   measuredValues?: Record<string, string>;
   layoutFile?: LayoutFileInfo | null;
+  editingSubmission?: {
+    id?: number;
+    submission_code: string;
+    started_at?: string;
+    created_at?: string;
+  };
   lastSavedAt?: string;
 }
