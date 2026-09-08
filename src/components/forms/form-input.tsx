@@ -26,6 +26,12 @@ const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
   ) => {
     const defaultId = React.useId();
     const inputId = id || defaultId;
+    const isTemporalInput =
+      type === "date" ||
+      type === "time" ||
+      type === "datetime-local" ||
+      type === "month" ||
+      type === "week";
 
     const handleWheel = (event: React.WheelEvent<HTMLInputElement>) => {
       onWheel?.(event);
@@ -55,22 +61,45 @@ const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
             {props.required && <span className="ml-1 text-danger">*</span>}
           </label>
         )}
-        <input
-          id={inputId}
-          ref={ref}
-          type={type}
-          onWheel={handleWheel}
-          onKeyDown={handleKeyDown}
-          className={cn(
-            "glass-input block min-w-0 max-w-full w-full box-border px-4 py-2 text-body",
-            "file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[#A3B1C4]",
-            "focus-visible:outline-none focus-visible:ring-0",
-            "disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-50",
-            error ? "border-danger shadow-[0_0_0_3px_rgba(239,68,68,.08)]" : "border-border",
-            className,
-          )}
-          {...props}
-        />
+        {isTemporalInput ? (
+          <div
+            className={cn(
+              "glass-input temporal-input-shell",
+              props.disabled && "cursor-not-allowed bg-muted opacity-50",
+              error
+                ? "border-danger shadow-[0_0_0_3px_rgba(239,68,68,.08)]"
+                : "border-border",
+              className,
+            )}
+          >
+            <input
+              id={inputId}
+              ref={ref}
+              type={type}
+              onWheel={handleWheel}
+              onKeyDown={handleKeyDown}
+              className="temporal-input h-full w-full min-w-0 max-w-full border-0 bg-transparent p-0 text-body outline-none"
+              {...props}
+            />
+          </div>
+        ) : (
+          <input
+            id={inputId}
+            ref={ref}
+            type={type}
+            onWheel={handleWheel}
+            onKeyDown={handleKeyDown}
+            className={cn(
+              "glass-input block min-w-0 max-w-full w-full box-border px-4 py-2 text-body",
+              "file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[#A3B1C4]",
+              "focus-visible:outline-none focus-visible:ring-0",
+              "disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-50",
+              error ? "border-danger shadow-[0_0_0_3px_rgba(239,68,68,.08)]" : "border-border",
+              className,
+            )}
+            {...props}
+          />
+        )}
         {helperText && !error && (
           <p className="text-caption text-text-secondary">{helperText}</p>
         )}
