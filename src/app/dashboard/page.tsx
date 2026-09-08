@@ -47,7 +47,7 @@ export default function DashboardPage() {
   const healthCount = summary ? summary.by_type.health_risk : 0;
   const satCount = summary ? summary.by_type.satisfaction : 0;
   const satAvg =
-    summary && summary.satisfaction_avg > 0
+    summary && satCount > 0 && summary.satisfaction_avg > 0
       ? `${summary.satisfaction_avg.toFixed(1)} / 5`
       : "—";
 

@@ -73,9 +73,9 @@ dashboardRoute.get("/summary", async (c) => {
       )
       .first<{ avg_score: number | null }>();
 
-    const satisfactionAvg = satAvgRow?.avg_score
+    const satisfactionAvg = satAvgRow?.avg_score != null
       ? Number(satAvgRow.avg_score.toFixed(2))
-      : 4.8;
+      : 0;
 
     return c.json({
       success: true,

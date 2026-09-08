@@ -82,7 +82,7 @@ function SatisfactionFormContent() {
     const submissionCode = editCode || `SUB-${datePart}-${randPart}`;
     const original = draftData.editingSubmission;
 
-    let overallAvg = 4.8;
+    let overallAvg = 0;
     if (draftData.answers) {
       const res = calculateSatisfactionResult(draftData.answers as any);
       overallAvg = res.overallAvg;

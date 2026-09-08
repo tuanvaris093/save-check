@@ -5,10 +5,10 @@
 
 PRAGMA foreign_keys = OFF;
 
+DELETE FROM assessment_results;
 DELETE FROM environment_measurement_points;
 DELETE FROM environment_inspections;
 DELETE FROM health_risk_answers;
-DELETE FROM health_risk_dimension_summaries;
 DELETE FROM satisfaction_answers;
 DELETE FROM respondent_work_infos;
 DELETE FROM respondent_profiles;
@@ -21,9 +21,9 @@ DELETE FROM sqlite_sequence WHERE name IN (
   'respondent_work_infos',
   'environment_inspections',
   'environment_measurement_points',
-  'health_risk_dimension_summaries',
   'health_risk_answers',
-  'satisfaction_answers'
+  'satisfaction_answers',
+  'assessment_results'
 );
 
 PRAGMA foreign_keys = ON;

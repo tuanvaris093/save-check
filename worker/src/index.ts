@@ -15,14 +15,20 @@ app.use("*", prettyJSON());
 
 // Dynamic CORS for Local & Production Frontends
 app.use("*", async (c, next) => {
+  const allowedCustomOrigins = (c.env.FRONTEND_URL || "")
+    .split(",")
+    .map((o) => o.trim())
+    .filter(Boolean);
+
   const corsMiddleware = cors({
     origin: (origin) => {
-      // Allow localhost on ports 3000, 3001, 5173, etc. or Cloudflare Pages domains
+      // Allow localhost on ports 3000, 3001, 5173, etc. or Cloudflare Pages domains or configured domains
       if (
         !origin ||
         origin.includes("localhost") ||
         origin.includes("127.0.0.1") ||
-        origin.endsWith(".pages.dev")
+        origin.endsWith(".pages.dev") ||
+        allowedCustomOrigins.includes(origin)
       ) {
         return origin || "*";
       }
