@@ -30,7 +30,7 @@ const FormSelect = React.forwardRef<HTMLSelectElement, FormSelectProps>(
     const selectId = id || defaultId;
 
     return (
-      <div className="flex w-full flex-col gap-1.5">
+      <div className="flex min-w-0 max-w-full flex-col gap-1.5">
         {label && (
           <label
             htmlFor={selectId}
@@ -40,12 +40,12 @@ const FormSelect = React.forwardRef<HTMLSelectElement, FormSelectProps>(
             {props.required && <span className="ml-1 text-danger">*</span>}
           </label>
         )}
-        <div className="relative">
+        <div className="relative min-w-0 max-w-full">
           <select
             id={selectId}
             ref={ref}
             className={cn(
-              "glass-input flex w-full appearance-none px-4 py-2 pr-10 text-body",
+              "glass-input block min-w-0 max-w-full w-full box-border appearance-none px-4 py-2 pr-10 text-body",
               "focus-visible:outline-none focus-visible:ring-0",
               "disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-50",
               error

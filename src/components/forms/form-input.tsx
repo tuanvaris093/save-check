@@ -45,7 +45,7 @@ const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
     };
 
     return (
-      <div className="flex w-full flex-col gap-1.5">
+      <div className="flex min-w-0 max-w-full flex-col gap-1.5">
         {label && (
           <label
             htmlFor={inputId}
@@ -62,7 +62,7 @@ const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
           onWheel={handleWheel}
           onKeyDown={handleKeyDown}
           className={cn(
-            "glass-input flex w-full px-4 py-2 text-body",
+            "glass-input block min-w-0 max-w-full w-full box-border px-4 py-2 text-body",
             "file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[#A3B1C4]",
             "focus-visible:outline-none focus-visible:ring-0",
             "disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-50",

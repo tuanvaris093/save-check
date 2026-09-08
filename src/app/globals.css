@@ -207,11 +207,24 @@ body::after {
 
 /* --- Glass Input --- */
 .glass-input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   height: 48px;
   border-radius: 0.875rem;
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid #D7E2F0;
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+/* iOS Safari gives localized date/time/select controls a large intrinsic width. */
+input.glass-input[type="date"],
+input.glass-input[type="time"],
+select.glass-input {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .glass-input:focus {
