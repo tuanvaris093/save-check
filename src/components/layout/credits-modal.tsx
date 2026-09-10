@@ -45,7 +45,7 @@ export function CreditsModal({ isOpen, onClose }: CreditsModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="animate-fade-in fixed inset-0 z-50 flex items-center justify-center px-4 pt-4 pb-[calc(104px+env(safe-area-inset-bottom,0px))] md:p-6">
+    <div className="animate-fade-in fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-x-hidden overflow-y-auto">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity"
@@ -55,7 +55,7 @@ export function CreditsModal({ isOpen, onClose }: CreditsModalProps) {
 
       {/* Modal Dialog Card */}
       <div
-        className="animate-scale-in relative max-h-full w-full max-w-lg overflow-y-auto overscroll-contain rounded-[28px] border border-white/60 bg-white/95 p-6 shadow-2xl backdrop-blur-xl sm:p-8 md:max-h-[90dvh]"
+        className="animate-scale-in relative my-auto max-h-[calc(100dvh-2.5rem)] sm:max-h-[calc(100dvh-3.5rem)] w-full max-w-lg overflow-x-hidden overflow-y-auto overscroll-contain rounded-3xl sm:rounded-[28px] border border-white/60 bg-white/95 p-5 sm:p-7 shadow-2xl backdrop-blur-xl"
         style={{
           boxShadow:
             "0 25px 60px -15px rgba(15, 99, 199, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.8)",
@@ -79,47 +79,47 @@ export function CreditsModal({ isOpen, onClose }: CreditsModalProps) {
         </button>
 
         {/* Header with App Brand */}
-        <div className="flex items-center gap-3.5 mb-5">
+        <div className="flex items-center gap-3 mb-3 sm:mb-4">
           <Image
             src="/assets/logo_savecheck.webp"
             alt="SafeCheck Logo"
-            width={48}
-            height={48}
-            className="h-12 w-12 shrink-0 rounded-2xl object-contain shadow-md shadow-primary/20"
+            width={44}
+            height={44}
+            className="h-10 w-10 sm:h-11 sm:w-11 shrink-0 rounded-2xl object-contain shadow-md shadow-primary/20"
             priority
           />
-          <div>
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <h2
                 id="credits-modal-title"
-                className="text-lg font-bold text-text-primary"
+                className="text-base sm:text-lg font-bold text-text-primary"
               >
                 SafeCheck
               </h2>
-              <span className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-0.5 text-[11px] font-semibold text-primary">
+              <span className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-[10px] sm:text-[11px] font-semibold text-primary">
                 <Sparkles className="h-3 w-3" /> v1.0
               </span>
             </div>
-            <p className="text-caption text-text-secondary">
+            <p className="text-[11px] sm:text-caption text-text-secondary truncate">
               ระบบประเมินสภาพแวดล้อมและความปลอดภัย
             </p>
           </div>
         </div>
 
         {/* University Logo (Center above authors) */}
-        <div className="flex flex-col items-center justify-center my-2 pb-1">
+        <div className="flex flex-col items-center justify-center my-1 sm:my-2 pb-1">
           <Image
             src="/assets/logo_u.webp"
             alt="ตราสัญลักษณ์ วิทยาลัยการสาธารณสุขสิรินธร จังหวัดยะลา"
-            width={90}
-            height={130}
-            className="h-26 sm:h-27 w-auto object-contain"
+            width={80}
+            height={110}
+            className="h-20 sm:h-24 md:h-26 w-auto object-contain transition-all"
             priority
           />
         </div>
 
         {/* Content Body */}
-        <div className="flex flex-col gap-4 text-small">
+        <div className="flex flex-col gap-3 sm:gap-4 text-small">
           {/* Authors List Card */}
           <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4">
             <div className="flex items-center gap-2 mb-3 text-text-primary font-semibold text-body">
@@ -164,13 +164,13 @@ export function CreditsModal({ isOpen, onClose }: CreditsModalProps) {
           </div>
 
           {/* Copyright & Disclaimer */}
-          <div className="rounded-xl bg-slate-100/70 px-4 py-3 text-caption text-text-muted flex items-start gap-2">
+          <div className="rounded-xl bg-slate-100/70 px-4 py-3 text-caption text-text-muted flex items-start gap-2.5">
             <Copyright className="h-4 w-4 shrink-0 mt-0.5 text-text-secondary" />
-            <div className="leading-relaxed">
+            <div className="min-w-0 flex-1 leading-relaxed">
               <p className="font-semibold text-text-secondary">
                 สงวนลิขสิทธิ์ พ.ศ. 2569 SafeCheck System
               </p>
-              <p className="text-[11px]">
+              <p className="text-[11px] break-words">
                 พัฒนาเพื่อใช้เป็นเครื่องมือประเมินสภาพแวดล้อมในการทำงาน ด้านแสง เสียง ความร้อน และความเสี่ยงต่อสุขภาพ
               </p>
             </div>
