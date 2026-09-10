@@ -355,6 +355,28 @@ dashboardRoute.get("/export-data", async (c) => {
       });
     }
 
+    // Helper to batch fetch associated data safely below D1's 100 parameter limit
+    const CHUNK_SIZE = 50;
+    const fetchInBatches = async (
+      ids: number[],
+      queryFn: (placeholders: string) => string
+    ): Promise<any[]> => {
+      if (ids.length === 0) return [];
+      const batches: number[][] = [];
+      for (let i = 0; i < ids.length; i += CHUNK_SIZE) {
+        batches.push(ids.slice(i, i + CHUNK_SIZE));
+      }
+
+      const batchResults = await Promise.all(
+        batches.map((batch) => {
+          const placeholders = batch.map(() => "?").join(",");
+          return db.prepare(queryFn(placeholders)).bind(...batch).all<any>();
+        })
+      );
+
+      return batchResults.flatMap((r) => r.results || []);
+    };
+
     // 2. Fetch Environment points
     const envSubIds = submissionsList
       .filter((s: any) => s.assessment_type === "environment")
@@ -362,15 +384,13 @@ dashboardRoute.get("/export-data", async (c) => {
 
     const envPointsMap: Record<number, any[]> = {};
     if (envSubIds.length > 0) {
-      const placeholders = envSubIds.map(() => "?").join(",");
-      const pointsRes = await db
-        .prepare(
+      const allPoints = await fetchInBatches(
+        envSubIds,
+        (placeholders) =>
           `SELECT * FROM environment_measurement_points WHERE submission_id IN (${placeholders}) ORDER BY submission_id, point_no ASC`
-        )
-        .bind(...envSubIds)
-        .all<any>();
+      );
 
-      for (const pt of pointsRes.results || []) {
+      for (const pt of allPoints) {
         if (!envPointsMap[pt.submission_id]) {
           envPointsMap[pt.submission_id] = [];
         }
@@ -385,15 +405,13 @@ dashboardRoute.get("/export-data", async (c) => {
 
     const hrAnswersMap: Record<number, any[]> = {};
     if (hrSubIds.length > 0) {
-      const placeholders = hrSubIds.map(() => "?").join(",");
-      const hrRes = await db
-        .prepare(
+      const allHrAnswers = await fetchInBatches(
+        hrSubIds,
+        (placeholders) =>
           `SELECT * FROM health_risk_answers WHERE submission_id IN (${placeholders}) ORDER BY submission_id, question_no ASC`
-        )
-        .bind(...hrSubIds)
-        .all<any>();
+      );
 
-      for (const ans of hrRes.results || []) {
+      for (const ans of allHrAnswers) {
         if (!hrAnswersMap[ans.submission_id]) {
           hrAnswersMap[ans.submission_id] = [];
         }
@@ -408,15 +426,13 @@ dashboardRoute.get("/export-data", async (c) => {
 
     const satAnswersMap: Record<number, any[]> = {};
     if (satSubIds.length > 0) {
-      const placeholders = satSubIds.map(() => "?").join(",");
-      const satRes = await db
-        .prepare(
+      const allSatAnswers = await fetchInBatches(
+        satSubIds,
+        (placeholders) =>
           `SELECT * FROM satisfaction_answers WHERE submission_id IN (${placeholders}) ORDER BY submission_id, id ASC`
-        )
-        .bind(...satSubIds)
-        .all<any>();
+      );
 
-      for (const ans of satRes.results || []) {
+      for (const ans of allSatAnswers) {
         if (!satAnswersMap[ans.submission_id]) {
           satAnswersMap[ans.submission_id] = [];
         }

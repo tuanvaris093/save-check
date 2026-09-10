@@ -6,24 +6,31 @@
 import type { ApiResponse } from "@/types";
 import { API_BASE_URL } from "./constants";
 
+interface FetchOptions extends RequestInit {
+  timeoutMs?: number;
+}
+
 /**
  * Base fetch wrapper with standard error handling
  */
 async function fetchApi<T>(
   endpoint: string,
-  options?: RequestInit,
+  options?: FetchOptions,
 ): Promise<ApiResponse<T>> {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+    const timeoutMs = options?.timeoutMs ?? 10000;
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    const { timeoutMs: _, ...fetchOptions } = options || {};
 
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       headers: {
         "Content-Type": "application/json",
-        ...options?.headers,
+        ...fetchOptions?.headers,
       },
       signal: controller.signal,
-      ...options,
+      ...fetchOptions,
     });
 
     clearTimeout(timeoutId);
@@ -45,8 +52,11 @@ async function fetchApi<T>(
     return {
       success: false,
       error: {
-        code: "NETWORK_ERROR",
-        message: "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กำลังใช้ข้อมูลจากเครื่อง",
+        code: error?.name === "AbortError" ? "TIMEOUT_ERROR" : "NETWORK_ERROR",
+        message:
+          error?.name === "AbortError"
+            ? "การเชื่อมต่อหมดเวลา กรุณาลองใหม่อีกครั้ง"
+            : "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้",
       },
     };
   }
@@ -239,5 +249,6 @@ export async function getExportData(
   const qs = query.toString();
   return fetchApi<ExportDataResponse>(
     `/dashboard/export-data${qs ? `?${qs}` : ""}`,
+    { timeoutMs: 25000 },
   );
 }

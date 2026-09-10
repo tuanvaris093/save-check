@@ -16,6 +16,7 @@ import {
   FileSpreadsheet,
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/badge";
+import { useToast } from "@/components/ui/toast";
 import {
   ASSESSMENT_TYPE_LABELS,
   ASSESSMENT_CATEGORY_LABELS,
@@ -84,6 +85,8 @@ export function AssessmentDataTable({
   initialPageSize = 10,
   isLoading: initialLoading = false,
 }: AssessmentDataTableProps) {
+  const { showToast } = useToast();
+
   // Filter States
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -199,15 +202,26 @@ export function AssessmentDataTable({
         sort_order: sortOrder,
       });
 
-      if (res.success && res.data) {
+      if (res.success) {
+        const count = res.data.submissions?.length || 0;
+        if (count === 0) {
+          showToast.warning("ไม่พบรายการข้อมูลตามเงื่อนไขที่เลือก", "ไม่มีข้อมูลสำหรับส่งออก");
+          return;
+        }
+
         const dateStr = new Date().toISOString().slice(0, 10);
         generateMultiSheetExcel(res.data, `save-check-export-${dateStr}.xlsx`);
+        showToast.success(`ส่งออกไฟล์ Excel เรียบร้อยแล้ว (${count} รายการ)`, "ส่งออกสำเร็จ");
       } else {
-        alert("ไม่สามารถดึงข้อมูลสำหรับส่งออกได้");
+        const errorMsg = res.error?.message || "ไม่สามารถดึงข้อมูลสำหรับส่งออกได้";
+        showToast.error(errorMsg, "เกิดข้อผิดพลาด");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Export error:", err);
-      alert("เกิดข้อผิดพลาดในการส่งออก Excel");
+      showToast.error(
+        err?.message || "เกิดข้อผิดพลาดในการส่งออก Excel กรุณาลองใหม่อีกครั้ง",
+        "ส่งออกไม่สำเร็จ"
+      );
     } finally {
       setIsExporting(false);
     }

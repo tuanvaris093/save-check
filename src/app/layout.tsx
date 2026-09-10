@@ -3,6 +3,7 @@ import { Noto_Sans_Thai, Inter } from "next/font/google";
 import "./globals.css";
 import { GlassSidebar } from "@/components/layout/glass-sidebar";
 import { FloatingPillNav } from "@/components/layout/floating-pill-nav";
+import { ToastProvider } from "@/components/ui/toast";
 
 const notoSansThai = Noto_Sans_Thai({
   subsets: ["thai", "latin"],
@@ -55,18 +56,20 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-dvh font-sans antialiased" suppressHydrationWarning>
-        <div className="flex min-h-dvh">
-          {/* Desktop/Tablet Glass Sidebar */}
-          <GlassSidebar />
+        <ToastProvider>
+          <div className="flex min-h-dvh">
+            {/* Desktop/Tablet Glass Sidebar */}
+            <GlassSidebar />
 
-          {/* Main Content */}
-          <main className="flex-1 min-w-0">
-            {children}
-          </main>
-        </div>
+            {/* Main Content */}
+            <main className="flex-1 min-w-0">
+              {children}
+            </main>
+          </div>
 
-        {/* Mobile Floating Pill Navigation */}
-        <FloatingPillNav />
+          {/* Mobile Floating Pill Navigation */}
+          <FloatingPillNav />
+        </ToastProvider>
       </body>
     </html>
   );
