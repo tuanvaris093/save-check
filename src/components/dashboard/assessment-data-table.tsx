@@ -91,6 +91,7 @@ export function AssessmentDataTable({
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedType, setSelectedType] = useState<string>("all");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [datePreset, setDatePreset] = useState<DatePreset>("all");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
@@ -123,6 +124,12 @@ export function AssessmentDataTable({
         page: currentPage,
         limit: pageSize,
         type: selectedType !== "all" ? selectedType : undefined,
+        category:
+          selectedType === "satisfaction"
+            ? undefined
+            : selectedCategory !== "all"
+            ? selectedCategory
+            : undefined,
         search: debouncedSearch.trim() || undefined,
         start_date: startDate || undefined,
         end_date: endDate || undefined,
@@ -140,7 +147,7 @@ export function AssessmentDataTable({
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, pageSize, selectedType, debouncedSearch, startDate, endDate, sortOrder]);
+  }, [currentPage, pageSize, selectedType, selectedCategory, debouncedSearch, startDate, endDate, sortOrder]);
 
   // Trigger query whenever any query parameter changes
   useEffect(() => {
@@ -177,6 +184,7 @@ export function AssessmentDataTable({
     setSearchTerm("");
     setDebouncedSearch("");
     setSelectedType("all");
+    setSelectedCategory("all");
     setStartDate("");
     setEndDate("");
     setDatePreset("all");
@@ -186,6 +194,7 @@ export function AssessmentDataTable({
   const isFilterActive =
     searchTerm.trim() !== "" ||
     selectedType !== "all" ||
+    selectedCategory !== "all" ||
     startDate !== "" ||
     endDate !== "" ||
     datePreset !== "all";
@@ -196,6 +205,12 @@ export function AssessmentDataTable({
     try {
       const res = await getExportData({
         type: selectedType !== "all" ? selectedType : undefined,
+        category:
+          selectedType === "satisfaction"
+            ? undefined
+            : selectedCategory !== "all"
+            ? selectedCategory
+            : undefined,
         search: debouncedSearch.trim() || undefined,
         start_date: startDate || undefined,
         end_date: endDate || undefined,
@@ -315,13 +330,18 @@ export function AssessmentDataTable({
             />
           </div>
 
-          {/* Type Dropdown & Sort Button */}
+          {/* Type Dropdown, Category Dropdown & Sort Button */}
           <div className="flex items-center gap-1.5 flex-wrap">
+            {/* Type Dropdown */}
             <div className="relative">
               <select
                 value={selectedType}
                 onChange={(e) => {
-                  setSelectedType(e.target.value);
+                  const newType = e.target.value;
+                  setSelectedType(newType);
+                  if (newType === "satisfaction") {
+                    setSelectedCategory("all");
+                  }
                   setCurrentPage(1);
                 }}
                 className="h-8.5 rounded-lg border border-gray-200 bg-white pl-2.5 pr-6 text-[12px] font-medium text-gray-700 focus:border-primary focus:outline-none transition-all cursor-pointer appearance-none shadow-2xs"
@@ -332,6 +352,46 @@ export function AssessmentDataTable({
                 <option value="satisfaction">ความพึงพอใจ</option>
               </select>
               <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-gray-400 pointer-events-none" />
+            </div>
+
+            {/* Category Dropdown */}
+            <div className="relative">
+              <select
+                value={selectedType === "satisfaction" ? "all" : selectedCategory}
+                disabled={selectedType === "satisfaction"}
+                onChange={(e) => {
+                  setSelectedCategory(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className={cn(
+                  "h-8.5 rounded-lg border pl-2.5 pr-6 text-[12px] font-medium transition-all appearance-none shadow-2xs",
+                  selectedType === "satisfaction"
+                    ? "border-gray-200 bg-gray-100/90 text-gray-400 cursor-not-allowed select-none"
+                    : "border-gray-200 bg-white text-gray-700 focus:border-primary focus:outline-none cursor-pointer"
+                )}
+                title={
+                  selectedType === "satisfaction"
+                    ? "ความพึงพอใจไม่มีหมวดหมู่ย่อย"
+                    : "เลือกหมวดหมู่ที่ต้องการกรอง"
+                }
+              >
+                {selectedType === "satisfaction" ? (
+                  <option value="all">ทั่วไป (ไม่มีหมวด)</option>
+                ) : (
+                  <>
+                    <option value="all">ทุกหมวดหมู่</option>
+                    <option value="light">แสงสว่าง</option>
+                    <option value="noise">เสียง</option>
+                    <option value="heat">ความร้อน</option>
+                  </>
+                )}
+              </select>
+              <ChevronDown
+                className={cn(
+                  "absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 pointer-events-none",
+                  selectedType === "satisfaction" ? "text-gray-300" : "text-gray-400"
+                )}
+              />
             </div>
 
             <button
@@ -438,6 +498,11 @@ export function AssessmentDataTable({
             {debouncedSearch && (
               <span className="text-gray-600 font-medium ml-1">
                 • คำค้น: &quot;{debouncedSearch}&quot;
+              </span>
+            )}
+            {selectedCategory !== "all" && selectedType !== "satisfaction" && (
+              <span className="text-primary font-medium ml-1">
+                • หมวดหมู่: {ASSESSMENT_CATEGORY_LABELS[selectedCategory as keyof typeof ASSESSMENT_CATEGORY_LABELS] || selectedCategory}
               </span>
             )}
           </div>
