@@ -43,7 +43,7 @@ export function PageHeader({
   return (
     <header
       className={cn(
-        "glass-surface sticky top-0 z-10 px-4 py-3 md:px-6 md:py-4",
+        "glass-surface sticky top-0 z-10 px-4 py-3 md:px-6 md:py-4 md:relative md:top-auto",
         className,
       )}
     >

@@ -29,10 +29,11 @@ export function GlassSidebar() {
   return (
     <>
       <aside
-        className="hidden md:flex md:flex-col md:shrink-0 print:hidden"
+        className="hidden md:flex md:flex-col md:shrink-0 md:sticky md:top-4 md:self-start z-30 print:hidden"
         style={{
           width: "260px",
-          minHeight: "calc(100vh - 32px)",
+          height: "calc(100dvh - 32px)",
+          maxHeight: "calc(100dvh - 32px)",
           margin: "16px",
           borderRadius: "32px",
           background:
@@ -68,7 +69,7 @@ export function GlassSidebar() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 pt-2">
+        <nav className="flex-1 px-4 pt-2 overflow-y-auto">
           <div className="flex flex-col gap-1">
             {SIDEBAR_ITEMS.map((item) => {
               const isActive =
