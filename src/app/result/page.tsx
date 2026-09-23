@@ -56,6 +56,7 @@ import {
   type HealthRiskQuestion,
 } from "@/lib/health-risk-data";
 import { calculateSatisfactionResult } from "@/lib/satisfaction-schema";
+import { SATISFACTION_QUESTIONS } from "@/lib/satisfaction-data";
 import { cn, formatFileSize } from "@/lib/utils";
 
 function ResultContent() {
@@ -774,7 +775,10 @@ function ResultContent() {
 
   // Satisfaction evaluation
   const satisfactionResult =
-    isSatisfaction && answers && answers.q1 !== undefined
+    isSatisfaction &&
+    answers &&
+    (answers.q1 !== undefined ||
+      Object.keys(answers).some((k) => k.startsWith("q")))
       ? calculateSatisfactionResult(answers)
       : null;
 
@@ -1768,6 +1772,122 @@ function ResultContent() {
                             ไม่ได้ตอบ
                           </span>
                         )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Satisfaction 16 Questions Responses Breakdown */}
+          {isSatisfaction && answers && (
+            <div className="glass-card animate-fade-in p-6 print:border-gray-300 print:bg-white print:shadow-none">
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <h3 className="text-card-title text-text-primary flex items-center gap-2 font-semibold">
+                    <FileText className="text-primary h-5 w-5" />
+                    รายละเอียดการตอบแบบประเมินความพึงพอใจ (16 ข้อ)
+                  </h3>
+                  <p className="text-caption text-text-secondary mt-0.5">
+                    ระดับความพึงพอใจในแต่ละหัวข้อที่ได้บันทึกไว้
+                  </p>
+                </div>
+                <span className="bg-primary-tint text-primary rounded-full px-2.5 py-1 text-[11px] font-semibold">
+                  16 ข้อประเมิน
+                </span>
+              </div>
+
+              <div className="flex flex-col gap-6">
+                {SATISFACTION_QUESTIONS.map((cat) => {
+                  const catAvg =
+                    cat.key === "accuracy"
+                      ? satisfactionResult?.accuracyAvg
+                      : cat.key === "design"
+                        ? satisfactionResult?.designAvg
+                        : cat.key === "usability"
+                          ? satisfactionResult?.usabilityAvg
+                          : satisfactionResult?.usefulnessAvg;
+
+                  return (
+                    <div key={cat.key} className="flex flex-col gap-3">
+                      <div className="border-border/70 flex items-center justify-between border-b pb-2">
+                        <h4 className="text-small text-text-primary font-semibold">
+                          {cat.label}
+                        </h4>
+                        {catAvg !== undefined && (
+                          <span className="text-caption text-primary font-semibold">
+                            คะแนนเฉลี่ย: {catAvg.toFixed(2)} / 5
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="divide-border/60 flex flex-col divide-y">
+                        {cat.questions.map((q) => {
+                          const val = answers[q.id];
+                          const numVal = Number(val);
+                          const isAnswered =
+                            val !== undefined &&
+                            val !== null &&
+                            val !== "" &&
+                            !isNaN(numVal) &&
+                            numVal > 0;
+                          const qNumber = q.id.replace("q", "");
+
+                          const ratingLabel =
+                            numVal === 5
+                              ? "พึงพอใจมากที่สุด (5 คะแนน)"
+                              : numVal === 4
+                                ? "พึงพอใจมาก (4 คะแนน)"
+                                : numVal === 3
+                                  ? "พึงพอใจปานกลาง (3 คะแนน)"
+                                  : numVal === 2
+                                    ? "พึงพอใจน้อย (2 คะแนน)"
+                                    : numVal === 1
+                                      ? "พึงพอใจน้อยที่สุด (1 คะแนน)"
+                                      : "-";
+
+                          return (
+                            <div
+                              key={q.id}
+                              className="flex flex-col justify-between gap-2 py-3 sm:flex-row sm:items-center print:break-inside-avoid"
+                            >
+                              <div className="flex max-w-xl items-start gap-2.5">
+                                <span className="bg-primary-tint text-primary mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold">
+                                  {qNumber}
+                                </span>
+                                <p className="text-small text-text-secondary leading-relaxed">
+                                  {q.text}
+                                </p>
+                              </div>
+                              <div className="shrink-0 pl-7 text-left sm:pl-0 sm:text-right">
+                                {isAnswered ? (
+                                  <span
+                                    className={cn(
+                                      "text-caption inline-flex items-center gap-1.5 rounded-full border px-3 py-1 font-semibold",
+                                      numVal === 5
+                                        ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                                        : numVal === 4
+                                          ? "border-teal-200 bg-teal-50 text-teal-700"
+                                          : numVal === 3
+                                            ? "border-amber-200 bg-amber-50 text-amber-700"
+                                            : numVal === 2
+                                              ? "border-orange-200 bg-orange-50 text-orange-700"
+                                              : "border-rose-200 bg-rose-50 text-rose-700",
+                                    )}
+                                  >
+                                    <Star className="h-3.5 w-3.5 fill-current" />
+                                    <span>{ratingLabel}</span>
+                                  </span>
+                                ) : (
+                                  <span className="text-caption text-text-tertiary">
+                                    ไม่ได้ตอบ
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   );
