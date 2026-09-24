@@ -75,6 +75,25 @@ const HEAT_QUESTION_COLUMNS = [
   "ข้อ 10 (วิงเวียน/มึนงง)",
 ];
 
+const SATISFACTION_QUESTION_COLUMNS = [
+  "ข้อ 1 (เนื้อหาถูกต้องครบถ้วน)",
+  "ข้อ 2 (แบบประเมินน่าเชื่อถือ)",
+  "ข้อ 3 (ภาษาชัดเจนเข้าใจง่าย)",
+  "ข้อ 4 (จัดลำดับเนื้อหาเป็นขั้นตอน)",
+  "ข้อ 5 (เมนูและปุ่มเป็นระเบียบ)",
+  "ข้อ 6 (ตัวอักษรและสีอ่านง่าย)",
+  "ข้อ 7 (แสดงผลตอบสนองรวดเร็ว)",
+  "ข้อ 8 (ออกแบบสวยงามทันสมัย)",
+  "ข้อ 9 (ขั้นตอนเข้าใจง่ายไม่ซับซ้อน)",
+  "ข้อ 10 (ประมวลผลข้อมูลรวดเร็ว)",
+  "ข้อ 11 (ใช้งานได้ดีทุกอุปกรณ์)",
+  "ข้อ 12 (ระบบเสถียรไม่มีข้อผิดพลาด)",
+  "ข้อ 13 (ประเมินสภาพแวดล้อมได้จริง)",
+  "ข้อ 14 (ประเมินความเสี่ยงสุขภาพได้จริง)",
+  "ข้อ 15 (ช่วยลดเวลาเพิ่มความสะดวก)",
+  "ข้อ 16 (ข้อมูลนำไปใช้ประโยชน์ได้จริง)",
+];
+
 function getOverallLevelLabel(level?: string | null, isHealthRisk = false): string {
   if (level === "pass") return isHealthRisk ? "ความเสี่ยงต่ำ (ผ่าน)" : "ผ่านเกณฑ์ (Pass)";
   if (level === "medium") return isHealthRisk ? "ความเสี่ยงปานกลาง" : "เสี่ยงปานกลาง (Medium)";
@@ -609,18 +628,76 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
       "ผู้ประเมิน",
       "แผนก",
       "คะแนนเฉลี่ยรวม (เต็ม 5)",
+      "ด้านเนื้อหา (เฉลี่ย)",
+      "ด้านการออกแบบ (เฉลี่ย)",
+      "ด้านการใช้งาน (เฉลี่ย)",
+      "ด้านประโยชน์ (เฉลี่ย)",
+      ...SATISFACTION_QUESTION_COLUMNS,
       "ข้อเสนอแนะเพิ่มเติม",
     ];
 
     const satRows = satSubmissions.map((sub, idx) => {
       const answers = satAnswersMap[sub.id] || [];
+      const ansMap = new Map<string, number>();
+
+      // 1. From sub.answers (e.g. offline cache or local state)
+      if (sub.answers && typeof sub.answers === "object") {
+        for (const [k, v] of Object.entries(sub.answers)) {
+          if (k.startsWith("q")) {
+            const num = Number(v);
+            if (!isNaN(num)) ansMap.set(k, num);
+          }
+        }
+      }
+
+      // 2. From satAnswersMap (from DB results)
+      for (const ans of answers) {
+        const key =
+          ans.question_id || (ans.question_no ? `q${ans.question_no}` : "");
+        const rating =
+          ans.rating !== undefined && ans.rating !== null
+            ? Number(ans.rating)
+            : ans.score !== undefined && ans.score !== null
+              ? Number(ans.score)
+              : undefined;
+        if (key && rating !== undefined && !isNaN(rating)) {
+          ansMap.set(key, rating);
+        }
+      }
+
       let suggestion = "-";
+      if (sub.answers && typeof sub.answers === "object" && sub.answers.suggestion) {
+        suggestion = sub.answers.suggestion;
+      }
       for (const ans of answers) {
         if (ans.suggestion) {
           suggestion = ans.suggestion;
           break;
         }
       }
+
+      // Calculate category averages
+      const calcAvg = (keys: string[]) => {
+        const valid = keys
+          .map((k) => ansMap.get(k))
+          .filter((v): v is number => v !== undefined && v !== null);
+        if (valid.length === 0) return "-";
+        const sum = valid.reduce((a, b) => a + b, 0);
+        return Number((sum / valid.length).toFixed(2));
+      };
+
+      const accuracyAvg = calcAvg(["q1", "q2", "q3", "q4"]);
+      const designAvg = calcAvg(["q5", "q6", "q7", "q8"]);
+      const usabilityAvg = calcAvg(["q9", "q10", "q11", "q12"]);
+      const usefulnessAvg = calcAvg(["q13", "q14", "q15", "q16"]);
+
+      // 16 question scores (1 to 16)
+      const questionScores = [
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+      ].map((qNum) => {
+        const sc = ansMap.get(`q${qNum}`);
+        return sc !== undefined && sc !== null ? sc : "-";
+      });
 
       return [
         idx + 1,
@@ -631,6 +708,11 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
         sub.overall_score !== null && sub.overall_score !== undefined
           ? Number(sub.overall_score).toFixed(2)
           : "-",
+        accuracyAvg,
+        designAvg,
+        usabilityAvg,
+        usefulnessAvg,
+        ...questionScores,
         suggestion,
       ];
     });
@@ -643,6 +725,11 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
       { wch: 22 },
       { wch: 20 },
       { wch: 24 },
+      { wch: 20 },
+      { wch: 22 },
+      { wch: 20 },
+      { wch: 20 },
+      ...SATISFACTION_QUESTION_COLUMNS.map(() => ({ wch: 26 })),
       { wch: 40 },
     ];
     XLSX.utils.book_append_sheet(wb, wsSat, "ความพึงพอใจ");
