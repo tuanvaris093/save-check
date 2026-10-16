@@ -84,7 +84,12 @@ export class AssessmentRepository {
     h: Header,
     id = h.latest_revision_id,
   ): Promise<EnvironmentRevisionV3> {
-    const r = await this.revisionRow(h, id);
+    return this.revisionFromRow(h, await this.revisionRow(h, id));
+  }
+  private async revisionFromRow(
+    h: Header,
+    r: RevisionRow,
+  ): Promise<EnvironmentRevisionV3> {
     if (r.schema_version !== 3)
       fail(
         409,
@@ -123,13 +128,20 @@ export class AssessmentRepository {
     };
   }
   async result(code: string, revisionId?: string, dataVersion?: number) {
-    const h = await this.header(code);
+    return this.resultFromHeader(
+      await this.header(code),
+      revisionId,
+      dataVersion,
+    );
+  }
+  // Reuse a header already read in this request; never cache across requests.
+  async resultFromHeader(h: Header, revisionId?: string, dataVersion?: number) {
     if (h.assessment_type === "environment" && dataVersion !== undefined)
       fail(400, "VERSION_NOT_APPLICABLE", "งานสภาพแวดล้อมใช้ revision");
     if (h.assessment_type === "environment" && h.latest_revision_id) {
       const row = await this.revisionRow(h, revisionId);
       if (row.schema_version === 3) {
-        const revision = await this.revision(h, row.id);
+        const revision = await this.revisionFromRow(h, row);
         const layout = revision.layout_file_id
           ? await this.sql(
               "SELECT id AS file_id,file_name,mime_type,byte_size,created_at FROM assessment_files WHERE id=?",

@@ -65,7 +65,15 @@ export class DashboardService {
           new Date(v).toISOString().slice(0, 10) !== v
         )
           fail(400, "FILTER_DATE", "วันที่ไม่ถูกต้อง");
-        where.push(`date(${dateColumn},'+7 hours')${op}date(?)`);
+        // Compare UTC instants against Bangkok day boundaries, allowing the
+        // creation-time expression index to serve a date range directly.
+        where.push(
+          dateColumn === "s.created_at"
+            ? key === "start_date"
+              ? "julianday(s.created_at)>=julianday(?,'-7 hours')"
+              : "julianday(s.created_at)<julianday(?,'+1 day','-7 hours')"
+            : `date(${dateColumn},'+7 hours')${op}date(?)`,
+        );
         args.push(v);
       }
     }
@@ -304,7 +312,7 @@ export class DashboardService {
             true,
           );
         for (const r of history.items)
-          appendRecord(await this.repo.result(code, String(r.id)));
+          appendRecord(await this.repo.resultFromHeader(h, String(r.id)));
         revisionPages.push({
           submission_code: code,
           total: history.total,

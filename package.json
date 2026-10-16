@@ -48,7 +48,8 @@
     "test:p9:browser": "node scripts/test-p9-browser.mjs",
     "test:layout-image": "node scripts/test-layout-image.mjs",
     "test:current-ui": "node scripts/test-current-ui.mjs",
-    "test:ui-restore": "node scripts/test-ui-restore.mjs"
+    "test:ui-restore": "node scripts/test-ui-restore.mjs",
+    "test:dashboard-reads": "node scripts/test-dashboard-reads.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",

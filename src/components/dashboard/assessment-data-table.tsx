@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -91,27 +91,64 @@ export function AssessmentDataTable({
     () => ({ ...filters, search: debouncedSearch || undefined }),
     [filters, debouncedSearch],
   );
+  // Only reuse the in-flight/current summary during this mounted view. A
+  // filter change, explicit refresh or remount reads fresh data from the API.
+  const summaryRequest = useRef<{
+    key: string;
+    expiresAt: number;
+    promise: ReturnType<typeof getDashboardSummary>;
+  } | null>(null);
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setError("");
-    setSummary(null);
     if (
       filters.start_date &&
       filters.end_date &&
       filters.start_date > filters.end_date
     ) {
       setError("วันที่เริ่มต้องไม่หลังวันสิ้นสุด");
+      setSummary(null);
+      summaryRequest.current = null;
       setItems([]);
       setTotal(0);
       setLoading(false);
       return;
     }
+    const summaryParams = { ...params };
+    delete summaryParams.sort_order;
+    const summaryKey = JSON.stringify([summaryParams, refresh]);
+    if (
+      summaryRequest.current?.key !== summaryKey ||
+      summaryRequest.current.expiresAt <= Date.now()
+    ) {
+      setSummary(null);
+      summaryRequest.current = {
+        key: summaryKey,
+        expiresAt: Date.now() + 30_000,
+        promise: getDashboardSummary(summaryParams),
+      };
+    }
     Promise.all([
       getDashboardSubmissions({ ...params, page, limit }),
-      getDashboardSummary(params),
-    ]).then(([rows, totals]) => {
+      summaryRequest.current.promise,
+    ]).then(async ([rows, totals]) => {
       if (cancelled) return;
+      // A concurrent save may change the count during the short reuse window.
+      // Do not display a cached total that disagrees with the fresh list.
+      if (
+        rows.success &&
+        totals.success &&
+        rows.data.total !== totals.data.total_submissions
+      ) {
+        summaryRequest.current = {
+          key: summaryKey,
+          expiresAt: Date.now() + 30_000,
+          promise: getDashboardSummary(summaryParams),
+        };
+        totals = await summaryRequest.current.promise;
+        if (cancelled) return;
+      }
       if (!rows.success || !totals.success) {
         setError(
           !rows.success

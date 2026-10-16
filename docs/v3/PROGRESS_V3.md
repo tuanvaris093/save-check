@@ -6,6 +6,10 @@
 
 ## สถานะปัจจุบัน
 
+- 16 ตุลาคม: ตามคำยืนยันผู้ใช้ migrate `0009` และ deploy เฉพาะ API production version `3c4b1872-95e4-4836-b07c-3247188af5ed` แล้ว สำรอง D1 ล่าสุดก่อน/หลังใน `.wrangler/dashboard-opt-20261016/`; frontend optimization ผู้ใช้จะ deploy เอง รายละเอียด [รายงาน optimization](./DASHBOARD_READ_OPTIMIZATION_2026-10-16.md)
+
+- 16 ตุลาคม: ลด read Dashboard/Export หลัง P9: ดัชนีแบบเพิ่มอย่างเดียว, ใช้ยอดสรุปซ้ำเฉพาะหน้าอายุไม่เกิน 30 วินาที และลดการอ่าน header/revision ซ้ำ ผล fixture ลดหน้า Dashboard 28% / Export latest 53% / history 30%; API 26, Export unit 11 และ browser 21 กรณีผ่าน สำเนา backup จริงทั้ง 27 ตารางและไฟล์แนบเดิมไม่เปลี่ยน **ยังไม่ migrate/deploy ชุดนี้** ดู [รายละเอียด](./DASHBOARD_READ_OPTIMIZATION_2026-10-16.md)
+
 - 16 ตุลาคม: cleanup ตามคำขอ ลบ build ทดสอบ 11 โฟลเดอร์/ภาพและไฟล์ผลทดสอบ 85 ไฟล์, `.next`/`out`/cache ที่สร้างใหม่ได้ เก็บโค้ด เอกสารต้นฉบับ ผลตรวจ JSON/logs และ backup D1/source archive ครบ เพิ่ม ignore ให้ generated artifacts; เปิด dev server พอร์ต 3000 กลับ ไม่เปลี่ยน production
 
 - 16 ตุลาคม: **P9 done / production deployed** ใช้ D1 อย่างเดียว ไม่เปิด R2/การเรียกเก็บเงิน; migration 0001–0008 ครบ ข้อมูลเดิม 1,159 รายการและทุก field ทั้ง 8 ตารางเทียบก่อน/หลังตรงกัน เปิดไฟล์เดิม 80 ไฟล์ผ่าน production API ได้ bytes ตรงต้นฉบับทั้งหมด; API 26, staging API 12, preview browser 6, production browser 3 และ regression ตาม [รายงาน release](./P9_RELEASE_2026-10-16.md) ผ่าน ไม่สร้างข้อมูลทดสอบปน production; เพิ่ม Excel filename hyperlinks และบีบรูปตาม D61 (≤5,000,000 bytes/คงต้นฉบับที่เล็กกว่า) Worker `5aa6b312-0f26-4576-9b8a-f6acfb8bf465`, Pages `8d22ab9c`; legacy ยังแยกจาก Dashboard ตามคำยืนยันล่าสุด

@@ -1,0 +1,11 @@
+{
+  "source": "private post-migration production backup, restored in memory only",
+  "all_tables_and_fields_identical": true,
+  "tables_checked": 27,
+  "original_submissions": 1159,
+  "original_health_answers": 10100,
+  "legacy_attachments": 80,
+  "foreign_key_errors": 0,
+  "integrity": "ok",
+  "added_index_bytes_on_backup": 8192
+}

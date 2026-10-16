@@ -1,0 +1,10 @@
+{
+  "stage": "after",
+  "checked": 80,
+  "all_downloads_200": true,
+  "all_bytes_and_sha256_match_backup": true,
+  "legacy": 80,
+  "D1": 0,
+  "before_verified": true,
+  "api_version": "3c4b1872-95e4-4836-b07c-3247188af5ed"
+}

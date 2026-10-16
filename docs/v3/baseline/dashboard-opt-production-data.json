@@ -1,0 +1,42 @@
+{
+  "all_fields_and_rows_unchanged": true,
+  "tables": {
+    "assessment_audit_events": 0,
+    "assessment_file_chunks": 0,
+    "assessment_files": 0,
+    "assessment_results": 0,
+    "environment_inspections": 96,
+    "environment_measurement_points": 962,
+    "environment_metadata_supplements": 0,
+    "environment_revision_points": 962,
+    "environment_revision_samples": 0,
+    "environment_revisions": 96,
+    "health_contexts": 0,
+    "health_light_draft_completions": 0,
+    "health_light_drafts": 0,
+    "health_noise_sources": 0,
+    "health_risk_answers": 10100,
+    "legacy_file_mappings": 0,
+    "legacy_layout_snapshots": 80,
+    "mutation_preconditions": 0,
+    "mutation_requests": 0,
+    "program_catalog": 7,
+    "respondent_profiles": 1010,
+    "respondent_work_infos": 1010,
+    "satisfaction_answers": 848,
+    "satisfaction_metadata": 0,
+    "submission_payload_versions": 0,
+    "submissions": 1159
+  },
+  "legacy_attachments": 80,
+  "committed_D1_attachments": 0,
+  "foreign_key_errors": 0,
+  "integrity": "ok",
+  "migration": "0009_dashboard_read_indexes.sql",
+  "indexes": [
+    "idx_submissions_current_created",
+    "idx_submissions_current_group_created"
+  ],
+  "before_sql_sha256": "f9238e3d97057effe8dc8637cb94a448d1a600a17f86d9d2eb90a98afa76ea00",
+  "after_sql_sha256": "a2096c5fe4ae47f31f372cd3b673fcb6406b74ef91adcba955fcbb1e02964b96"
+}

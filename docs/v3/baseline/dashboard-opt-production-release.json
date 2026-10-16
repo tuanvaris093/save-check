@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-16",
+  "api_version": "3c4b1872-95e4-4836-b07c-3247188af5ed",
+  "previous_api_version": "5aa6b312-0f26-4576-9b8a-f6acfb8bf465",
+  "migration": "0009_dashboard_read_indexes.sql",
+  "api_url": "https://save-check-api.ameenahroya.workers.dev/api",
+  "frontend_deployed_by_agent": false,
+  "production_business_payloads_identical": true,
+  "all_tables_verified": true,
+  "all_80_attachments_verified_before_and_after": true,
+  "source_archive_sha256": "6c857be5c17bc5232448e19b4ea23fa18674702fa5b60be0bc0d4cf8719ffc06",
+  "transient_error_during_database_export": "Initial concurrent API/file probes returned 500 during export creation; subsequent full API and 80-file checks passed with 200 and identical payloads/bytes."
+}

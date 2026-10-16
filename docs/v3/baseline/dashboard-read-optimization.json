@@ -1,0 +1,67 @@
+{
+  "synthetic": true,
+  "comparison": "pre-optimization code before indexes vs optimized code with indexes",
+  "legacy_jobs": 10000,
+  "current_jobs": 120,
+  "current_revisions": 120,
+  "all_responses_identical": true,
+  "all_rows_preserved": true,
+  "metrics": {
+    "dashboard": {
+      "before_reads": 1106,
+      "after_reads": 792,
+      "before_queries": 4,
+      "after_queries": 4,
+      "reduction_percent": 28.39
+    },
+    "search": {
+      "before_reads": 931,
+      "after_reads": 806,
+      "before_queries": 4,
+      "after_queries": 4,
+      "reduction_percent": 13.43
+    },
+    "filtered-date-ascending": {
+      "before_reads": 522,
+      "after_reads": 428,
+      "before_queries": 4,
+      "after_queries": 4,
+      "reduction_percent": 18.01
+    },
+    "Bangkok-day-boundaries": {
+      "before_reads": 1737,
+      "after_reads": 1352,
+      "before_queries": 6,
+      "after_queries": 6,
+      "reduction_percent": 22.16
+    },
+    "latest-measurement-date": {
+      "before_reads": 1118,
+      "after_reads": 822,
+      "before_queries": 4,
+      "after_queries": 4,
+      "reduction_percent": 26.48
+    },
+    "latest-export-all": {
+      "before_reads": 7455,
+      "after_reads": 3474,
+      "before_queries": 344,
+      "after_queries": 304,
+      "reduction_percent": 53.4
+    },
+    "history-export": {
+      "before_reads": 529,
+      "after_reads": 369,
+      "before_queries": 112,
+      "after_queries": 72,
+      "reduction_percent": 30.25
+    },
+    "history-next-round-page": {
+      "before_reads": 22,
+      "after_reads": 20,
+      "before_queries": 9,
+      "after_queries": 7,
+      "reduction_percent": 9.09
+    }
+  }
+}

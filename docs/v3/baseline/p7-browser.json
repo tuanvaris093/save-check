@@ -1,10 +1,11 @@
 {
   "phase": "P7",
-  "passed": 20,
+  "passed": 21,
   "checks": [
     "actual local fixtures cover Spot/Area/noise/WBGT, all health and both satisfaction groups",
     "one global spinner stays centered until parallel dashboard loads both finish",
     "dashboard shows created_at and sorts by actual creation time in both directions, including timezone offsets",
+    "Dashboard reuses summary for pagination/size/order, but refresh and filters read fresh data",
     "health paired result and selected Excel totals/wording/metadata exactly match stored API",
     "environment selected history retains old failure, date/thresholds; only current failed jobs expose retest",
     "Area samples, noise duration thresholds and WBGT intervals are exported from snapshots",

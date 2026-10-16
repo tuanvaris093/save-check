@@ -518,6 +518,76 @@ try {
     },
   );
   await check(
+    "Dashboard reuses summary for pagination/size/order, but refresh and filters read fresh data",
+    async () => {
+      let summaries = 0;
+      const count = (request) => {
+        if (request.url().includes("/api/dashboard/summary")) summaries++;
+      };
+      page.on("request", count);
+      try {
+        await page.goto(front + "/dashboard");
+        await page.locator("[data-dashboard-list]").waitFor();
+        await page
+          .locator("[data-global-loading]")
+          .waitFor({ state: "hidden" });
+        const initial = summaries;
+        assert(initial >= 1);
+        const reload = page.waitForResponse((r) =>
+          r.url().includes("/dashboard/submissions?"),
+        );
+        await page
+          .getByLabel("เรียงวันที่", { exact: true })
+          .selectOption("asc");
+        await reload;
+        await page
+          .locator("[data-global-loading]")
+          .waitFor({ state: "hidden" });
+        assert.equal(summaries, initial, "sorting must not re-read summary");
+        // Page size changes use the same path as moving between list pages.
+        const sizeResponse = page.waitForResponse(
+          (r) =>
+            r.url().includes("/dashboard/submissions?") &&
+            r.url().includes("limit=20"),
+        );
+        await page.locator(".dashboard-pagination select").selectOption("20");
+        await sizeResponse;
+        await page
+          .locator("[data-global-loading]")
+          .waitFor({ state: "hidden" });
+        assert.equal(summaries, initial, "page size must not re-read summary");
+        const refreshResponse = page.waitForResponse((r) =>
+          r.url().includes("/dashboard/summary?"),
+        );
+        await page.reload();
+        await refreshResponse;
+        await page
+          .locator("[data-global-loading]")
+          .waitFor({ state: "hidden" });
+        assert.equal(
+          summaries,
+          initial + 1,
+          "explicit refresh must invalidate reuse",
+        );
+        const filteredResponse = page.waitForResponse(
+          (r) =>
+            r.url().includes("/dashboard/summary?") &&
+            r.url().includes("group=environment"),
+        );
+        await page
+          .getByLabel("ประเภท", { exact: true })
+          .selectOption("environment");
+        await filteredResponse;
+        await page
+          .locator("[data-global-loading]")
+          .waitFor({ state: "hidden" });
+        assert.equal(summaries, initial + 2, "filters must read fresh summary");
+      } finally {
+        page.off("request", count);
+      }
+    },
+  );
+  await check(
     "health paired result and selected Excel totals/wording/metadata exactly match stored API",
     async () => {
       await openResult(health);
