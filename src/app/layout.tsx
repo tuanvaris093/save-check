@@ -1,9 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_Thai, Inter } from "next/font/google";
 import "./globals.css";
+import "./compact-controls.css";
+import "./responsive-shell.css";
+import "./content-cards.css";
+import "./legacy-report-ui.css";
+import "./classic-detail.css";
+import "./summary-details.css";
 import { GlassSidebar } from "@/components/layout/glass-sidebar";
 import { FloatingPillNav } from "@/components/layout/floating-pill-nav";
 import { ToastProvider } from "@/components/ui/toast";
+import { GlobalLoadingHost } from "@/components/ui/loading-state";
 
 const notoSansThai = Noto_Sans_Thai({
   subsets: ["thai", "latin"],
@@ -20,9 +27,9 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   applicationName: "SafeCheck",
-  title: "SafeCheck - ระบบประเมินสภาพแวดล้อมและสุขภาพ",
+  title: "SafeCheck ระบบประเมินสภาพแวดล้อมและสุขภาพ",
   description:
-    "ระบบแบบประเมินออนไลน์สำหรับประเมินสภาพแวดล้อมในการทำงาน ความเสี่ยงต่อสุขภาพ และความพึงพอใจในการใช้แอป",
+    "ระบบแบบประเมินออนไลน์สำหรับประเมินสภาพแวดล้อมในการทำงาน อาการทางสุขภาพ และความพึงพอใจในการใช้แอป",
   keywords: [
     "แบบประเมิน",
     "สภาพแวดล้อม",
@@ -55,19 +62,21 @@ export default function RootLayout({
       className={`${notoSansThai.variable} ${inter.variable}`}
       suppressHydrationWarning
     >
-      <body className="min-h-dvh font-sans antialiased" suppressHydrationWarning>
+      <body
+        className="min-h-dvh font-sans antialiased"
+        suppressHydrationWarning
+      >
         <ToastProvider>
+          <GlobalLoadingHost />
           <div className="flex min-h-dvh">
-            {/* Desktop/Tablet Glass Sidebar */}
+            {/* Large-screen Glass Sidebar */}
             <GlassSidebar />
 
             {/* Main Content */}
-            <main className="flex-1 min-w-0">
-              {children}
-            </main>
+            <main className="min-w-0 flex-1">{children}</main>
           </div>
 
-          {/* Mobile Floating Pill Navigation */}
+          {/* Mobile/Tablet Floating Pill Navigation */}
           <FloatingPillNav />
         </ToastProvider>
       </body>

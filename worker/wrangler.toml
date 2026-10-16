@@ -11,4 +11,34 @@ FRONTEND_URL = "http://localhost:3000,http://localhost:3001"
 binding = "DB"
 database_name = "save-check-db"
 database_id = "ba75b7dc-092d-4b52-bcf6-3d2a02a1a4d7"
-migrations_dir = "src/db"
+migrations_dir = "src/db/migrations"
+
+[env.p9]
+name = "save-check-api-p9"
+
+[env.p9.vars]
+ENVIRONMENT = "staging"
+FRONTEND_URL = "https://p9.save-check.pages.dev"
+RELEASE_MAINTENANCE = "0"
+
+[[env.p9.d1_databases]]
+binding = "DB"
+database_name = "save-check-p9"
+database_id = "7c20b9b6-03c4-4b36-a3ca-ab696ef23888"
+migrations_dir = "src/db/migrations"
+
+# Uploaded files are stored as bounded BLOB chunks in D1 (migration 0008).
+
+[env.production]
+name = "save-check-api"
+
+[env.production.vars]
+ENVIRONMENT = "production"
+FRONTEND_URL = "https://save-check.pages.dev,https://p9.save-check.pages.dev"
+RELEASE_MAINTENANCE = "0"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "save-check-db"
+database_id = "ba75b7dc-092d-4b52-bcf6-3d2a02a1a4d7"
+migrations_dir = "src/db/migrations"

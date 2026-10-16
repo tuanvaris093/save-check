@@ -1,0 +1,21 @@
+
+> save-check@0.1.1 test:p5:browser
+> node scripts/test-p5-browser.mjs
+
+PASS 1: required metadata errors focus first field; light technique before standards; optional local layout with upload after review
+PASS 2: Spot first inspection writes metadata/IDs/standards and server failure result
+PASS 3: failed → failed → pass three real revisions; only failed units submitted; carried source and timestamp retained
+PASS 4: Spot surrounding controls, zero measurement, draft refresh and stable IDs work at threshold boundary
+PASS 5: Area average passes but minimum fails; samples persist; mobile PDFs match source with viewer/download fallback
+PASS 6: Area retest locks standard/sample topology and requires every sample
+PASS 7: noise exposure minutes selects true threshold, observed bounds and authoritative result
+PASS 8: TWA8 remains 85 dBA; failed network retains draft and same key, then real retry succeeds
+PASS 9: meter WBGT avoids duplicate raw inputs; heat retest carries old interval while validating new interval
+PASS 10: metadata-only heat correction keeps carried intervals and rejects changed measurements outside the new window
+PASS 11: calculated WBGT with sunlight and 120 minute weighted intervals matches API
+PASS 12: real concurrent retest rejects stale base; draft survives and reload opens new base
+PASS 13: correction has required reason, preserves old snapshot and cannot change standards
+PASS 14: legacy record is excluded from current UI while original source remains unchanged
+PASS 15: forged retest metadata, topology and standards rejected; no extra revision
+PASS 16: corrupt local environment draft recovers to safe blank form without page crash
+P5 browser integration PASS 16

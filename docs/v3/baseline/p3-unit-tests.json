@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-12",
+  "passed": 11,
+  "checks": [
+    "draft identity separates all eight entries and correction/retest bases",
+    "draft incomplete fields, zeros, before/after and step/tab survive roundtrip",
+    "bad JSON, v1 envelope, mismatched context, impossible UI and invalid field shapes rejected",
+    "patch preserves separate periods and persistent retry key",
+    "invalid payload has field paths and never calls transport",
+    "400/409/network/timeout stay failures rather than local success",
+    "server receipt must contain actual ID/code/version",
+    "nested form error maps to the actual field name for focus",
+    "field validation messages use Thai labels without internal property names",
+    "explicit none excludes other choices while N/A remains a real select value",
+    "all form submits use central service and never fabricate local saved records"
+  ],
+  "remote": false
+}

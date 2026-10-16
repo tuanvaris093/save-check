@@ -1,0 +1,28 @@
+{
+  "scope": "Post-UAT UI/layout corrections D17/D18",
+  "date": "2026-10-14T06:32:46.661Z",
+  "mode": "browser",
+  "runs": [
+    {
+      "command": "npm run test:satisfaction:browser",
+      "exit_code": 0,
+      "elapsed_seconds": 46.749,
+      "log": "docs/v3/baseline/current-ui-logs/test-satisfaction-browser.log"
+    },
+    {
+      "command": "npm run test:p5:browser",
+      "exit_code": 0,
+      "elapsed_seconds": 51.701,
+      "log": "docs/v3/baseline/current-ui-logs/test-p5-browser.log"
+    },
+    {
+      "command": "npm run test:p6:browser",
+      "exit_code": 1,
+      "elapsed_seconds": 70.686,
+      "log": "docs/v3/baseline/current-ui-logs/test-p6-browser.log"
+    }
+  ],
+  "passed": false,
+  "previous_p8_uat": "approved before these corrections",
+  "deployed": false
+}

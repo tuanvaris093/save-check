@@ -1,0 +1,16 @@
+
+> save-check@0.1.1 test:p6:browser
+> node scripts/test-p6-browser.mjs
+
+PASS 1: independent health entry requires name/type/program/year; real 7 programs and separate years 1–6
+PASS 2: 16 ratings required; optional notes, back/refresh preserve profile and answers; real health create/read
+PASS 3: environment name is required, drafts/groups do not share ratings, durations follow ratings
+PASS 4: all 8 manual units required; positive total/int/ranges validated; 93784 seconds and negative difference persist
+PASS 5: downloaded real Excel matches API group, name, seconds, mean and all stored question text
+PASS 6: staff explicit N/A has no student field; other respondents require study/work context
+PASS 7: network failure keeps typed draft/key; retry creates once, clears only its group and uses server result
+PASS 8: correction includes reason and group/time/profile; old version result is immutable
+PASS 9: Worker rejects missing group/duration/name/student year and invalid rating without writes; no 46/309 quota
+PASS 10: legacy satisfaction is readable as unknown without new profile/time guesses; invalid groups choose explicitly
+PASS 11: same-questionnaire old drafts keep ratings but require respondent data; corrupt typed drafts recover safely
+P6 browser integration PASS 11

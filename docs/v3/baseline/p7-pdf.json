@@ -1,0 +1,40 @@
+{
+  "reports": [
+    {
+      "module": "health",
+      "pages": 2,
+      "text_characters": 2526,
+      "a4_points": [
+        0.0,
+        0.0,
+        595.91998,
+        842.88
+      ]
+    },
+    {
+      "module": "environment",
+      "pages": 2,
+      "text_characters": 1337,
+      "a4_points": [
+        0.0,
+        0.0,
+        595.91998,
+        842.88
+      ]
+    },
+    {
+      "module": "satisfaction",
+      "pages": 1,
+      "text_characters": 2368,
+      "a4_points": [
+        0.0,
+        0.0,
+        595.91998,
+        842.88
+      ]
+    }
+  ],
+  "controls_hidden": true,
+  "rendered_for_visual_review": true,
+  "visual_review": "all 5 rendered A4 pages inspected: Thai text, repeated health table header, complete borders, complete standards block, no control/iframe printed"
+}

@@ -1,0 +1,83 @@
+{
+  "phase": "P8",
+  "date": "2026-10-16T09:42:22.498Z",
+  "fixture_only": true,
+  "remote": false,
+  "passed": 7,
+  "checks": [
+    "local recovery SQL exports and restores all original columns/rows before migration",
+    "real local D1 upgrade preserves every original field across all eight tables",
+    "latest pointers, ownership, revision/point identity, finalized status and all migration ledger entries are consistent",
+    "zero/null/old weekly-day units/legacy score/unknown group/layout bytes remain original",
+    "resume is idempotent and cannot rewrite finalized snapshots",
+    "restored legacy recovery copy independently migrates to identical revisions and pointers",
+    "partial legacy schema and changed original columns fail preflight before migration writes"
+  ],
+  "counts": [
+    {
+      "table": "submissions",
+      "before": 28,
+      "after": 28,
+      "all_original_fields_preserved": true
+    },
+    {
+      "table": "respondent_profiles",
+      "before": 1,
+      "after": 1,
+      "all_original_fields_preserved": true
+    },
+    {
+      "table": "respondent_work_infos",
+      "before": 2,
+      "after": 2,
+      "all_original_fields_preserved": true
+    },
+    {
+      "table": "environment_inspections",
+      "before": 3,
+      "after": 3,
+      "all_original_fields_preserved": true
+    },
+    {
+      "table": "environment_measurement_points",
+      "before": 6,
+      "after": 6,
+      "all_original_fields_preserved": true
+    },
+    {
+      "table": "health_risk_answers",
+      "before": 11,
+      "after": 11,
+      "all_original_fields_preserved": true
+    },
+    {
+      "table": "satisfaction_answers",
+      "before": 8,
+      "after": 8,
+      "all_original_fields_preserved": true
+    },
+    {
+      "table": "assessment_results",
+      "before": 2,
+      "after": 2,
+      "all_original_fields_preserved": true
+    }
+  ],
+  "revisions": 4,
+  "points": 6,
+  "ledger": [
+    "0001_legacy_baseline.sql",
+    "0002_v3_domain.sql",
+    "0003_legacy_revision_snapshots.sql",
+    "0004_worker_v3_services.sql",
+    "0005_optional_layout.sql",
+    "0006_health_pending.sql",
+    "0007_retire_archive.sql",
+    "0008_d1_file_chunks.sql"
+  ],
+  "foreign_key_violations": 0,
+  "duplicate_revision_mapping": 0,
+  "duplicate_point_mapping": 0,
+  "local_recovery_roundtrip": true,
+  "fixture_sha256": "138219d983e23b1718b2d781ae5282a197a4eaf78e15d2b1d38350ec0644d8d3"
+}

@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-15T02:42:48.884359+00:00",
+  "passed": true,
+  "browser_scenarios": 37,
+  "question_card_geometry_checks": 60,
+  "added_navigation_positions": 12,
+  "viewport_widths": [
+    320,
+    390,
+    1440
+  ],
+  "runtime": "Chromium with isolated Worker/D1/R2",
+  "page_errors": [],
+  "foreign_key_violations": 0,
+  "eslint": "passed",
+  "frontend_typecheck": "passed",
+  "deployed": false,
+  "source_sha256": {
+    "src/components/health/health-steps.tsx": "330af75fe8ef9d87a84850f2b316932ebf5220f30584300e010da7ac41392e0f",
+    "src/components/layout/floating-pill-nav.tsx": "21ff99cf39c2b89c924528d0d946d4a9b7baea920b9595b7137a5680efb974af",
+    "src/components/layout/credits-modal.tsx": "1a0ac1378a1149e8f37eea98cb6ceb3116002c64eb4d07e873393e8356919cea",
+    "scripts/test-p4-browser.mjs": "fc537d4da3a49166429503293c7905979565c6269af74193f4606d5cbf4cef97",
+    "scripts/test-ui-restore.mjs": "3b0b2fc0fc7b840720835b0f2b723a274f21195ba738ca7f5389c405dd90914e"
+  }
+}

@@ -1,0 +1,18 @@
+/* Menu cards grow with their content rather than a fixed minimum height. */
+a.category-card,
+a.assessment-menu-card {
+  min-height: 0;
+  height: auto;
+  padding: 16px;
+}
+.assessment-topic-grid {
+  align-items: start;
+}
+.home-assessment-grid {
+  align-items: stretch;
+}
+@media (min-width: 1440px) {
+  .home-assessment-grid {
+    align-items: start;
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-16T10:37:15.334Z",
+  "mode": "staging",
+  "front": "https://p9.save-check.pages.dev",
+  "passed": true,
+  "checks": [
+    "Built static pages load all eight form entry routes and both groups",
+    "Dashboard loads with the production API URL",
+    "All nine saved form variants render from real Cloudflare D1",
+    "Image selected in real UI compresses to JPG, saves to D1, previews, and opens through downloaded Excel hyperlink",
+    "PDF bytes remain original; replace/remove keep historical image and PDF files usable",
+    "Mobile layout and no browser runtime errors"
+  ],
+  "page_errors": []
+}

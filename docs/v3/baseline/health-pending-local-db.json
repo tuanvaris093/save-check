@@ -1,0 +1,20 @@
+{
+  "backup": "/private/tmp/save-check-health-pending-backup-z5ae4hf8/local.sqlite",
+  "original_tables": 23,
+  "changed_original_tables": [],
+  "foreign_key_violations": 0,
+  "ledger": [
+    "0001_legacy_baseline.sql",
+    "0002_v3_domain.sql",
+    "0003_legacy_revision_snapshots.sql",
+    "0004_worker_v3_services.sql",
+    "0005_optional_layout.sql",
+    "0006_health_pending.sql"
+  ],
+  "new_tables_rows": {
+    "health_light_drafts": 0,
+    "health_light_draft_completions": 0
+  },
+  "remote": false,
+  "deployed": false
+}

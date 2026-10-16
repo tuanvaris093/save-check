@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import {
   Users,
@@ -42,10 +43,10 @@ export function CreditsModal({ isOpen, onClose }: CreditsModalProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === "undefined") return null;
 
-  return (
-    <div className="animate-fade-in fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-x-hidden overflow-y-auto">
+  return createPortal(
+    <div className="animate-fade-in fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-x-hidden overflow-y-auto">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity"
@@ -171,7 +172,7 @@ export function CreditsModal({ isOpen, onClose }: CreditsModalProps) {
                 สงวนลิขสิทธิ์ พ.ศ. 2569 SafeCheck System
               </p>
               <p className="text-[11px] break-words">
-                พัฒนาเพื่อใช้เป็นเครื่องมือประเมินสภาพแวดล้อมในการทำงาน ด้านแสง เสียง ความร้อน และความเสี่ยงต่อสุขภาพ
+                พัฒนาเพื่อใช้เป็นเครื่องมือประเมินสภาพแวดล้อมในการทำงาน ด้านแสง เสียง ความร้อน และอาการทางสุขภาพ
               </p>
             </div>
           </div>
@@ -189,6 +190,7 @@ export function CreditsModal({ isOpen, onClose }: CreditsModalProps) {
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

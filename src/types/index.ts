@@ -132,7 +132,7 @@ export interface AssessmentResult {
 
 export type ApiResponse<T> =
   | { success: true; data: T }
-  | { success: false; error: { code: string; message: string } };
+  | { success: false; error: { code: string; message: string; issues?: { path: (string | number)[]; code: string; message: string }[] } };
 
 // --- Form Input Types ---
 
@@ -177,3 +177,6 @@ export interface SubmissionListItem {
   has_layout?: boolean;
   completed_at: string;
 }
+
+// Opt-in v3 contracts; legacy screens keep their existing DTOs until P3–P7.
+export type { CreateSubmissionV3, EnvironmentRevisionV3, DomainResponse } from "../../shared/v3";

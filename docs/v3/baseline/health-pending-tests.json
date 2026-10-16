@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-15T05:13:30.749Z",
+  "passed": 11,
+  "checks": [
+    "pending contract requires completed before/profile/context; partial after stays absent, closed scores and current wording only",
+    "before-only save/retry creates one server draft with no after values, score, final submission or export row",
+    "concurrent creates/updates converge or conflict without duplicates or lost winning data",
+    "incomplete/stale/wrong-source finalization rolls back every scored table; correct completion replays once",
+    "save racing completion permits exactly one mutation against a base; failed batch can be retried atomically",
+    "GUI validates before; skip saves partial after on server; lost save response preserves answers and retry is idempotent",
+    "fresh browser context resumes server data/after tab, retains zero and partial local edits through refresh and back",
+    "stale open tab cannot overwrite remote edits and keeps its unsaved answer",
+    "finish from resumed draft computes true scores once; lost completion receipt retries same result and removes pending row",
+    "normal completed receipt cannot become pending; normal submit racing first save permits one path",
+    "pending table paginates beyond ten, uses responsive rows and never inflates final totals"
+  ],
+  "page_errors": [],
+  "foreign_key_violations": 0,
+  "runtime": "Chromium + isolated Worker/D1/R2; separate browser contexts have no shared storage",
+  "deployed": false
+}

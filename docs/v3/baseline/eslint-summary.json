@@ -1,0 +1,118 @@
+{
+  "scope": "src and worker/src",
+  "files": 71,
+  "errors": 0,
+  "warnings": 172,
+  "rules": {
+    "@typescript-eslint/no-explicit-any": 156,
+    "@typescript-eslint/no-unused-vars": 15,
+    "react-hooks/exhaustive-deps": 1
+  },
+  "filesWithMessages": [
+    {
+      "file": "src/app/assessment/environment-form/page.tsx",
+      "errors": 0,
+      "warnings": 6
+    },
+    {
+      "file": "src/app/assessment/health-risk-form/page.tsx",
+      "errors": 0,
+      "warnings": 8
+    },
+    {
+      "file": "src/app/assessment/satisfaction/page.tsx",
+      "errors": 0,
+      "warnings": 5
+    },
+    {
+      "file": "src/app/dashboard/page.tsx",
+      "errors": 0,
+      "warnings": 4
+    },
+    {
+      "file": "src/app/result/page.tsx",
+      "errors": 0,
+      "warnings": 17
+    },
+    {
+      "file": "src/components/assessment/environment-step.tsx",
+      "errors": 0,
+      "warnings": 37
+    },
+    {
+      "file": "src/components/assessment/health-risk-step.tsx",
+      "errors": 0,
+      "warnings": 2
+    },
+    {
+      "file": "src/components/assessment/profile-step.tsx",
+      "errors": 0,
+      "warnings": 3
+    },
+    {
+      "file": "src/components/assessment/review-step.tsx",
+      "errors": 0,
+      "warnings": 5
+    },
+    {
+      "file": "src/components/assessment/satisfaction-step.tsx",
+      "errors": 0,
+      "warnings": 1
+    },
+    {
+      "file": "src/components/assessment/work-info-step.tsx",
+      "errors": 0,
+      "warnings": 1
+    },
+    {
+      "file": "src/components/dashboard/assessment-data-table.tsx",
+      "errors": 0,
+      "warnings": 4
+    },
+    {
+      "file": "src/hooks/use-assessment.ts",
+      "errors": 0,
+      "warnings": 2
+    },
+    {
+      "file": "src/lib/api.ts",
+      "errors": 0,
+      "warnings": 13
+    },
+    {
+      "file": "src/lib/environment-schema.ts",
+      "errors": 0,
+      "warnings": 16
+    },
+    {
+      "file": "src/lib/excel-export.ts",
+      "errors": 0,
+      "warnings": 4
+    },
+    {
+      "file": "src/lib/satisfaction-schema.ts",
+      "errors": 0,
+      "warnings": 2
+    },
+    {
+      "file": "worker/src/routes/dashboard.ts",
+      "errors": 0,
+      "warnings": 19
+    },
+    {
+      "file": "worker/src/routes/results.ts",
+      "errors": 0,
+      "warnings": 12
+    },
+    {
+      "file": "worker/src/routes/submissions.ts",
+      "errors": 0,
+      "warnings": 10
+    },
+    {
+      "file": "worker/src/types.ts",
+      "errors": 0,
+      "warnings": 1
+    }
+  ]
+}

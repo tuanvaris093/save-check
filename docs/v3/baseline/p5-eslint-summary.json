@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-12",
+  "errors": 0,
+  "warnings": 99,
+  "new_p5_files": {
+    "scripts/test-p5-browser.mjs": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "scripts/test-p5.mjs": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "src/components/environment/environment-result.tsx": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "src/components/environment/environment-summary.tsx": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "src/components/environment/environment-wizard.tsx": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "src/components/environment/standards.tsx": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "src/components/environment/unit-editor.tsx": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "src/hooks/use-environment-form.ts": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "src/lib/v3/environment-form.ts": {
+      "errors": 0,
+      "warnings": 0
+    }
+  }
+}

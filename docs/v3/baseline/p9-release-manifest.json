@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-16T10:25:50.791063+00:00",
+  "release": "p9-20261016",
+  "source_files": 209,
+  "source_archive_sha256": "f513b7bf6cc308f328c1d56d0d3aa955695f94cf06073b8406422ca66057755f",
+  "frontend_manifest_sha256": "44eecfc32e354d6fb234c076eaf0abec63229490fd7308e02d054a4735ea3510",
+  "frontend_directory": ".next-test-p9-release-final",
+  "storage": "D1 only",
+  "production_modified": true,
+  "release_completed_at": "2026-10-16T10:57:21.529654+00:00",
+  "worker_version": "5aa6b312-0f26-4576-9b8a-f6acfb8bf465",
+  "maintenance_version": "701bd622-5498-4553-81e2-0c18250be69b",
+  "pages_deployment": "8d22ab9c",
+  "production_url": "https://save-check.pages.dev",
+  "legacy_original_rows_preserved": 1159,
+  "legacy_files_verified": 80
+}

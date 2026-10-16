@@ -1,9 +1,17 @@
 "use client";
+import { focusFormError } from "@/lib/v3/form-errors";
+import { useStepDraft } from "@/hooks/use-step-draft";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { healthRiskMeasurementSchema, type HealthRiskMeasurementFormValues } from "@/lib/health-risk-schema";
-import { HEALTH_RISK_QUESTIONS, HEALTH_RISK_OPTIONS } from "@/lib/health-risk-data";
+import {
+  healthRiskMeasurementSchema,
+  type HealthRiskMeasurementFormValues,
+} from "@/lib/health-risk-schema";
+import {
+  HEALTH_RISK_QUESTIONS,
+  HEALTH_RISK_OPTIONS,
+} from "@/lib/health-risk-data";
 import { Button } from "@/components/ui";
 import type { AssessmentCategory } from "@/types";
 import { ASSESSMENT_CATEGORY_LABELS } from "@/lib/constants";
@@ -24,6 +32,7 @@ export function HealthRiskStep({
 }: HealthRiskStepProps) {
   const {
     register,
+    watch,
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<HealthRiskMeasurementFormValues>({
@@ -41,41 +50,52 @@ export function HealthRiskStep({
       q10: undefined,
       ...defaultValues,
     } as any,
-    mode: "onTouched",
+    mode: "onChange",
+    reValidateMode: "onChange",
   });
 
-  const questions = HEALTH_RISK_QUESTIONS[category as keyof typeof HEALTH_RISK_QUESTIONS] || [];
+  const questions =
+    HEALTH_RISK_QUESTIONS[category as keyof typeof HEALTH_RISK_QUESTIONS] || [];
 
+  useStepDraft(watch, "answers");
   return (
-    <form onSubmit={handleSubmit(onNext)} className="flex flex-col gap-6 animate-fade-in" noValidate>
+    <form
+      onSubmit={handleSubmit(onNext, focusFormError)}
+      className="animate-fade-in flex flex-col gap-6"
+      noValidate
+    >
       <div className="form-section-card p-5">
-        <h3 className="mb-2 text-card-title font-semibold text-text-primary">
-          แบบประเมินความเสี่ยงสุขภาพ ({ASSESSMENT_CATEGORY_LABELS[category]})
+        <h3 className="text-card-title text-text-primary mb-2 font-semibold">
+          แบบประเมินอาการทางสุขภาพ ({ASSESSMENT_CATEGORY_LABELS[category]})
         </h3>
-        <p className="mb-6 text-caption text-text-secondary">
-          โปรดเลือกคำตอบที่ตรงกับอาการของท่านมากที่สุดในแต่ละข้อ (บังคับตอบทุกข้อ)
+        <p className="text-caption text-text-secondary mb-6">
+          โปรดเลือกคำตอบที่ตรงกับอาการของท่านมากที่สุดในแต่ละข้อ
+          (บังคับตอบทุกข้อ)
         </p>
 
         <div className="flex flex-col gap-5">
           {questions.map((q, index) => {
-            const fieldName = `q${index + 1}` as keyof HealthRiskMeasurementFormValues;
+            const fieldName =
+              `q${index + 1}` as keyof HealthRiskMeasurementFormValues;
             const errorMsg = errors[fieldName]?.message;
             return (
               <div
                 key={q.id}
                 className={cn(
-                  "flex flex-col gap-3 p-4 rounded-lg border transition-colors",
-                  errorMsg ? "border-danger bg-danger-soft/10" : "border-border bg-background"
+                  "flex flex-col gap-3 rounded-lg border p-4 transition-colors",
+                  errorMsg
+                    ? "border-danger bg-danger-soft/10"
+                    : "border-border bg-background",
                 )}
               >
-                <p className="text-body font-medium text-text-primary">
+                <p className="text-body text-text-primary font-medium">
                   {index + 1}. {q.text} <span className="text-danger">*</span>
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                   {HEALTH_RISK_OPTIONS.map((opt) => (
                     <label
                       key={opt.value}
-                      className="relative flex cursor-pointer items-center gap-3 rounded-md border border-border bg-surface px-4 py-3 transition-all hover:bg-muted active:scale-[0.98] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary has-[:checked]:border-primary has-[:checked]:bg-primary-tint has-[:checked]:shadow-sm"
+                      className="border-border bg-surface hover:bg-muted has-[:focus-visible]:ring-primary has-[:checked]:border-primary has-[:checked]:bg-primary-tint relative flex cursor-pointer items-center gap-3 rounded-md border px-4 py-3 transition-all active:scale-[0.98] has-[:checked]:shadow-sm has-[:focus-visible]:ring-2"
                     >
                       <input
                         type="radio"
@@ -84,16 +104,18 @@ export function HealthRiskStep({
                         className="peer sr-only"
                       />
                       {/* Custom radio indicator */}
-                      <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-border bg-surface transition-colors peer-checked:border-primary">
-                        <div className="h-2.5 w-2.5 rounded-full bg-primary opacity-0 transition-opacity peer-checked:opacity-100" />
+                      <div className="border-border bg-surface peer-checked:border-primary flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors">
+                        <div className="bg-primary h-2.5 w-2.5 rounded-full opacity-0 transition-opacity peer-checked:opacity-100" />
                       </div>
-                      <span className="text-small font-medium text-text-primary peer-checked:text-primary">
+                      <span className="text-small text-text-primary peer-checked:text-primary font-medium">
                         {opt.label}
                       </span>
                     </label>
                   ))}
                 </div>
-                {errorMsg && <p className="text-caption text-danger mt-1">{errorMsg}</p>}
+                {errorMsg && (
+                  <p className="text-caption text-danger mt-1">{errorMsg}</p>
+                )}
               </div>
             );
           })}
@@ -101,11 +123,16 @@ export function HealthRiskStep({
       </div>
 
       <div className="mt-2 flex gap-3 pb-8">
-        <Button type="button" variant="outline" className="flex-1" onClick={onPrev}>
+        <Button
+          type="button"
+          variant="outline"
+          className="flex-1"
+          onClick={onPrev}
+        >
           ย้อนกลับ
         </Button>
-        <Button type="submit" className="flex-1" >
-          สรุปผลความเสี่ยง
+        <Button type="submit" className="flex-1">
+          สรุปผลอาการทางสุขภาพ
         </Button>
       </div>
     </form>

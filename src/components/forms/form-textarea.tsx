@@ -2,8 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { ErrorMessage } from "../ui/error-message";
 
-export interface FormTextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+export interface FormTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -19,29 +18,34 @@ const FormTextarea = React.forwardRef<HTMLTextAreaElement, FormTextareaProps>(
         {label && (
           <label
             htmlFor={textareaId}
-            className="text-small font-semibold text-text-primary"
+            className="text-small text-text-primary font-semibold"
           >
             {label}
-            {props.required && <span className="ml-1 text-danger">*</span>}
+            {props.required && <span className="text-danger ml-1">*</span>}
           </label>
         )}
         <textarea
           id={textareaId}
           ref={ref}
           className={cn(
-            "glass-input flex min-h-[108px] w-full resize-y px-4 py-3 text-body",
+            "glass-input text-body flex min-h-[108px] w-full resize-y px-4 py-3",
             "placeholder:text-[#A3B1C4]",
-            "focus-visible:outline-none focus-visible:ring-0",
-            "disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-50",
+            "focus-visible:ring-0 focus-visible:outline-none",
+            "disabled:bg-muted disabled:cursor-not-allowed disabled:opacity-50",
             error ? "border-danger focus-visible:ring-danger" : "border-border",
             className,
           )}
           {...props}
         />
         {helperText && !error && (
-          <p className="text-caption text-text-secondary">{helperText}</p>
+          <p
+            id={`${textareaId}-help`}
+            className="text-caption text-text-secondary"
+          >
+            {helperText}
+          </p>
         )}
-        {error && <ErrorMessage message={error} />}
+        {error && <ErrorMessage id={`${textareaId}-error`} message={error} />}
       </div>
     );
   },

@@ -1,6 +1,7 @@
 "use client";
+import { focusFormError } from "@/lib/v3/form-errors";
+import { useStepDraft } from "@/hooks/use-step-draft";
 
-import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -27,7 +28,6 @@ export function ProfileStep({ defaultValues, onNext }: ProfileStepProps) {
     control,
     watch,
     formState: { errors, isValid },
-    reset,
   } = useForm<RespondentProfileFormValues>({
     resolver: zodResolver(respondentProfileSchema) as any,
     defaultValues: {
@@ -42,26 +42,23 @@ export function ProfileStep({ defaultValues, onNext }: ProfileStepProps) {
       underlying_disease_details: "",
       ...defaultValues,
     } as any,
-    mode: "onTouched",
+    mode: "onChange",
+    reValidateMode: "onChange",
   });
 
   const hasDisease = watch("has_underlying_disease");
 
   // Allow resetting form if defaultValues change (e.g. loaded from draft later)
-  useEffect(() => {
-    if (defaultValues && Object.keys(defaultValues).length > 0) {
-      reset((prev) => ({ ...prev, ...defaultValues }));
-    }
-  }, [defaultValues, reset]);
 
+  useStepDraft(watch, "profile");
   return (
     <form
-      onSubmit={handleSubmit(onNext)}
-      className="flex flex-col gap-6 animate-fade-in"
+      onSubmit={handleSubmit(onNext, focusFormError)}
+      className="animate-fade-in flex flex-col gap-6"
       noValidate
     >
       <div className="form-section-card p-5">
-        <h3 className="mb-4 text-card-title font-semibold text-text-primary">
+        <h3 className="text-card-title text-text-primary mb-4 font-semibold">
           ข้อมูลส่วนตัว
         </h3>
         <div className="flex flex-col gap-4">
@@ -150,12 +147,12 @@ export function ProfileStep({ defaultValues, onNext }: ProfileStepProps) {
       </div>
 
       <div className="form-section-card p-5">
-        <h3 className="mb-4 text-card-title font-semibold text-text-primary">
+        <h3 className="text-card-title text-text-primary mb-4 font-semibold">
           ข้อมูลสุขภาพ
         </h3>
         <div className="flex flex-col gap-4">
           <div>
-            <label className="mb-2 block text-small font-medium text-text-primary">
+            <label className="text-small text-text-primary mb-2 block font-medium">
               ท่านมีโรคประจำตัวหรือไม่? <span className="text-danger">*</span>
             </label>
             <div className="grid grid-cols-2 gap-3">
@@ -179,7 +176,7 @@ export function ProfileStep({ defaultValues, onNext }: ProfileStepProps) {
               />
             </div>
             {errors.has_underlying_disease && (
-              <p className="mt-1 text-caption text-danger">
+              <p className="text-caption text-danger mt-1">
                 {errors.has_underlying_disease.message}
               </p>
             )}
@@ -200,11 +197,7 @@ export function ProfileStep({ defaultValues, onNext }: ProfileStepProps) {
       </div>
 
       <div className="mt-2 pb-8">
-        <Button
-          type="submit"
-          className="w-full"
-          
-        >
+        <Button type="submit" className="w-full">
           ถัดไป
         </Button>
       </div>

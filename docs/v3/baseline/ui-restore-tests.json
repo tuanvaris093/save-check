@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-15T04:36:31.471Z",
+  "passed": 17,
+  "checks": [
+    "optional-layout migration preserves populated legacy/current revisions, references, snapshots and guards",
+    "Worker accepts omitted floor plans for light/noise/heat and preserves null without a file reference",
+    "GUI review saves without a plan; no upload/create occurs before final confirmation",
+    "plan-free failed round can be retested while preserving its original history",
+    "add a plan later through GUI review; old rounds and measurement dates/values remain unchanged",
+    "local PDF/image preview, replace/remove and refresh never call upload; keyboard uploader and type validation work",
+    "failed upload prevents submission; stable upload receipt/key and draft survive retries without duplicate records",
+    "current-only Dashboard API counts eight form categories, excludes legacy from lists/export and computes four satisfaction dimensions",
+    "Dashboard restores row/column table and form-specific statuses with no unknown/legacy card",
+    "result headers/code are unique; current environment and satisfaction answers use tables; old links display no raw data",
+    "mobile navigation stays at viewport bottom at top/middle/end, is a body portal and never creates horizontal overflow",
+    "downloaded table report retains exact API snapshot and original scores",
+    "all routes retain headings, menus and bounded layouts on mobile and desktop",
+    "environment headings, concise Area options, review and guidance survive every category",
+    "health restores personal/health/work sections and disease choices through review",
+    "health recommendations follow current symptom levels for all three categories, light uses after score",
+    "satisfaction keeps four summary dimensions, sixteen current questions, suggestions and both groups"
+  ],
+  "page_errors": [],
+  "runtime": "Chromium + isolated real local Worker/D1/R2",
+  "foreign_key_violations": 0,
+  "remote": false,
+  "deployed": false
+}

@@ -1,0 +1,177 @@
+
+> save-check@0.1.1 test:health-pending:regression
+> node scripts/test-health-pending-regression.mjs --resume
+
+START test:health-pending
+
+> save-check@0.1.1 test:health-pending
+> node scripts/test-health-pending.mjs
+
+PASS 1: pending contract requires completed before/profile/context; partial after stays absent, closed scores and current wording only
+PASS 2: before-only save/retry creates one server draft with no after values, score, final submission or export row
+PASS 3: concurrent creates/updates converge or conflict without duplicates or lost winning data
+PASS 4: incomplete/stale/wrong-source finalization rolls back every scored table; correct completion replays once
+PASS 5: save racing completion permits exactly one mutation against a base; failed batch can be retried atomically
+PASS 6: GUI validates before; skip saves partial after on server; lost save response preserves answers and retry is idempotent
+PASS 7: fresh browser context resumes server data/after tab, retains zero and partial local edits through refresh and back
+PASS 8: stale open tab cannot overwrite remote edits and keeps its unsaved answer
+PASS 9: finish from resumed draft computes true scores once; lost completion receipt retries same result and removes pending row
+PASS 10: normal completed receipt cannot become pending; normal submit racing first save permits one path
+PASS 11: pending table paginates beyond ten, uses responsive rows and never inflates final totals
+Health pending PASS 11
+DONE test:health-pending
+START lint
+
+> save-check@0.1.1 lint
+> eslint src worker/src shared scripts
+
+
+/Users/tuanvaris/dev/save-check/src/components/assessment/environment-step.tsx
+   44:60  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   60:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   61:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   62:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   74:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   75:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   76:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   77:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   80:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   91:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   97:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  131:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  144:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  146:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  166:45  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  167:45  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  170:72  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  326:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  327:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  328:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  426:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  670:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  671:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  672:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  673:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  676:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  677:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/components/assessment/health-risk-step.tsx
+  37:26  warning  'isValid' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  52:10  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/components/assessment/profile-step.tsx
+  30:26  warning  'isValid' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  32:55  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  44:10  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/components/assessment/review-step.tsx
+   13:3   warning  'X' is defined but never used             @typescript-eslint/no-unused-vars
+   60:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  130:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  179:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  244:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/components/assessment/work-info-step.tsx
+  28:26  warning  'isValid' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/tuanvaris/dev/save-check/src/lib/api.ts
+   56:24  warning  '_' is assigned a value but never used    @typescript-eslint/no-unused-vars
+   83:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  109:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  110:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  111:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  112:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  113:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  148:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  174:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  277:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  278:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  279:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  280:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/lib/environment-schema.ts
+   17:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   23:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   27:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   31:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   38:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   46:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   50:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   54:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   66:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   71:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   84:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   88:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   92:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   96:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  102:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  106:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/lib/excel-export.ts
+  227:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  321:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  434:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  530:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/lib/satisfaction-schema.ts
+  42:65  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  59:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/worker/src/types.ts
+  83:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 74 problems (0 errors, 74 warnings)
+
+DONE lint
+START build
+
+> save-check@0.1.1 build
+> next build
+
+   ▲ Next.js 15.5.19
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 3.0s
+   Skipping linting
+   Checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/14) ...
+   Generating static pages (3/14) 
+   Generating static pages (6/14) 
+   Generating static pages (10/14) 
+ ✓ Generating static pages (14/14)
+   Finalizing page optimization ...
+   Collecting build traces ...
+   Exporting (0/2) ...
+ ✓ Exporting (2/2)
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                      979 B         119 kB
+├ ○ /_not-found                            123 B         103 kB
+├ ○ /apple-icon.png                          0 B            0 B
+├ ○ /assessment/environment                130 B         122 kB
+├ ○ /assessment/environment-form         11.8 kB         190 kB
+├ ○ /assessment/health-risk                131 B         122 kB
+├ ○ /assessment/health-risk-form         4.07 kB         185 kB
+├ ○ /assessment/satisfaction             7.91 kB         182 kB
+├ ○ /complete                              162 B         106 kB
+├ ○ /dashboard                           7.21 kB         130 kB
+├ ○ /icon.png                                0 B            0 B
+└ ○ /result                              6.91 kB         174 kB
++ First Load JS shared by all             103 kB
+  ├ chunks/255-eb4aecc3ff015961.js       46.3 kB
+  ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+  └ other shared chunks (total)          2.06 kB
+
+
+○  (Static)  prerendered as static content
+
+DONE build
+START typecheck
+
+> save-check@0.1.1 typecheck
+> tsc --noEmit --incremental false
+
+DONE typecheck
+Health pending regression PASS 13 commands; no deployment

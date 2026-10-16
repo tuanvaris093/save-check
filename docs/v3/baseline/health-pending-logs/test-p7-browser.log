@@ -1,0 +1,19 @@
+
+> save-check@0.1.1 test:p7:browser
+> node scripts/test-p7-browser.mjs
+
+PASS 1: actual local fixtures cover Spot/Area/noise/WBGT, all health and both satisfaction groups
+PASS 2: health paired result and selected Excel totals/wording/metadata exactly match stored API
+PASS 3: environment selected history retains old failure, date/thresholds; only current failed jobs expose retest
+PASS 4: Area samples, noise duration thresholds and WBGT intervals are exported from snapshots
+PASS 5: satisfaction version correction and history selector keep selected wording, mean and manual duration
+PASS 6: legacy data is excluded from current UI while its stored source remains intact
+PASS 7: API date basis/filter validation, one job per code, SQL grouped satisfaction averages
+PASS 8: dashboard filters apply identically to cards/list/XLSX with mobile without overflow
+PASS 9: bulk export reads more than 100 real jobs through all pages with no lost codes
+PASS 10: history export follows 13 real revisions and maintains one job row and frozen previous result
+PASS 11: archive/restore needs reason and keeps all results/history; dashboard archive scope matches
+PASS 12: API failure/invalid selection surfaces errors and retry without stale report
+PASS 13: A4 print/PDF chosen version retains Thai questions/thresholds and hides controls/embedded standard PDF
+PASS 14: no browser runtime errors or SQLite foreign-key violations
+P7 browser PASS 14

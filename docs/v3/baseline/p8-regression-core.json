@@ -1,0 +1,58 @@
+{
+  "phase": "P8",
+  "date": "2026-10-16T09:41:21.260Z",
+  "mode": "core",
+  "runs": [
+    {
+      "command": "npm run test:v3",
+      "exit_code": 0,
+      "elapsed_seconds": 2.258,
+      "log": "docs/v3/baseline/p8-logs/test-v3.log"
+    },
+    {
+      "command": "npm run test:p3",
+      "exit_code": 0,
+      "elapsed_seconds": 0.32,
+      "log": "docs/v3/baseline/p8-logs/test-p3.log"
+    },
+    {
+      "command": "npm run test:p4",
+      "exit_code": 0,
+      "elapsed_seconds": 0.218,
+      "log": "docs/v3/baseline/p8-logs/test-p4.log"
+    },
+    {
+      "command": "npm run test:satisfaction-questions",
+      "exit_code": 0,
+      "elapsed_seconds": 0.369,
+      "log": "docs/v3/baseline/p8-logs/test-satisfaction-questions.log"
+    },
+    {
+      "command": "npm run test:p5",
+      "exit_code": 0,
+      "elapsed_seconds": 0.288,
+      "log": "docs/v3/baseline/p8-logs/test-p5.log"
+    },
+    {
+      "command": "npm run test:p6",
+      "exit_code": 0,
+      "elapsed_seconds": 0.524,
+      "log": "docs/v3/baseline/p8-logs/test-p6.log"
+    },
+    {
+      "command": "npm run test:p7",
+      "exit_code": 0,
+      "elapsed_seconds": 0.488,
+      "log": "docs/v3/baseline/p8-logs/test-p7.log"
+    },
+    {
+      "command": "npm run test:p2",
+      "exit_code": 0,
+      "elapsed_seconds": 5.053,
+      "log": "docs/v3/baseline/p8-logs/test-p2.log"
+    }
+  ],
+  "passed": true,
+  "owner_uat": "pending",
+  "deployed": false
+}

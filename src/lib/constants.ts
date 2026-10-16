@@ -13,15 +13,13 @@ export const API_BASE_URL =
 
 export const ASSESSMENT_TYPE_LABELS: Record<AssessmentType, string> = {
   environment: "ประเมินสภาพแวดล้อมในการทำงาน",
-  health_risk: "ประเมินความเสี่ยงต่อสุขภาพ",
+  health_risk: "ประเมินอาการทางสุขภาพ",
   satisfaction: "ประเมินความพึงพอใจในการใช้แอป",
 };
 
 export const ASSESSMENT_TYPE_DESCRIPTIONS: Record<AssessmentType, string> = {
-  environment:
-    "ประเมินข้อมูลด้านแสงสว่าง เสียง และความร้อนในพื้นที่ทำงาน",
-  health_risk:
-    "ประเมินอาการหรือผลกระทบทางสุขภาพจากแสง เสียง และความร้อน",
+  environment: "ประเมินข้อมูลด้านแสงสว่าง เสียง และความร้อนในพื้นที่ทำงาน",
+  health_risk: "ประเมินอาการหรือผลกระทบทางสุขภาพจากแสง เสียง และความร้อน",
   satisfaction:
     "ประเมินความพึงพอใจด้านเนื้อหา การออกแบบ การใช้งาน และประโยชน์ของแอป",
 };

@@ -1,0 +1,15 @@
+
+> save-check@0.1.1 test:p3
+> node scripts/test-p3.mjs
+
+PASS draft identity separates all eight entries and correction/retest bases
+PASS draft incomplete fields, zeros, before/after and step/tab survive roundtrip
+PASS bad JSON, v1 envelope, mismatched context, impossible UI and invalid field shapes rejected
+PASS patch preserves separate periods and persistent retry key
+PASS invalid payload has field paths and never calls transport
+PASS 400/409/network/timeout stay failures rather than local success
+PASS server receipt must contain actual ID/code/version
+PASS nested form error maps to the actual field name for focus
+PASS field validation messages use Thai labels without internal property names
+PASS explicit none excludes other choices while N/A remains a real select value
+PASS all form submits use central service and never fabricate local saved records

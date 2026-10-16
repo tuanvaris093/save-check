@@ -43,15 +43,15 @@ export function PageHeader({
   return (
     <header
       className={cn(
-        "glass-surface sticky top-0 z-10 px-4 py-3 md:px-6 md:py-4 md:relative md:top-auto",
+        "app-page-header glass-surface sticky top-0 z-10 px-4 py-3 min-[1440px]:relative min-[1440px]:top-auto min-[1440px]:px-6 min-[1440px]:py-4",
         className,
       )}
     >
-      <div className="flex items-center gap-3 max-w-[1200px] mx-auto">
+      <div className="mx-auto flex max-w-[1200px] items-center gap-3">
         {showBack && (
           <button
             onClick={handleBack}
-            className="flex h-11 w-11 items-center justify-center rounded-full text-text-secondary transition-all hover:bg-primary-tint hover:text-primary active:scale-95"
+            className="text-text-secondary hover:bg-primary-tint hover:text-primary flex h-11 w-11 items-center justify-center rounded-full transition-all active:scale-95"
             aria-label="ย้อนกลับ"
           >
             <ArrowLeft className="h-5 w-5" strokeWidth={2.25} />
@@ -72,11 +72,11 @@ export function PageHeader({
               <span className="text-sm font-bold text-white">SafeCheck</span>
             </div>
           )}
-          <h1 className="truncate text-lg font-bold text-text-primary md:text-xl">
+          <h1 className="text-text-primary text-lg font-bold break-words min-[1440px]:text-xl">
             {title}
           </h1>
           {subtitle && (
-            <p className="truncate text-caption text-text-secondary">
+            <p className="text-caption text-text-secondary break-words">
               {subtitle}
             </p>
           )}

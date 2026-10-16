@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-14T06:49:38.718Z",
+  "passed": 8,
+  "checks": [
+    "optional-layout migration preserves populated legacy/current revisions, references, snapshots and guards",
+    "Worker accepts omitted floor plans for light/noise/heat and preserves null without a file reference",
+    "GUI review saves without a plan; no upload/create occurs before final confirmation",
+    "plan-free failed round can be retested while preserving its original history",
+    "add a plan later through GUI review; old rounds and measurement dates/values remain unchanged",
+    "local PDF/image preview, replace/remove and refresh never call upload; keyboard uploader and type validation work",
+    "failed upload prevents submission; stable upload receipt/key and draft survive retries without duplicate records",
+    "dashboard/results present one current app without schema/version filters or v3 wording; API/exports stay available"
+  ],
+  "page_errors": [],
+  "runtime": "Chromium + isolated real local Worker/D1/R2",
+  "foreign_key_violations": 0,
+  "remote": false,
+  "deployed": false
+}

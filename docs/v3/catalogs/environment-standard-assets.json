@@ -1,0 +1,35 @@
+{
+  "verified_on": "2026-10-12",
+  "documents": [
+    {
+      "category": "light",
+      "version": "lighting-2561-v1",
+      "source": "docs/v3/lighting-std-2561.pdf",
+      "public_url": "/standards/lighting-std-2561.pdf",
+      "bytes": 363822,
+      "sha256": "12c138b5c027e4ad93ea3fdb78c62f87fbc8ebb3e410345bf95c58c31dd27bd2",
+      "pages": 7,
+      "unchanged_from_source": true
+    },
+    {
+      "category": "noise",
+      "version": "sound-2560-v1",
+      "source": "docs/v3/sound-standard-2560.pdf",
+      "public_url": "/standards/sound-standard-2560.pdf",
+      "bytes": 145944,
+      "sha256": "0a16d7ae6295f8d0d7fc75b1f072b1c96964495ae9fbbe040d205f9f2c2ace44",
+      "pages": 2,
+      "unchanged_from_source": true
+    },
+    {
+      "category": "heat",
+      "version": "heat-2559-v1",
+      "source": "docs/v3/มาตรฐานความร้อน.pdf",
+      "public_url": "/standards/heat-standard-2559.pdf",
+      "bytes": 73209,
+      "sha256": "889f9e7ef618f07dd37289da5eedcf5e05a2231c6f0a5bedf4c09566f96a5ff2",
+      "pages": 7,
+      "unchanged_from_source": true
+    }
+  ]
+}

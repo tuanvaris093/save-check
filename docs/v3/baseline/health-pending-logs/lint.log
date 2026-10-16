@@ -1,0 +1,101 @@
+
+> save-check@0.1.1 lint
+> eslint src worker/src shared scripts
+
+
+/Users/tuanvaris/dev/save-check/src/components/assessment/environment-step.tsx
+   44:60  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   60:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   61:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   62:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   74:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   75:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   76:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   77:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   80:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   91:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   97:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  131:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  144:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  146:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  166:45  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  167:45  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  170:72  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  326:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  327:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  328:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  426:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  670:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  671:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  672:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  673:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  676:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  677:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/components/assessment/health-risk-step.tsx
+  37:26  warning  'isValid' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  52:10  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/components/assessment/profile-step.tsx
+  30:26  warning  'isValid' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  32:55  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  44:10  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/components/assessment/review-step.tsx
+   13:3   warning  'X' is defined but never used             @typescript-eslint/no-unused-vars
+   60:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  130:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  179:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  244:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/components/assessment/work-info-step.tsx
+  28:26  warning  'isValid' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/tuanvaris/dev/save-check/src/lib/api.ts
+   56:24  warning  '_' is assigned a value but never used    @typescript-eslint/no-unused-vars
+   83:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  109:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  110:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  111:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  112:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  113:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  148:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  174:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  277:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  278:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  279:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  280:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/lib/environment-schema.ts
+   17:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   23:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   27:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   31:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   38:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   46:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   50:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   54:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   66:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   71:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   84:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   88:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   92:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   96:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  102:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  106:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/lib/excel-export.ts
+  227:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  321:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  434:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  530:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/lib/satisfaction-schema.ts
+  42:65  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  59:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/worker/src/types.ts
+  83:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 74 problems (0 errors, 74 warnings)
+

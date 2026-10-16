@@ -1,0 +1,221 @@
+.summary-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 16px;
+  color: #1e293b;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+.summary-heading > svg {
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  flex-shrink: 0;
+  color: #5865e8;
+}
+.summary-details {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px 28px;
+}
+.summary-details > div {
+  min-width: 0;
+}
+.summary-details dt {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin-bottom: 5px;
+  color: #1e293b;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.summary-details dt > svg {
+  width: 15px;
+  height: 15px;
+  margin-top: 3px;
+  flex-shrink: 0;
+  color: #64748b;
+}
+.summary-details dd,
+.summary-content {
+  margin: 0;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+.summary-subsection {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+.summary-metrics dd {
+  color: #334155;
+  font-size: 18px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.summary-score-list p {
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.8;
+  margin-top: 8px;
+}
+.summary-score-list p strong {
+  color: #1e293b;
+  font-weight: 600;
+}
+.health-score-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.health-score-card {
+  padding: 18px 10px;
+  text-align: center;
+  border: 1px solid #dce5fc;
+  border-radius: 16px;
+  background: linear-gradient(150deg, #eff6ff, #f5f7ff);
+}
+.health-score-card.is-after {
+  background: linear-gradient(150deg, #f0edff, #faf5ff);
+  border-color: #e4dcfa;
+}
+.health-score-label {
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.health-score-card > strong {
+  display: block;
+  margin: 10px 0 2px;
+  color: #4338ca;
+  font-size: 38px;
+  line-height: 1.2;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.health-score-card.level-pass > strong {
+  color: #047857;
+}
+.health-score-card.level-medium > strong {
+  color: #a16207;
+}
+.health-score-card.level-high_risk > strong {
+  color: #be123c;
+}
+.health-score-unit {
+  color: #64748b;
+  font-size: 12px;
+}
+.health-score-change {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  margin: 16px 0;
+  color: #475569;
+  font-size: 13px;
+}
+.health-score-change > svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.health-score-change.is-increased > svg,
+.is-increased .health-change-label {
+  color: #be123c;
+}
+.health-score-change.is-decreased > svg,
+.is-decreased .health-change-label {
+  color: #047857;
+}
+.health-change-label {
+  padding: 3px 8px;
+  background: #f8fafc;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.health-level-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.health-level-banner > svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.health-level-banner.level-pass {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #065f46;
+}
+.health-level-banner.level-medium {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #854d0e;
+}
+.health-level-banner.level-high_risk {
+  background: #fff1f2;
+  border-color: #fecdd3;
+  color: #9f1239;
+}
+.health-level-description {
+  color: #475569;
+  font-size: 13px;
+  margin-top: 5px;
+}
+@media print {
+  .health-score-cards,
+  .health-level-banner {
+    break-inside: avoid;
+  }
+}
+.summary-view table th {
+  color: #334155;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f8fafc;
+}
+.summary-view table td {
+  color: #475569;
+  line-height: 1.7;
+}
+.summary-view [data-health-comparison] th,
+.summary-view [data-health-comparison] td {
+  border: 0;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 12px;
+  vertical-align: top;
+}
+@media (min-width: 640px) {
+  .summary-details {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media print {
+  .summary-details dt,
+  .summary-heading {
+    color: #172033;
+  }
+  .summary-details dd,
+  .summary-content {
+    color: #334155;
+  }
+  .summary-field {
+    break-inside: avoid;
+  }
+}

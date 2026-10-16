@@ -2,7 +2,7 @@ import { z } from "zod";
 import { SATISFACTION_QUESTIONS } from "./satisfaction-data";
 
 // Generate schema dynamically based on 16 questions
-const ratingSchema = z.string({ required_error: "กรุณาให้คะแนน" });
+const ratingSchema = z.enum(["1","2","3","4","5"], {errorMap:()=>({message:"กรุณาให้คะแนน 1–5"})});
 
 export const satisfactionMeasurementSchema = z.object({
   q1: ratingSchema,

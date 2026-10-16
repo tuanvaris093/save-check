@@ -1,0 +1,15 @@
+
+> save-check@0.1.1 test:health-pending
+> node scripts/test-health-pending.mjs
+
+PASS 1: pending contract requires completed before/profile/context; partial after stays absent, closed scores and current wording only
+PASS 2: before-only save/retry creates one server draft with no after values, score, final submission or export row
+PASS 3: concurrent creates/updates converge or conflict without duplicates or lost winning data
+PASS 4: incomplete/stale/wrong-source finalization rolls back every scored table; correct completion replays once
+PASS 5: save racing completion permits exactly one mutation against a base; failed batch can be retried atomically
+PASS 6: GUI validates before; skip saves partial after on server; lost save response preserves answers and retry is idempotent
+PASS 7: fresh browser context resumes server data/after tab, retains zero and partial local edits through refresh and back
+PASS 8: stale open tab cannot overwrite remote edits and keeps its unsaved answer
+PASS 9: finish from resumed draft computes true scores once; lost completion receipt retries same result and removes pending row
+PASS 10: pending table paginates beyond ten, uses responsive rows and never inflates final totals
+Health pending PASS 10

@@ -1,6 +1,14 @@
+import {
+  SATISFACTION_QUESTIONS,
+  getSatisfactionQuestions,
+  satisfactionQuestionnaireVersion,
+} from "./satisfaction-data";
 import * as XLSX from "xlsx";
 import { formatDateTimeThai, formatDateThai } from "@/lib/utils";
-import { ASSESSMENT_TYPE_LABELS, ASSESSMENT_CATEGORY_LABELS } from "@/lib/constants";
+import {
+  ASSESSMENT_TYPE_LABELS,
+  ASSESSMENT_CATEGORY_LABELS,
+} from "@/lib/constants";
 import type { ExportDataResponse } from "@/lib/api";
 
 // Mapping dictionary for clean Thai labels
@@ -75,36 +83,31 @@ const HEAT_QUESTION_COLUMNS = [
   "ข้อ 10 (วิงเวียน/มึนงง)",
 ];
 
-const SATISFACTION_QUESTION_COLUMNS = [
-  "ข้อ 1 (เนื้อหาถูกต้องครบถ้วน)",
-  "ข้อ 2 (แบบประเมินน่าเชื่อถือ)",
-  "ข้อ 3 (ภาษาชัดเจนเข้าใจง่าย)",
-  "ข้อ 4 (จัดลำดับเนื้อหาเป็นขั้นตอน)",
-  "ข้อ 5 (เมนูและปุ่มเป็นระเบียบ)",
-  "ข้อ 6 (ตัวอักษรและสีอ่านง่าย)",
-  "ข้อ 7 (แสดงผลตอบสนองรวดเร็ว)",
-  "ข้อ 8 (ออกแบบสวยงามทันสมัย)",
-  "ข้อ 9 (ขั้นตอนเข้าใจง่ายไม่ซับซ้อน)",
-  "ข้อ 10 (ประมวลผลข้อมูลรวดเร็ว)",
-  "ข้อ 11 (ใช้งานได้ดีทุกอุปกรณ์)",
-  "ข้อ 12 (ระบบเสถียรไม่มีข้อผิดพลาด)",
-  "ข้อ 13 (ประเมินสภาพแวดล้อมได้จริง)",
-  "ข้อ 14 (ประเมินความเสี่ยงสุขภาพได้จริง)",
-  "ข้อ 15 (ช่วยลดเวลาเพิ่มความสะดวก)",
-  "ข้อ 16 (ข้อมูลนำไปใช้ประโยชน์ได้จริง)",
-];
+const SATISFACTION_QUESTION_COLUMNS = Array.from(
+  { length: 16 },
+  (_, i) => `ข้อ ${i + 1} (คะแนน)`,
+);
 
-function getOverallLevelLabel(level?: string | null, isHealthRisk = false): string {
-  if (level === "pass") return isHealthRisk ? "ความเสี่ยงต่ำ (ผ่าน)" : "ผ่านเกณฑ์ (Pass)";
-  if (level === "medium") return isHealthRisk ? "ความเสี่ยงปานกลาง" : "เสี่ยงปานกลาง (Medium)";
-  if (level === "high_risk") return isHealthRisk ? "ความเสี่ยงสูง" : "เสี่ยงสูง (High Risk)";
+function getOverallLevelLabel(
+  level?: string | null,
+  isHealthRisk = false,
+): string {
+  if (level === "pass")
+    return isHealthRisk ? "ความเสี่ยงต่ำ (ผ่าน)" : "ผ่านเกณฑ์ (Pass)";
+  if (level === "medium")
+    return isHealthRisk ? "ความเสี่ยงปานกลาง" : "เสี่ยงปานกลาง (Medium)";
+  if (level === "high_risk")
+    return isHealthRisk ? "ความเสี่ยงสูง" : "เสี่ยงสูง (High Risk)";
   return "-";
 }
 
 /**
  * Generate and download a comprehensive Multi-Sheet Excel Workbook categorized by Assessment Category
  */
-export function generateMultiSheetExcel(data: ExportDataResponse, filename?: string) {
+export function generateMultiSheetExcel(
+  data: ExportDataResponse,
+  filename?: string,
+) {
   const {
     submissions = [],
     envPointsMap = {},
@@ -132,11 +135,13 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
 
   const overviewRows = submissions.map((sub, idx) => {
     const typeLabel =
-      ASSESSMENT_TYPE_LABELS[sub.assessment_type as keyof typeof ASSESSMENT_TYPE_LABELS] ||
-      sub.assessment_type;
+      ASSESSMENT_TYPE_LABELS[
+        sub.assessment_type as keyof typeof ASSESSMENT_TYPE_LABELS
+      ] || sub.assessment_type;
     const catLabel =
-      ASSESSMENT_CATEGORY_LABELS[sub.assessment_category as keyof typeof ASSESSMENT_CATEGORY_LABELS] ||
-      sub.assessment_category;
+      ASSESSMENT_CATEGORY_LABELS[
+        sub.assessment_category as keyof typeof ASSESSMENT_CATEGORY_LABELS
+      ] || sub.assessment_category;
     const person =
       sub.assessment_type === "environment"
         ? sub.inspector_name || "-"
@@ -146,9 +151,16 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
         ? sub.inspection_location || "-"
         : sub.profile_department || "-";
 
-    const level = getOverallLevelLabel(sub.overall_level, sub.assessment_type === "health_risk");
+    const level = getOverallLevelLabel(
+      sub.overall_level,
+      sub.assessment_type === "health_risk",
+    );
     const layout =
-      sub.assessment_type === "environment" ? (sub.has_layout ? "มีผังห้อง" : "ไม่มี") : "-";
+      sub.assessment_type === "environment"
+        ? sub.has_layout
+          ? "มีผังห้อง"
+          : "ไม่มี"
+        : "-";
 
     return [
       idx + 1,
@@ -159,12 +171,17 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
       person,
       loc,
       level,
-      sub.overall_score !== null && sub.overall_score !== undefined ? sub.overall_score : "-",
+      sub.overall_score !== null && sub.overall_score !== undefined
+        ? sub.overall_score
+        : "-",
       layout,
     ];
   });
 
-  const wsOverview = XLSX.utils.aoa_to_sheet([overviewHeaders, ...overviewRows]);
+  const wsOverview = XLSX.utils.aoa_to_sheet([
+    overviewHeaders,
+    ...overviewRows,
+  ]);
   wsOverview["!cols"] = [
     { wch: 8 },
     { wch: 22 },
@@ -182,10 +199,14 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
   // ----------------------------------------------------
   // Environment Submissions & Categorized Sheets
   // ----------------------------------------------------
-  const envSubmissions = submissions.filter((s) => s.assessment_type === "environment");
+  const envSubmissions = submissions.filter(
+    (s) => s.assessment_type === "environment",
+  );
 
   // 2.1 สิ่งแวดล้อม - แสงสว่าง (Light)
-  const envLightSubs = envSubmissions.filter((s) => s.assessment_category === "light");
+  const envLightSubs = envSubmissions.filter(
+    (s) => s.assessment_category === "light",
+  );
   if (envLightSubs.length > 0) {
     const lightHeaders = [
       "ลำดับ",
@@ -207,7 +228,9 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
     let rowIdx = 1;
     for (const sub of envLightSubs) {
       const points = envPointsMap[sub.id] || [];
-      const dateStr = formatDateThai(sub.inspection_date || sub.completed_at || sub.created_at);
+      const dateStr = formatDateThai(
+        sub.inspection_date || sub.completed_at || sub.created_at,
+      );
 
       if (points.length === 0) {
         lightRows.push([
@@ -238,8 +261,11 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
             sub.equipment || "-",
             pt.point_no,
             pt.location_desc || "-",
-            pt.measure_value !== null && pt.measure_value !== undefined ? pt.measure_value : "-",
-            pt.standard_display || (pt.standard_value ? String(pt.standard_value) : "-"),
+            pt.measure_value !== null && pt.measure_value !== undefined
+              ? pt.measure_value
+              : "-",
+            pt.standard_display ||
+              (pt.standard_value ? String(pt.standard_value) : "-"),
             passLabel,
             pt.remark || "-",
           ]);
@@ -267,7 +293,9 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
   }
 
   // 2.2 สิ่งแวดล้อม - เสียง (Noise)
-  const envNoiseSubs = envSubmissions.filter((s) => s.assessment_category === "noise");
+  const envNoiseSubs = envSubmissions.filter(
+    (s) => s.assessment_category === "noise",
+  );
   if (envNoiseSubs.length > 0) {
     const noiseHeaders = [
       "ลำดับ",
@@ -294,7 +322,9 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
     let rowIdx = 1;
     for (const sub of envNoiseSubs) {
       const points = envPointsMap[sub.id] || [];
-      const dateStr = formatDateThai(sub.inspection_date || sub.completed_at || sub.created_at);
+      const dateStr = formatDateThai(
+        sub.inspection_date || sub.completed_at || sub.created_at,
+      );
 
       if (points.length === 0) {
         noiseRows.push([
@@ -333,10 +363,17 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
             pt.start_time || "-",
             pt.end_time || "-",
             pt.total_time || "-",
-            pt.measure_value !== null && pt.measure_value !== undefined ? pt.measure_value : "-",
-            pt.min_value !== null && pt.min_value !== undefined ? pt.min_value : "-",
-            pt.max_value !== null && pt.max_value !== undefined ? pt.max_value : "-",
-            pt.standard_display || (pt.standard_value ? String(pt.standard_value) : "-"),
+            pt.measure_value !== null && pt.measure_value !== undefined
+              ? pt.measure_value
+              : "-",
+            pt.min_value !== null && pt.min_value !== undefined
+              ? pt.min_value
+              : "-",
+            pt.max_value !== null && pt.max_value !== undefined
+              ? pt.max_value
+              : "-",
+            pt.standard_display ||
+              (pt.standard_value ? String(pt.standard_value) : "-"),
             passLabel,
             pt.remark || "-",
           ]);
@@ -369,7 +406,9 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
   }
 
   // 2.3 สิ่งแวดล้อม - ความร้อน (Heat)
-  const envHeatSubs = envSubmissions.filter((s) => s.assessment_category === "heat");
+  const envHeatSubs = envSubmissions.filter(
+    (s) => s.assessment_category === "heat",
+  );
   if (envHeatSubs.length > 0) {
     const heatHeaders = [
       "ลำดับ",
@@ -396,7 +435,9 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
     let rowIdx = 1;
     for (const sub of envHeatSubs) {
       const points = envPointsMap[sub.id] || [];
-      const dateStr = formatDateThai(sub.inspection_date || sub.completed_at || sub.created_at);
+      const dateStr = formatDateThai(
+        sub.inspection_date || sub.completed_at || sub.created_at,
+      );
 
       if (points.length === 0) {
         heatRows.push([
@@ -422,8 +463,10 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
       } else {
         for (const pt of points) {
           const passLabel = pt.is_pass === 1 ? "ผ่านเกณฑ์" : "ไม่ผ่านเกณฑ์";
-          const workloadLabel = WORKLOAD_LABELS[pt.workload] || pt.workload || "-";
-          const wbgtTypeLabel = WBGT_TYPE_LABELS[pt.wbgt_type] || pt.wbgt_type || "-";
+          const workloadLabel =
+            WORKLOAD_LABELS[pt.workload] || pt.workload || "-";
+          const wbgtTypeLabel =
+            WBGT_TYPE_LABELS[pt.wbgt_type] || pt.wbgt_type || "-";
 
           heatRows.push([
             rowIdx++,
@@ -440,8 +483,11 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
             pt.temp_db !== null && pt.temp_db !== undefined ? pt.temp_db : "-",
             pt.temp_wb !== null && pt.temp_wb !== undefined ? pt.temp_wb : "-",
             pt.temp_gt !== null && pt.temp_gt !== undefined ? pt.temp_gt : "-",
-            pt.temp_wbgt !== null && pt.temp_wbgt !== undefined ? pt.temp_wbgt : "-",
-            pt.standard_display || (pt.standard_value ? String(pt.standard_value) : "-"),
+            pt.temp_wbgt !== null && pt.temp_wbgt !== undefined
+              ? pt.temp_wbgt
+              : "-",
+            pt.standard_display ||
+              (pt.standard_value ? String(pt.standard_value) : "-"),
             passLabel,
             pt.remark || "-",
           ]);
@@ -476,7 +522,9 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
   // ----------------------------------------------------
   // Health Risk Submissions & Categorized Sheets
   // ----------------------------------------------------
-  const hrSubmissions = submissions.filter((s) => s.assessment_type === "health_risk");
+  const hrSubmissions = submissions.filter(
+    (s) => s.assessment_type === "health_risk",
+  );
 
   // Helper to build rows for a Health Risk Category sheet
   const buildHealthRiskSheetData = (subs: any[], questionHeaders: string[]) => {
@@ -505,9 +553,12 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
     ];
 
     const rows = subs.map((sub, idx) => {
-      const gender = GENDER_LABELS[sub.profile_gender] || sub.profile_gender || "-";
-      const education = EDUCATION_LABELS[sub.profile_education] || sub.profile_education || "-";
-      const marital = MARITAL_LABELS[sub.profile_marital] || sub.profile_marital || "-";
+      const gender =
+        GENDER_LABELS[sub.profile_gender] || sub.profile_gender || "-";
+      const education =
+        EDUCATION_LABELS[sub.profile_education] || sub.profile_education || "-";
+      const marital =
+        MARITAL_LABELS[sub.profile_marital] || sub.profile_marital || "-";
 
       let bmi = "-";
       if (sub.profile_weight && sub.profile_height) {
@@ -525,7 +576,8 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
       const answers = hrAnswersMap[sub.id] || [];
       const ansMap = new Map<string, number>();
       for (const ans of answers) {
-        const key = ans.question_id || (ans.question_no ? `q${ans.question_no}` : "");
+        const key =
+          ans.question_id || (ans.question_no ? `q${ans.question_no}` : "");
         if (key) {
           ansMap.set(key, ans.score);
         }
@@ -561,7 +613,9 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
           ? sub.profile_work_days
           : "-",
         sub.profile_work_area || "-",
-        sub.overall_score !== null && sub.overall_score !== undefined ? sub.overall_score : "-",
+        sub.overall_score !== null && sub.overall_score !== undefined
+          ? sub.overall_score
+          : "-",
         level,
         ...questionScores,
       ];
@@ -596,21 +650,27 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
   };
 
   // 3.1 สุขภาพ - แสงสว่าง
-  const hrLightSubs = hrSubmissions.filter((s) => s.assessment_category === "light");
+  const hrLightSubs = hrSubmissions.filter(
+    (s) => s.assessment_category === "light",
+  );
   if (hrLightSubs.length > 0) {
     const ws = buildHealthRiskSheetData(hrLightSubs, LIGHT_QUESTION_COLUMNS);
     XLSX.utils.book_append_sheet(wb, ws, "สุขภาพ-แสงสว่าง");
   }
 
   // 3.2 สุขภาพ - เสียง
-  const hrNoiseSubs = hrSubmissions.filter((s) => s.assessment_category === "noise");
+  const hrNoiseSubs = hrSubmissions.filter(
+    (s) => s.assessment_category === "noise",
+  );
   if (hrNoiseSubs.length > 0) {
     const ws = buildHealthRiskSheetData(hrNoiseSubs, NOISE_QUESTION_COLUMNS);
     XLSX.utils.book_append_sheet(wb, ws, "สุขภาพ-เสียง");
   }
 
   // 3.3 สุขภาพ - ความร้อน
-  const hrHeatSubs = hrSubmissions.filter((s) => s.assessment_category === "heat");
+  const hrHeatSubs = hrSubmissions.filter(
+    (s) => s.assessment_category === "heat",
+  );
   if (hrHeatSubs.length > 0) {
     const ws = buildHealthRiskSheetData(hrHeatSubs, HEAT_QUESTION_COLUMNS);
     XLSX.utils.book_append_sheet(wb, ws, "สุขภาพ-ความร้อน");
@@ -619,7 +679,9 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
   // ----------------------------------------------------
   // Sheet 4: ความพึงพอใจ (Satisfaction)
   // ----------------------------------------------------
-  const satSubmissions = submissions.filter((s) => s.assessment_type === "satisfaction");
+  const satSubmissions = submissions.filter(
+    (s) => s.assessment_type === "satisfaction",
+  );
   if (satSubmissions.length > 0) {
     const satHeaders = [
       "ลำดับ",
@@ -627,6 +689,8 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
       "วันที่ประเมิน",
       "ผู้ประเมิน",
       "แผนก",
+      "กลุ่มแบบประเมิน",
+      "รุ่นคำถาม",
       "คะแนนเฉลี่ยรวม (เต็ม 5)",
       "ด้านเนื้อหา (เฉลี่ย)",
       "ด้านการออกแบบ (เฉลี่ย)",
@@ -666,7 +730,11 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
       }
 
       let suggestion = "-";
-      if (sub.answers && typeof sub.answers === "object" && sub.answers.suggestion) {
+      if (
+        sub.answers &&
+        typeof sub.answers === "object" &&
+        sub.answers.suggestion
+      ) {
         suggestion = sub.answers.suggestion;
       }
       for (const ans of answers) {
@@ -705,6 +773,10 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
         formatDateThai(sub.completed_at || sub.created_at),
         sub.profile_name || "ผู้ตอบแบบสอบถาม",
         sub.profile_department || "-",
+        sub.assessment_group ?? "unknown",
+        sub.questionnaire_version ??
+          sub.resolved?.questionnaire_version ??
+          "ไม่ระบุ",
         sub.overall_score !== null && sub.overall_score !== undefined
           ? Number(sub.overall_score).toFixed(2)
           : "-",
@@ -718,21 +790,43 @@ export function generateMultiSheetExcel(data: ExportDataResponse, filename?: str
     });
 
     const wsSat = XLSX.utils.aoa_to_sheet([satHeaders, ...satRows]);
-    wsSat["!cols"] = [
-      { wch: 8 },
-      { wch: 22 },
-      { wch: 18 },
-      { wch: 22 },
-      { wch: 20 },
-      { wch: 24 },
-      { wch: 20 },
-      { wch: 22 },
-      { wch: 20 },
-      { wch: 20 },
-      ...SATISFACTION_QUESTION_COLUMNS.map(() => ({ wch: 26 })),
-      { wch: 40 },
-    ];
+    wsSat["!cols"] = satHeaders.map((label) => ({
+      wch:
+        label === "รุ่นคำถาม" ? 48 : label === "ข้อเสนอแนะเพิ่มเติม" ? 40 : 26,
+    }));
     XLSX.utils.book_append_sheet(wb, wsSat, "ความพึงพอใจ");
+    const questionRows = [
+      ["กลุ่ม", "รุ่นคำถาม", "ด้าน", "รหัสข้อ", "คำถาม"],
+      ...(["environment", "health"] as const).flatMap((group) =>
+        getSatisfactionQuestions(group).flatMap((category) =>
+          category.questions.map((q) => [
+            group,
+            satisfactionQuestionnaireVersion(group),
+            category.label,
+            q.id,
+            q.text,
+          ]),
+        ),
+      ),
+      ...SATISFACTION_QUESTIONS.flatMap((category) =>
+        category.questions.map((q) => [
+          "legacy",
+          "satisfaction-v3-2026-10-12",
+          category.label,
+          q.id,
+          q.text,
+        ]),
+      ),
+    ];
+    const wsQuestions = XLSX.utils.aoa_to_sheet(questionRows);
+    wsQuestions["!cols"] = [
+      { wch: 16 },
+      { wch: 48 },
+      { wch: 40 },
+      { wch: 10 },
+      { wch: 110 },
+    ];
+    XLSX.utils.book_append_sheet(wb, wsQuestions, "ชุดคำถามความพึงพอใจ");
   }
 
   // Fallback: If no sheets were appended for some reason, ensure at least Overview exists

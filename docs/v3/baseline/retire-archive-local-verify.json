@@ -1,0 +1,5 @@
+{
+  "changed_original_tables": [],
+  "foreign_keys": [],
+  "latest_migration": "0007_retire_archive.sql"
+}

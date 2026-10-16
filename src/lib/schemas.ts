@@ -81,7 +81,7 @@ export type InspectionDataFormValues = z.infer<typeof inspectionDataSchema>;
 
 export const workInfoSchema = z.object({
   position_type: z.string().min(1, "กรุณาเลือกประเภทบุคลากร"),
-  department: z.string().min(2, "กรุณาระบุคณะ/แผนก/ฝ่าย"),
+  department: z.string().min(2, "กรุณาระบุหลักสูตร / แผนก / ฝ่าย"),
   work_experience_years: z.coerce
     .number()
     .min(0, "อายุงานต้องไม่ติดลบ")
@@ -108,10 +108,14 @@ export type WorkInfoFormValues = z.infer<typeof workInfoSchema>;
 // --- Helper type for the entire draft state ---
 
 export interface AssessmentDraftData {
+  satisfactionV3?: import("./v3/satisfaction-form").SatisfactionDraft;
+  healthV3?: import("./v3/health-form").HealthDraft;
   profile?: RespondentProfileFormValues;
   workInfo?: WorkInfoFormValues;
   inspectionData?: InspectionDataFormValues;
   answers?: Record<string, string | number>;
+  answersBefore?: Record<string, string | number>;
+  answersAfter?: Record<string, string | number>;
   measuredValues?: Record<string, string>;
   layoutFile?: LayoutFileInfo | null;
   editingSubmission?: {

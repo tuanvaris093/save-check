@@ -18,11 +18,11 @@ export function StepProgress({
 
   return (
     <div className={cn("w-full py-4", className)}>
-      <div className="mb-2 flex items-center justify-between text-caption font-medium">
+      <div className="text-caption mb-2 flex items-center justify-between font-medium">
         <span className="text-primary">
           ขั้นตอนที่ {safeCurrent} จาก {totalSteps}
         </span>
-        <span className="font-semibold text-primary-deep">
+        <span className="text-primary-deep font-semibold">
           {Math.round(progressPercentage)}%
         </span>
       </div>

@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,9 +23,27 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "worker"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".next-test-current/types/**/*.ts",
+    ".next-test-p4/types/**/*.ts",
+    ".next-test-p5/types/**/*.ts",
+    ".next-test-p6/types/**/*.ts",
+    ".next-test-p7/types/**/*.ts",
+    ".next-test-p8/types/**/*.ts",
+    ".next-test-ui-restore/types/**/*.ts",
+    ".next/types/**/*.ts",
+    "next-env.d.ts",
+    ".next-test-health-pending/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "worker"
+  ]
 }

@@ -1,0 +1,43 @@
+
+> save-check@0.1.1 test:p6:browser
+> node scripts/test-p6-browser.mjs
+
+PASS 1: independent health entry requires name/type/program/year; real 7 programs and separate years 1–6
+   ▲ Next.js 15.5.19 (Turbopack)
+   - Local:        http://127.0.0.1:3034
+   - Network:      http://127.0.0.1:3034
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 2.1s
+ ○ Compiling / ...
+ ✓ Compiled / in 5s
+ GET / 200 in 5843ms
+ ○ Compiling /assessment/satisfaction ...
+ ✓ Compiled /assessment/satisfaction in 1292ms
+ GET /assessment/satisfaction?group=health 200 in 1673ms
+ GET /assessment/satisfaction?group=health 200 in 791ms
+ ○ Compiling /result ...
+ ✓ Compiled /result in 9.6s
+ GET /result?submissionId=SUB-20261016-e4fcd4f9&saved=1&returnTo=%2Fassessment%2Fhealth-risk 200 in 10165ms
+
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+0 !== 1
+
+    at file:///Users/tuanvaris/dev/save-check/scripts/test-p6-browser.mjs:275:14
+    at async check (file:///Users/tuanvaris/dev/save-check/scripts/test-p6-browser.mjs:108:3)
+    at async file:///Users/tuanvaris/dev/save-check/scripts/test-p6-browser.mjs:221:3 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 0,
+  expected: 1,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v22.23.0

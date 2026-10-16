@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-12",
+  "passed": 5,
+  "checks": [
+    "environment all 16 questions/Content/rating options render correctly",
+    "environment Worker stores correct version/snapshots and result renders stored 16 questions",
+    "health all 16 questions/Content/rating options render correctly",
+    "health Worker stores correct version/snapshots and result renders stored 16 questions",
+    "current UI excludes old wording; stored source remains intact and correction cannot replace old questions"
+  ],
+  "page_errors": [],
+  "runtime": "Chromium + local Worker/D1",
+  "remote": false
+}

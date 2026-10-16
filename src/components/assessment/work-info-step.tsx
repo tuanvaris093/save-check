@@ -1,6 +1,7 @@
 "use client";
+import { focusFormError } from "@/lib/v3/form-errors";
+import { useStepDraft } from "@/hooks/use-step-draft";
 
-import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { workInfoSchema, type WorkInfoFormValues } from "@/lib/schemas";
@@ -21,10 +22,10 @@ export function WorkInfoStep({
 }: WorkInfoStepProps) {
   const {
     register,
+    watch,
     handleSubmit,
     control,
     formState: { errors, isValid },
-    reset,
   } = useForm<WorkInfoFormValues>({
     resolver: zodResolver(workInfoSchema),
     defaultValues: {
@@ -35,23 +36,19 @@ export function WorkInfoStep({
       working_days_per_week: undefined,
       ...defaultValues,
     },
-    mode: "onTouched",
+    mode: "onChange",
+    reValidateMode: "onChange",
   });
 
-  useEffect(() => {
-    if (defaultValues && Object.keys(defaultValues).length > 0) {
-      reset((prev) => ({ ...prev, ...defaultValues }));
-    }
-  }, [defaultValues, reset]);
-
+  useStepDraft(watch, "workInfo");
   return (
     <form
-      onSubmit={handleSubmit(onNext)}
-      className="flex flex-col gap-6 animate-fade-in"
+      onSubmit={handleSubmit(onNext, focusFormError)}
+      className="animate-fade-in flex flex-col gap-6"
       noValidate
     >
       <div className="form-section-card p-5">
-        <h3 className="mb-4 text-card-title font-semibold text-text-primary">
+        <h3 className="text-card-title text-text-primary mb-4 font-semibold">
           ข้อมูลการปฏิบัติงาน
         </h3>
         <div className="flex flex-col gap-4">
@@ -71,7 +68,7 @@ export function WorkInfoStep({
           />
 
           <FormInput
-            label="คณะ / แผนก / ฝ่าย"
+            label="หลักสูตร / แผนก / ฝ่าย"
             placeholder="ระบุสังกัด"
             required
             {...register("department")}
@@ -117,11 +114,7 @@ export function WorkInfoStep({
         >
           ย้อนกลับ
         </Button>
-        <Button
-          type="submit"
-          className="flex-1"
-          
-        >
+        <Button type="submit" className="flex-1">
           ถัดไป
         </Button>
       </div>

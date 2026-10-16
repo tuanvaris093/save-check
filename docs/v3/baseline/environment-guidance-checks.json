@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-16T10:21:09.620Z",
+  "checks": [
+    {
+      "category": "light",
+      "pass": false,
+      "failed": 2,
+      "area": false
+    },
+    {
+      "category": "light",
+      "pass": false,
+      "failed": 1,
+      "area": false
+    },
+    {
+      "category": "light",
+      "pass": true,
+      "failed": 0,
+      "area": false
+    },
+    {
+      "category": "light",
+      "pass": true,
+      "failed": 0,
+      "area": false
+    },
+    {
+      "category": "light",
+      "pass": false,
+      "failed": 1,
+      "area": true
+    },
+    {
+      "category": "light",
+      "pass": true,
+      "failed": 0,
+      "area": true
+    },
+    {
+      "category": "noise",
+      "pass": true,
+      "failed": 0,
+      "area": false
+    },
+    {
+      "category": "noise",
+      "pass": false,
+      "failed": 1,
+      "area": false
+    },
+    {
+      "category": "heat",
+      "pass": false,
+      "failed": 1,
+      "area": false
+    },
+    {
+      "category": "heat",
+      "pass": true,
+      "failed": 0,
+      "area": false
+    },
+    {
+      "category": "heat",
+      "pass": true,
+      "failed": 0,
+      "area": false
+    },
+    {
+      "category": "heat",
+      "pass": false,
+      "failed": 1,
+      "area": false
+    },
+    {
+      "category": "light",
+      "pass": false,
+      "failed": 1,
+      "area": false
+    },
+    {
+      "category": "noise",
+      "pass": true,
+      "failed": 0,
+      "area": false
+    }
+  ],
+  "passed": true,
+  "remote": false,
+  "deployed": false
+}

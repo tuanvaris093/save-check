@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-16T10:23:40.804Z",
+  "passed": true,
+  "checks": [
+    {
+      "name": "Efficient PNG diagram preserved byte-for-byte, dimensions and text intact",
+      "input": 130348,
+      "output": 130348,
+      "psnr": 100
+    },
+    {
+      "name": "image/png compressed, including below 5 MB",
+      "input": 3303994,
+      "output": 974983
+    },
+    {
+      "name": "image/webp compressed, including below 5 MB",
+      "input": 2880694,
+      "output": 974983
+    },
+    {
+      "name": "image/jpeg compressed, including below 5 MB",
+      "input": 2803681,
+      "output": 975039
+    },
+    {
+      "name": "5–10 MB photo reduces to JPG at most 5 MB",
+      "input": 7852205,
+      "output": 4373543
+    },
+    {
+      "name": "Optimized JPEG and PDF unchanged, transparency safe, corrupt image rejected"
+    }
+  ]
+}

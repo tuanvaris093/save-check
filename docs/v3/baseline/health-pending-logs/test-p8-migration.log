@@ -1,0 +1,12 @@
+
+> save-check@0.1.1 test:p8:migration
+> node scripts/test-p8-migration.mjs
+
+PASS 1: local recovery SQL exports and restores all original columns/rows before migration
+PASS 2: real local D1 upgrade preserves every original field across all eight tables
+PASS 3: latest pointers, ownership, revision/point identity, finalized status and all migration ledger entries are consistent
+PASS 4: zero/null/old weekly-day units/legacy score/unknown group/layout bytes remain original
+PASS 5: resume is idempotent and cannot rewrite finalized snapshots
+PASS 6: restored legacy recovery copy independently migrates to identical revisions and pointers
+PASS 7: partial legacy schema and changed original columns fail preflight before migration writes
+P8 D1 rehearsal PASS 7; isolated local DB, no remote operation

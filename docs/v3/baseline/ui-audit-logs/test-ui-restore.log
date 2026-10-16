@@ -1,0 +1,22 @@
+
+> save-check@0.1.1 test:ui-restore
+> node scripts/test-ui-restore.mjs
+
+PASS 1: optional-layout migration preserves populated legacy/current revisions, references, snapshots and guards
+PASS 2: Worker accepts omitted floor plans for light/noise/heat and preserves null without a file reference
+PASS 3: GUI review saves without a plan; no upload/create occurs before final confirmation
+PASS 4: plan-free failed round can be retested while preserving its original history
+PASS 5: add a plan later through GUI review; old rounds and measurement dates/values remain unchanged
+PASS 6: local PDF/image preview, replace/remove and refresh never call upload; keyboard uploader and type validation work
+PASS 7: failed upload prevents submission; stable upload receipt/key and draft survive retries without duplicate records
+PASS 8: current-only Dashboard API counts eight form categories, excludes legacy from lists/export and computes four satisfaction dimensions
+PASS 9: Dashboard restores row/column table and form-specific statuses with no unknown/legacy card
+PASS 10: result headers/code are unique; current environment and satisfaction answers use tables; old links display no raw data
+PASS 11: mobile navigation stays at viewport bottom at top/middle/end, is a body portal and never creates horizontal overflow
+PASS 12: downloaded table report retains exact API snapshot and original scores
+PASS 13: all routes retain headings, menus and bounded layouts on mobile and desktop
+PASS 14: environment headings, concise Area options, review and guidance survive every category
+PASS 15: health restores personal/health/work sections and disease choices through review
+PASS 16: health recommendations follow current symptom levels for all three categories, light uses after score
+PASS 17: satisfaction keeps four summary dimensions, sixteen current questions, suggestions and both groups
+UI restore acceptance PASS 17

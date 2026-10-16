@@ -1,0 +1,12 @@
+
+> save-check@0.1.1 test:p4
+> node scripts/test-p4.mjs
+
+PASS health profile requires all fields and never defaults blank numeric to zero
+PASS disease details conditional, no-disease normalizes hidden text to null
+PASS all seven exact programs allow independent study years 1 through 6
+PASS staff/faculty/other contexts only include applicable year or experience and weekly hours
+PASS 20 light answers separated, valid zero accepted, today hours required but not score
+PASS noise source none/other rules and heat has no unwanted context
+PASS server draft adapter preserves before/after zero and questionnaire version
+PASS saved result renders server result and resolved question/program snapshots

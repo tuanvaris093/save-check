@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-14",
+  "passed": 7,
+  "checks": [
+    "group closed, all 16 scores required 1–5, suggestion optional and version mismatch rejected",
+    "student programs and separate years 1–6; work context requires explicit N/A or program",
+    "duration blank/zero/decimals/overflow are distinct; manual total is 93784",
+    "durations do not change ratings and differences retain negative sign; health omits durations",
+    "typed incomplete draft survives with zeros; groups isolated; corrupted nested shapes rejected",
+    "same-questionnaire draft migration preserves real ratings but requires new metadata/time",
+    "actual workbook carries group/profile/program/year/manual seconds/negative delta and stored wording; legacy unknown stays blank"
+  ],
+  "remote": false
+}

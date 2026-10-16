@@ -1,64 +1,88 @@
+"use client";
 import * as React from "react";
 import { createPortal } from "react-dom";
 import { Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-interface LoadingStateProps {
-  text?: string;
-  className?: string;
+import {
+  beginGlobalLoading,
+  loadingSnapshot,
+  loadingServerSnapshot,
+  subscribeLoading,
+} from "@/lib/global-loading";
+export function useGlobalLoading(
+  active: boolean,
+  phase?: "uploading" | "saving" | "redirecting",
+) {
+  React.useEffect(() => {
+    if (active) return beginGlobalLoading(phase);
+  }, [active, phase]);
 }
-
-export function LoadingState({
-  text = "กำลังโหลด...",
-  className,
-}: LoadingStateProps) {
-  return (
-    <div
-      className={cn(
-        "flex min-h-[200px] flex-col items-center justify-center gap-3 p-8 text-center animate-fade-in",
-        className,
-      )}
-    >
-      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      {text && <p className="text-small text-text-secondary">{text}</p>}
-    </div>
-  );
+export function LoadingState(_props: { text?: string; className?: string }) {
+  void _props;
+  useGlobalLoading(true);
+  return null;
 }
-
 export function SubmitLoadingOverlay({
   isOpen,
-  text = "กำลังบันทึกข้อมูลผลการประเมิน...",
+  phase = "saving",
 }: {
   isOpen: boolean;
   text?: string;
+  phase?: "uploading" | "saving" | "redirecting";
 }) {
-  const [mounted, setMounted] = React.useState(false);
-
+  useGlobalLoading(isOpen, phase);
+  return null;
+}
+export function GlobalLoadingHost() {
+  const state = React.useSyncExternalStore(
+    subscribeLoading,
+    loadingSnapshot,
+    loadingServerSnapshot,
+  );
+  const dialog = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  React.useEffect(() => {
-    if (isOpen) {
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = originalOverflow;
-      };
-    }
-  }, [isOpen]);
-
-  if (!mounted || !isOpen) return null;
-
+    if (!state.active) return;
+    const overflow = document.body.style.overflow;
+    const focused = document.activeElement as HTMLElement | null;
+    document.body.style.overflow = "hidden";
+    dialog.current?.focus();
+    return () => {
+      document.body.style.overflow = overflow;
+      if (focused?.isConnected) focused.focus();
+    };
+  }, [state.active]);
+  if (!state.active) return null;
   return createPortal(
-    <div className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-black/60 backdrop-blur-xs animate-fade-in w-screen h-screen top-0 left-0 select-none">
-      <div className="flex flex-col items-center gap-3.5 rounded-2xl bg-white px-8 py-7 shadow-2xl animate-scale-up text-center max-w-sm mx-4">
-        <Loader2 className="h-9 w-9 animate-spin text-primary" />
-        <p className="text-small font-semibold text-text-primary">{text}</p>
-        <p className="text-caption text-text-tertiary">กรุณารอสักครู่ ระบบกำลังจัดเก็บข้อมูลลงฐานข้อมูล...</p>
+    <div
+      className="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-900/25 p-4 backdrop-blur-sm print:hidden"
+      data-global-loading
+    >
+      <div
+        ref={dialog}
+        role="dialog"
+        aria-modal="true"
+        aria-label="กำลังโหลด"
+        aria-busy="true"
+        tabIndex={-1}
+        data-submit-loading={state.phase}
+        onKeyDown={(event) => {
+          if (["Tab", "Enter", "Escape"].includes(event.key))
+            event.preventDefault();
+        }}
+        className="flex flex-col items-center gap-4 text-center outline-none"
+      >
+        <Loader2
+          aria-hidden="true"
+          className="text-primary h-9 w-9 animate-spin"
+        />
+        <p
+          role="status"
+          aria-live="polite"
+          className="text-text-primary font-semibold"
+        >
+          กำลังโหลด
+        </p>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }
-

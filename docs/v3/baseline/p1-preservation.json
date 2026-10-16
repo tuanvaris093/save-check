@@ -1,0 +1,26 @@
+{
+  "legacy_tables_preserved": [
+    "submissions",
+    "respondent_profiles",
+    "respondent_work_infos",
+    "environment_inspections",
+    "environment_measurement_points",
+    "health_risk_answers",
+    "satisfaction_answers",
+    "assessment_results"
+  ],
+  "original_rows": {
+    "submissions": 5,
+    "respondent_profiles": 1,
+    "respondent_work_infos": 1,
+    "environment_inspections": 2,
+    "environment_measurement_points": 5,
+    "health_risk_answers": 10,
+    "satisfaction_answers": 8,
+    "assessment_results": 2
+  },
+  "legacy_revisions": 3,
+  "legacy_points": 5,
+  "foreign_key_violations": 0,
+  "fixture_only": true
+}

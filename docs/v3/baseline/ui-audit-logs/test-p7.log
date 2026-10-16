@@ -1,0 +1,15 @@
+
+> save-check@0.1.1 test:p7
+> node scripts/test-p7.mjs
+
+PASS 1: selected immutable result/version never evaluates against current catalog
+PASS 2: health export keeps paired question IDs/phases, frozen wording, stored delta/level and weekly hours
+PASS 3: legacy single health preserves recorded totals without fabricated before/after or current wording
+PASS 4: one row per job, separate revisions, carry source/date and area samples persist
+PASS 5: complete large snapshot is split into Excel-safe cells and reconstructs exactly
+PASS 6: bulk collector reads all 103 jobs through sequential pages with identical filters
+PASS 7: history collector uses exact job and follows more than ten revisions without duplicates
+PASS 8: bulk aborts partial, duplicate, changed count/version and missing revision responses
+PASS 9: oversized export page restarts with smaller batches without partial downloads
+PASS 10: Worker bounds record payload bytes before accumulating a large response
+P7 unit PASS 10

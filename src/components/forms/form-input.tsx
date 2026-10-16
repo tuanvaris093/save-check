@@ -2,8 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { ErrorMessage } from "../ui/error-message";
 
-export interface FormInputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -51,21 +50,21 @@ const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
     };
 
     return (
-      <div className="flex min-w-0 max-w-full flex-col gap-1.5">
+      <div className="flex max-w-full min-w-0 flex-col gap-1.5">
         {label && (
           <label
             htmlFor={inputId}
-            className="text-small font-semibold text-text-primary"
+            className="text-small text-text-primary font-semibold"
           >
             {label}
-            {props.required && <span className="ml-1 text-danger">*</span>}
+            {props.required && <span className="text-danger ml-1">*</span>}
           </label>
         )}
         {isTemporalInput ? (
           <div
             className={cn(
               "glass-input temporal-input-shell",
-              props.disabled && "cursor-not-allowed bg-muted opacity-50",
+              props.disabled && "bg-muted cursor-not-allowed opacity-50",
               error
                 ? "border-danger shadow-[0_0_0_3px_rgba(239,68,68,.08)]"
                 : "border-border",
@@ -78,7 +77,15 @@ const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
               type={type}
               onWheel={handleWheel}
               onKeyDown={handleKeyDown}
-              className="temporal-input h-full w-full min-w-0 max-w-full border-0 bg-transparent p-0 text-body outline-none"
+              className="temporal-input text-body h-full w-full max-w-full min-w-0 border-0 bg-transparent p-0 outline-none"
+              aria-invalid={!!error}
+              aria-describedby={
+                error
+                  ? `${inputId}-error`
+                  : helperText
+                    ? `${inputId}-help`
+                    : undefined
+              }
               {...props}
             />
           </div>
@@ -90,20 +97,35 @@ const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
             onWheel={handleWheel}
             onKeyDown={handleKeyDown}
             className={cn(
-              "glass-input block min-w-0 max-w-full w-full box-border px-4 py-2 text-body",
+              "glass-input text-body box-border block w-full max-w-full min-w-0 px-4 py-2",
               "file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[#A3B1C4]",
-              "focus-visible:outline-none focus-visible:ring-0",
-              "disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-50",
-              error ? "border-danger shadow-[0_0_0_3px_rgba(239,68,68,.08)]" : "border-border",
+              "focus-visible:ring-0 focus-visible:outline-none",
+              "disabled:bg-muted disabled:cursor-not-allowed disabled:opacity-50",
+              error
+                ? "border-danger shadow-[0_0_0_3px_rgba(239,68,68,.08)]"
+                : "border-border",
               className,
             )}
+            aria-invalid={!!error}
+            aria-describedby={
+              error
+                ? `${inputId}-error`
+                : helperText
+                  ? `${inputId}-help`
+                  : undefined
+            }
             {...props}
           />
         )}
         {helperText && !error && (
-          <p className="text-caption text-text-secondary">{helperText}</p>
+          <p
+            id={`${inputId}-help`}
+            className="text-caption text-text-secondary"
+          >
+            {helperText}
+          </p>
         )}
-        {error && <ErrorMessage message={error} />}
+        {error && <ErrorMessage id={`${inputId}-error`} message={error} />}
       </div>
     );
   },

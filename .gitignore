@@ -44,3 +44,19 @@ next-env.d.ts
 .mf
 worker/.wrangler
 worker/.mf
+
+# Isolated local browser-test builds
+/.next-test-*/
+
+# Python verification-script bytecode
+/scripts/__pycache__/
+
+# Generated test screenshots and exported report samples
+/artifacts/
+/docs/v3/baseline/**/*.png
+/docs/v3/baseline/**/*.jpg
+/docs/v3/baseline/**/*.jpeg
+/docs/v3/baseline/**/*.webp
+/docs/v3/baseline/**/*.gif
+/docs/v3/baseline/**/*.pdf
+/docs/v3/baseline/**/*.xlsx

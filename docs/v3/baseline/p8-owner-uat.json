@@ -1,0 +1,24 @@
+{
+  "phase": "P8",
+  "task": "P8.6",
+  "status": "approved",
+  "date": "2026-10-14",
+  "timezone": "Asia/Bangkok",
+  "source": "Direct human user reply in this chat to the P8.6 UAT question",
+  "owner_statement": "ยืนยัน UAT ตามเอกสารและรับทราบขอบเขตทดสอบ",
+  "reviewed_document": "docs/v3/P8_UAT_V3.md",
+  "acknowledged_scope": {
+    "tested_browser": "Chromium",
+    "not_run": [
+      "Firefox",
+      "WebKit"
+    ],
+    "runtime_installation": "not authorized",
+    "deployment": false
+  },
+  "scope_note": "Approval of documented expected/actual and acknowledgement of test scope; no additional manual/device test results are claimed.",
+  "phase_status": "done",
+  "next_phase": "P9",
+  "next_phase_status": "not-started",
+  "deployed": false
+}

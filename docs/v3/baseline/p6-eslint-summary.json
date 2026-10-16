@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-14",
+  "errors": 0,
+  "warnings": 97,
+  "p6_files": {
+    "scripts/test-p6-browser.mjs": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "scripts/test-p6.mjs": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "src/components/satisfaction/satisfaction-details.tsx": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "src/components/satisfaction/satisfaction-result.tsx": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "src/components/satisfaction/satisfaction-summary.tsx": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "src/components/satisfaction/satisfaction-wizard.tsx": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "src/lib/v3/satisfaction-export.ts": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "src/lib/v3/satisfaction-form.ts": {
+      "errors": 0,
+      "warnings": 0
+    }
+  }
+}

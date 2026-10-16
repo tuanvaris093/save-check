@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-16T09:48:06.800Z",
+  "runtime": "isolated Miniflare D1",
+  "original_fields_unchanged": true,
+  "tables": {
+    "submissions": {
+      "count": 1159,
+      "sha256": "09f9d3a851e9f291bcbb4d3fce340c294d411676c38a2cf8421ffd97d3632660"
+    },
+    "respondent_profiles": {
+      "count": 1010,
+      "sha256": "ae6533b2a3198033fbfeb9f2b54481dbdf8692e428d56c26ff23f3c9957526d5"
+    },
+    "respondent_work_infos": {
+      "count": 1010,
+      "sha256": "7ebebf7c249c392223bd8e8d04d2dd12cc71dab4d868d9a8950ed551991fdc93"
+    },
+    "environment_inspections": {
+      "count": 96,
+      "sha256": "1ed4fc25a52b6a66903ff06e0af784a261aaf7cdea41364c357a682f556c43c3"
+    },
+    "environment_measurement_points": {
+      "count": 962,
+      "sha256": "fec69969d013a4ab7a4d4624b1eb34d2a5ed04827e9f81a0bf220c0deb14e822"
+    },
+    "health_risk_answers": {
+      "count": 10100,
+      "sha256": "36a54bd9d8e333318d53be25c67697b32b69abf7b84ca02d92550fd652dc4906"
+    },
+    "satisfaction_answers": {
+      "count": 848,
+      "sha256": "52fa5051d5e8cd6464d96e8ee5155154b95aa3a153ec4f81a88115ceab6dc065"
+    },
+    "assessment_results": {
+      "count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  },
+  "legacy_files": {
+    "total": 80,
+    "embedded": 80,
+    "external": 0,
+    "empty": 0
+  },
+  "foreign_key_violations": 0,
+  "remote_modified": false
+}

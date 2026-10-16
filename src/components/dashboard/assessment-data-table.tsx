@@ -1,826 +1,723 @@
 "use client";
-
-import { useState, useEffect, useCallback } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   Search,
+  ClipboardCheck,
+  HeartPulse,
+  Star,
+  Layers3,
+  CalendarDays,
+  RotateCcw,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  ChevronDown,
-  ChevronRight as ChevronRightIcon,
-  ArrowUpDown,
-  Calendar,
-  RotateCcw,
-  FileSpreadsheet,
 } from "lucide-react";
-import { StatusBadge } from "@/components/ui/badge";
-import { useToast } from "@/components/ui/toast";
-import {
-  ASSESSMENT_TYPE_LABELS,
-  ASSESSMENT_CATEGORY_LABELS,
-  ROUTES,
-} from "@/lib/constants";
-import { formatDateTimeThai, formatDateThai, cn } from "@/lib/utils";
+import { Button, LoadingState, useGlobalLoading } from "@/components/ui";
+import { CategoryIcon } from "@/components/assessment/category-icon";
 import {
   getDashboardSubmissions,
-  getExportData,
+  getDashboardSummary,
   type DashboardSubmissionsParams,
+  type DashboardItem,
+  type DashboardSummaryData,
 } from "@/lib/api";
-import { generateMultiSheetExcel } from "@/lib/excel-export";
-import type { AssessmentType, AssessmentCategory, RiskLevel } from "@/types";
-
-export interface AssessmentRecord {
-  id: number | string;
-  submission_code: string;
-  assessment_type: AssessmentType;
-  assessment_category: AssessmentCategory;
-  completed_at: string;
-  created_at?: string;
-  overall_score?: number | null;
-  overall_level?: RiskLevel | null;
-  has_layout?: boolean;
-}
-
+import { collectExportRecords } from "@/lib/v3/bulk-export";
+import {
+  REPORT_TYPES,
+  REPORT_CATEGORIES,
+  REPORT_GROUPS,
+} from "@/lib/v3/report-model";
+import { formatDateTimeThai } from "@/lib/utils";
+export type AssessmentRecord = DashboardItem;
 export type DatePreset = "all" | "today" | "7d" | "30d" | "custom";
-
-function formatDateToYMD(d: Date): string {
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+function resultLabel(item: DashboardItem) {
+  if (item.assessment_type === "environment")
+    return item.overall_level === "pass"
+      ? "ผ่าน"
+      : item.overall_level === "high_risk"
+        ? "ไม่ผ่าน"
+        : "ไม่มีข้อมูล";
+  if (item.assessment_type === "satisfaction")
+    return item.overall_score == null
+      ? "ไม่มีข้อมูล"
+      : `${item.overall_score.toFixed(2)} / 5`;
+  return (
+    (
+      {
+        pass: "อาการระดับต่ำ",
+        medium: "อาการระดับปานกลาง",
+        high_risk: "อาการระดับสูง",
+      } as Record<string, string>
+    )[item.overall_level || ""] || "ไม่มีข้อมูล"
+  );
 }
-
-function getPresetDates(preset: DatePreset): { startDate: string; endDate: string } {
-  const now = new Date();
-  const todayStr = formatDateToYMD(now);
-
-  if (preset === "today") {
-    return { startDate: todayStr, endDate: todayStr };
-  }
-  if (preset === "7d") {
-    const d = new Date(now);
-    d.setDate(d.getDate() - 6);
-    return { startDate: formatDateToYMD(d), endDate: todayStr };
-  }
-  if (preset === "30d") {
-    const d = new Date(now);
-    d.setDate(d.getDate() - 29);
-    return { startDate: formatDateToYMD(d), endDate: todayStr };
-  }
-  return { startDate: "", endDate: "" };
-}
-
-interface AssessmentDataTableProps {
-  data?: AssessmentRecord[];
-  className?: string;
-  initialPageSize?: number;
-  isLoading?: boolean;
-}
-
 export function AssessmentDataTable({
-  data = [],
-  className = "",
   initialPageSize = 10,
-  isLoading: initialLoading = false,
-}: AssessmentDataTableProps) {
-  const { showToast } = useToast();
-
-  // Filter States
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [selectedType, setSelectedType] = useState<string>("all");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [datePreset, setDatePreset] = useState<DatePreset>("all");
-  const [startDate, setStartDate] = useState<string>("");
-  const [endDate, setEndDate] = useState<string>("");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-
-  // Pagination States
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(initialPageSize);
-
-  // Data & Request States
-  const [items, setItems] = useState<AssessmentRecord[]>(data);
-  const [totalItems, setTotalItems] = useState<number>(data.length);
-  const [totalPages, setTotalPages] = useState<number>(Math.max(1, Math.ceil(data.length / initialPageSize)));
-  const [isLoading, setIsLoading] = useState<boolean>(initialLoading);
-  const [isExporting, setIsExporting] = useState<boolean>(false);
-
-  // Debounce search input (350ms)
+  className = "",
+}: {
+  initialPageSize?: number;
+  className?: string;
+}) {
+  const [filters, setFilters] = useState<DashboardSubmissionsParams>({
+      archived: "all",
+      date_basis: "created",
+      sort_order: "desc",
+    }),
+    [search, setSearch] = useState(""),
+    [debouncedSearch, setDebouncedSearch] = useState("");
+  const [page, setPage] = useState(1),
+    [limit, setLimit] = useState(initialPageSize),
+    [items, setItems] = useState<DashboardItem[]>([]),
+    [total, setTotal] = useState(0),
+    [summary, setSummary] = useState<DashboardSummaryData | null>(null),
+    [loading, setLoading] = useState(true),
+    [error, setError] = useState(""),
+    [refresh, setRefresh] = useState(0),
+    [datePreset, setDatePreset] = useState<DatePreset>("all");
+  const [exporting, setExporting] = useState(false),
+    [exportProgress, setExportProgress] = useState(""),
+    [exportError, setExportError] = useState("");
+  useGlobalLoading(exporting);
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedSearch(searchTerm);
+      setDebouncedSearch(search.trim());
+      setPage(1);
     }, 350);
     return () => clearTimeout(timer);
-  }, [searchTerm]);
-
-  // Fetch from API with full server-side query params
-  const fetchSubmissions = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const params: DashboardSubmissionsParams = {
-        page: currentPage,
-        limit: pageSize,
-        type: selectedType !== "all" ? selectedType : undefined,
-        category:
-          selectedType === "satisfaction"
-            ? undefined
-            : selectedCategory !== "all"
-            ? selectedCategory
-            : undefined,
-        search: debouncedSearch.trim() || undefined,
-        start_date: startDate || undefined,
-        end_date: endDate || undefined,
-        sort_order: sortOrder,
-      };
-
-      const res = await getDashboardSubmissions(params);
-      if (res.success && res.data) {
-        setItems(res.data.items as any);
-        setTotalItems(res.data.pagination.total);
-        setTotalPages(res.data.pagination.total_pages);
-      }
-    } catch (err) {
-      console.error("Failed to query submissions from API:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentPage, pageSize, selectedType, selectedCategory, debouncedSearch, startDate, endDate, sortOrder]);
-
-  // Trigger query whenever any query parameter changes
+  }, [search]);
+  const params = useMemo(
+    () => ({ ...filters, search: debouncedSearch || undefined }),
+    [filters, debouncedSearch],
+  );
   useEffect(() => {
-    fetchSubmissions();
-  }, [fetchSubmissions]);
-
-  // Handle Date Presets
-  const handlePresetChange = (preset: DatePreset) => {
-    setDatePreset(preset);
-    const { startDate: s, endDate: e } = getPresetDates(preset);
-    setStartDate(s);
-    setEndDate(e);
-    setCurrentPage(1);
-  };
-
-  const handleStartDateChange = (val: string) => {
-    setStartDate(val);
-    setDatePreset(val || endDate ? "custom" : "all");
-    setCurrentPage(1);
-  };
-
-  const handleEndDateChange = (val: string) => {
-    setEndDate(val);
-    setDatePreset(startDate || val ? "custom" : "all");
-    setCurrentPage(1);
-  };
-
-  const handleSortToggle = () => {
-    setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
-    setCurrentPage(1);
-  };
-
-  const handleResetFilters = () => {
-    setSearchTerm("");
-    setDebouncedSearch("");
-    setSelectedType("all");
-    setSelectedCategory("all");
-    setStartDate("");
-    setEndDate("");
-    setDatePreset("all");
-    setCurrentPage(1);
-  };
-
-  const isFilterActive =
-    searchTerm.trim() !== "" ||
-    selectedType !== "all" ||
-    selectedCategory !== "all" ||
-    startDate !== "" ||
-    endDate !== "" ||
-    datePreset !== "all";
-
-  const handleExportExcel = async () => {
-    if (isExporting) return;
-    setIsExporting(true);
-    try {
-      const res = await getExportData({
-        type: selectedType !== "all" ? selectedType : undefined,
-        category:
-          selectedType === "satisfaction"
-            ? undefined
-            : selectedCategory !== "all"
-            ? selectedCategory
-            : undefined,
-        search: debouncedSearch.trim() || undefined,
-        start_date: startDate || undefined,
-        end_date: endDate || undefined,
-        sort_order: sortOrder,
-      });
-
-      if (res.success) {
-        const count = res.data.submissions?.length || 0;
-        if (count === 0) {
-          showToast.warning("ไม่พบรายการข้อมูลตามเงื่อนไขที่เลือก", "ไม่มีข้อมูลสำหรับส่งออก");
-          return;
-        }
-
-        const dateStr = new Date().toISOString().slice(0, 10);
-        generateMultiSheetExcel(res.data, `save-check-export-${dateStr}.xlsx`);
-        showToast.success(`ส่งออกไฟล์ Excel เรียบร้อยแล้ว (${count} รายการ)`, "ส่งออกสำเร็จ");
+    let cancelled = false;
+    setLoading(true);
+    setError("");
+    setSummary(null);
+    if (
+      filters.start_date &&
+      filters.end_date &&
+      filters.start_date > filters.end_date
+    ) {
+      setError("วันที่เริ่มต้องไม่หลังวันสิ้นสุด");
+      setItems([]);
+      setTotal(0);
+      setLoading(false);
+      return;
+    }
+    Promise.all([
+      getDashboardSubmissions({ ...params, page, limit }),
+      getDashboardSummary(params),
+    ]).then(([rows, totals]) => {
+      if (cancelled) return;
+      if (!rows.success || !totals.success) {
+        setError(
+          !rows.success
+            ? rows.error.message
+            : !totals.success
+              ? totals.error.message
+              : "โหลดข้อมูลไม่สำเร็จ",
+        );
+        setItems([]);
+        setTotal(0);
       } else {
-        const errorMsg = res.error?.message || "ไม่สามารถดึงข้อมูลสำหรับส่งออกได้";
-        showToast.error(errorMsg, "เกิดข้อผิดพลาด");
+        setItems(rows.data.items);
+        setTotal(rows.data.total);
+        setSummary(totals.data);
       }
-    } catch (err: any) {
-      console.error("Export error:", err);
-      showToast.error(
-        err?.message || "เกิดข้อผิดพลาดในการส่งออก Excel กรุณาลองใหม่อีกครั้ง",
-        "ส่งออกไม่สำเร็จ"
+      setLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [params, page, limit, refresh, filters.start_date, filters.end_date]);
+  const change = (key: keyof DashboardSubmissionsParams, value: string) => {
+    if (key === "start_date" || key === "end_date") setDatePreset("custom");
+    setFilters((f) => ({
+      ...f,
+      [key]: value || undefined,
+      ...(key === "type" ? { category: undefined } : {}),
+    }));
+    setPage(1);
+  };
+  const resetFilters = () => {
+    setFilters({
+      archived: "all",
+      date_basis: "created",
+      sort_order: "desc",
+    });
+    setSearch("");
+    setDebouncedSearch("");
+    setDatePreset("all");
+    setPage(1);
+  };
+  const applyDatePreset = (preset: Exclude<DatePreset, "custom">) => {
+    const today = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Bangkok",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date());
+    const start = new Date(today + "T12:00:00Z");
+    start.setUTCDate(
+      start.getUTCDate() - (preset === "7d" ? 6 : preset === "30d" ? 29 : 0),
+    );
+    setFilters((f) => ({
+      ...f,
+      start_date:
+        preset === "all" ? undefined : start.toISOString().slice(0, 10),
+      end_date: preset === "all" ? undefined : today,
+    }));
+    setDatePreset(preset);
+    setPage(1);
+  };
+  async function exportAll() {
+    setExporting(true);
+    setExportError("");
+    setExportProgress("กำลังอ่านข้อมูล…");
+    try {
+      const records = await collectExportRecords(
+        { ...params, revision_scope: "latest" },
+        (done, count) => setExportProgress(`อ่านแล้ว ${done} / ${count} งาน`),
       );
+      if (!records.length) throw new Error("ไม่มีรายการตรงตัวกรอง");
+      const { exportReportRecords } = await import("@/lib/v3/report-export");
+      exportReportRecords(
+        records,
+        `safecheck-${new Date().toISOString().slice(0, 10)}.xlsx`,
+        "latest",
+      );
+      setExportProgress(
+        `ส่งออก ${new Set(records.map((r) => r.submission_code)).size} งานเรียบร้อยแล้ว`,
+      );
+    } catch (e) {
+      setExportError(e instanceof Error ? e.message : "ส่งออกไม่สำเร็จ");
+      setExportProgress("");
     } finally {
-      setIsExporting(false);
+      setExporting(false);
     }
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
-  };
-
-  const getTypeBadge = (type: AssessmentType) => {
-    switch (type) {
-      case "environment":
-        return (
-          <span className="inline-flex items-center rounded-full bg-emerald-500 px-2 py-0.5 text-[11px] font-semibold text-white tracking-wide">
-            สภาพแวดล้อม
-          </span>
-        );
-      case "health_risk":
-        return (
-          <span className="inline-flex items-center rounded-full bg-blue-600 px-2 py-0.5 text-[11px] font-semibold text-white tracking-wide">
-            สุขภาพ
-          </span>
-        );
-      case "satisfaction":
-        return (
-          <span className="inline-flex items-center rounded-full bg-amber-500 px-2 py-0.5 text-[11px] font-semibold text-white tracking-wide">
-            พึงพอใจ
-          </span>
-        );
-      default:
-        return (
-          <span className="inline-flex items-center rounded-full bg-gray-500 px-2 py-0.5 text-[11px] font-semibold text-white tracking-wide">
-            ทั่วไป
-          </span>
-        );
-    }
-  };
-
-  const startIndex = (currentPage - 1) * pageSize;
-
+  }
+  const average = (group: string) =>
+    summary?.satisfaction_avg_by_group[group] == null
+      ? "—"
+      : `${summary.satisfaction_avg_by_group[group]!.toFixed(2)} / 5`;
+  const select = (
+    label: string,
+    key: keyof DashboardSubmissionsParams,
+    options: Record<string, string>,
+    defaultValue = "all",
+  ) => (
+    <label className="max-w-full min-w-0">
+      <span className="sr-only">{label}</span>
+      <select
+        aria-label={label}
+        className="dashboard-filter-control max-w-full"
+        value={String(filters[key] ?? defaultValue)}
+        onChange={(e) => change(key, e.target.value)}
+      >
+        {Object.entries(options).map(([v, t]) => (
+          <option key={v} value={v}>
+            {t}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
   return (
-    <div className={cn("dashboard-history flex flex-col gap-3", className)}>
-      {/* Section Header with Export Excel Action Button */}
-      <div className="flex items-center justify-between gap-2">
-        <div className="min-w-0 flex-1">
-          <h2 className="text-card-title font-semibold text-text-primary">
-            ประวัติการประเมิน
-          </h2>
-          <p className="text-caption text-text-secondary truncate">
-            ประวัติการประเมินทั้งหมด พร้อมค้นหาและแบ่งหน้า
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={handleExportExcel}
-          disabled={isExporting || totalItems === 0}
-          title="ส่งออกรายงาน Excel (แยกตามประเภทการประเมิน)"
-          className="success-cta inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-button px-3 py-1.5 text-caption font-semibold text-white transition-all hover:brightness-105 active:scale-[.99] disabled:cursor-not-allowed disabled:opacity-50"
+    <div className={`flex flex-col gap-4 ${className}`}>
+      <section
+        className="flex flex-col gap-6"
+        aria-label="สรุปตามตัวกรอง"
+        data-dashboard-summary
+      >
+        <div
+          className="grid grid-cols-2 gap-3 min-[1440px]:grid-cols-4 min-[1440px]:gap-4"
+          data-dashboard-kpis
         >
-          {isExporting ? (
-            <>
-              <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              <span>กำลังส่งออก...</span>
-            </>
-          ) : (
-            <>
-              <FileSpreadsheet className="h-3.5 w-3.5" />
-              <span>ส่งออก Excel</span>
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* Search & Filter Controls Card */}
-      <div className="space-y-2.5 rounded-xl border border-gray-200 bg-white p-3 shadow-xs">
-        {/* Row 1: Search, Type Filter & Sort */}
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          {/* Search Input */}
-          <div className="relative flex-1 min-w-50 max-w-sm">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 pointer-events-none" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
-              placeholder="ค้นหารหัส เช่น SUB-..."
-            className="h-11 w-full rounded-[14px] border border-gray-200 bg-white/95 pl-9 pr-3 text-[12px] text-gray-800 placeholder:text-[#A3B1C4] focus:border-primary focus:bg-white focus:outline-none transition-all"
-            />
-          </div>
-
-          {/* Type Dropdown, Category Dropdown & Sort Button */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            {/* Type Dropdown */}
-            <div className="relative">
-              <select
-                value={selectedType}
-                onChange={(e) => {
-                  const newType = e.target.value;
-                  setSelectedType(newType);
-                  if (newType === "satisfaction") {
-                    setSelectedCategory("all");
-                  }
-                  setCurrentPage(1);
-                }}
-                className="h-8.5 rounded-lg border border-gray-200 bg-white pl-2.5 pr-6 text-[12px] font-medium text-gray-700 focus:border-primary focus:outline-none transition-all cursor-pointer appearance-none shadow-2xs"
-              >
-                <option value="all">ทุกประเภท</option>
-                <option value="environment">สภาพแวดล้อม</option>
-                <option value="health_risk">ความเสี่ยงสุขภาพ</option>
-                <option value="satisfaction">ความพึงพอใจ</option>
-              </select>
-              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-gray-400 pointer-events-none" />
-            </div>
-
-            {/* Category Dropdown */}
-            <div className="relative">
-              <select
-                value={selectedType === "satisfaction" ? "all" : selectedCategory}
-                disabled={selectedType === "satisfaction"}
-                onChange={(e) => {
-                  setSelectedCategory(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className={cn(
-                  "h-8.5 rounded-lg border pl-2.5 pr-6 text-[12px] font-medium transition-all appearance-none shadow-2xs",
-                  selectedType === "satisfaction"
-                    ? "border-gray-200 bg-gray-100/90 text-gray-400 cursor-not-allowed select-none"
-                    : "border-gray-200 bg-white text-gray-700 focus:border-primary focus:outline-none cursor-pointer"
-                )}
-                title={
-                  selectedType === "satisfaction"
-                    ? "ความพึงพอใจไม่มีหมวดหมู่ย่อย"
-                    : "เลือกหมวดหมู่ที่ต้องการกรอง"
-                }
-              >
-                {selectedType === "satisfaction" ? (
-                  <option value="all">ทั่วไป (ไม่มีหมวด)</option>
-                ) : (
-                  <>
-                    <option value="all">ทุกหมวดหมู่</option>
-                    <option value="light">แสงสว่าง</option>
-                    <option value="noise">เสียง</option>
-                    <option value="heat">ความร้อน</option>
-                  </>
-                )}
-              </select>
-              <ChevronDown
-                className={cn(
-                  "absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 pointer-events-none",
-                  selectedType === "satisfaction" ? "text-gray-300" : "text-gray-400"
-                )}
-              />
-            </div>
-
-            <button
-              type="button"
-              onClick={handleSortToggle}
-              title={sortOrder === "desc" ? "เรียงจากล่าสุดไปเก่าสุด" : "เรียงจากเก่าสุดไปล่าสุด"}
-              className={cn(
-                "inline-flex h-8.5 items-center gap-1 rounded-lg border px-2.5 text-[11px] font-medium transition-all cursor-pointer shrink-0 shadow-2xs",
-                sortOrder === "asc"
-                  ? "border-primary/40 bg-primary/5 text-primary"
-                  : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-              )}
-            >
-              <ArrowUpDown className="h-3 w-3" />
-              <span>{sortOrder === "desc" ? "ล่าสุด" : "เก่าสุด"}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Row 2: Date Range Filter & Presets */}
-        <div className="pt-2 border-t border-gray-100 flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
-          {/* Preset Buttons */}
-          <div className="flex items-center gap-1 overflow-x-auto pb-1 lg:pb-0 text-[11px] scrollbar-none">
-            <span className="text-gray-400 font-medium flex items-center gap-1 mr-1 shrink-0">
-              <Calendar className="h-3.5 w-3.5" />
-              <span>ช่วงเวลา:</span>
-            </span>
-
-            {[
-              { id: "all", label: "ทั้งหมด" },
-              { id: "today", label: "วันนี้" },
-              { id: "7d", label: "7 วันล่าสุด" },
-              { id: "30d", label: "30 วันล่าสุด" },
-            ].map((preset) => {
-              const isActive = datePreset === preset.id;
-              return (
-                <button
-                  key={preset.id}
-                  type="button"
-                  onClick={() => handlePresetChange(preset.id as DatePreset)}
-                  className={cn(
-                    "cursor-pointer whitespace-nowrap rounded-full px-3 py-1.5 font-medium transition-all",
-                    isActive
-                      ? "bg-[linear-gradient(135deg,#2563EB,#4F6BFF)] text-white shadow-[0_6px_14px_rgba(79,107,255,.22)]"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200/70 hover:text-gray-900"
-                  )}
+          {[
+            {
+              label: "ประเมินทั้งหมด",
+              value: summary?.total_submissions ?? 0,
+              Icon: Layers3,
+              icon: "icon-primary",
+              color: "text-primary",
+              unit: "รายการ",
+            },
+            {
+              label: "สภาพแวดล้อม",
+              value: summary?.by_group.environment ?? 0,
+              Icon: ClipboardCheck,
+              icon: "icon-environment",
+              color: "text-emerald-600",
+              unit: "รายการ",
+            },
+            {
+              label: "อาการทางสุขภาพ",
+              value: summary?.by_group.health ?? 0,
+              Icon: HeartPulse,
+              icon: "icon-health",
+              color: "text-rose-500",
+              unit: "รายการ",
+            },
+            {
+              label: "ความพึงพอใจเฉลี่ย",
+              value: summary?.by_type.satisfaction
+                ? `${summary.satisfaction_avg.toFixed(2)} / 5`
+                : "ไม่มีข้อมูล",
+              Icon: Star,
+              icon: "icon-satisfaction",
+              color: "text-amber-500",
+              unit: "",
+            },
+          ].map(({ label, value, Icon, icon, color, unit }) => (
+            <div className="kpi-card glass-card p-4" key={label}>
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="text-caption text-text-secondary font-semibold">
+                  {label}
+                </h3>
+                <span
+                  className={`icon-container icon-container-sm ${icon}`}
+                  aria-hidden="true"
                 >
-                  {preset.label}
-                </button>
+                  <Icon className="h-5 w-5" />
+                </span>
+              </div>
+              <p className={`mt-2 text-[28px] leading-none font-bold ${color}`}>
+                {loading ? "…" : value}
+              </p>
+              {unit && (
+                <span className="text-text-muted mt-1.5 block text-[11px] font-medium">
+                  {unit}
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+        <div>
+          <h2 className="text-card-title mb-3 font-semibold">แยกตามประเภท</h2>
+          <div className="flex flex-col gap-2" data-dashboard-form-counts>
+            {(["environment", "health_risk"] as const).map((type) => {
+              const Icon = type === "environment" ? ClipboardCheck : HeartPulse;
+              return (
+                <div className="glass-card rounded-2xl px-4 py-3" key={type}>
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`icon-container icon-container-sm ${type === "environment" ? "icon-environment" : "icon-health"}`}
+                      aria-hidden="true"
+                    >
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <h3 className="text-small font-medium">
+                      {REPORT_TYPES[type]}
+                    </h3>
+                    <span className="text-small text-text-secondary ml-auto">
+                      {loading
+                        ? "…"
+                        : (summary?.by_group[
+                            type === "environment" ? "environment" : "health"
+                          ] ?? 0)}{" "}
+                      รายการ
+                    </span>
+                  </div>
+                  <div className="border-border/50 mt-3 grid grid-cols-1 gap-2 border-t pt-3 min-[1440px]:grid-cols-4 sm:grid-cols-2">
+                    {(["light", "noise", "heat", "general"] as const).map(
+                      (category) => (
+                        <div
+                          key={category}
+                          className="text-small flex min-w-0 items-center gap-2"
+                          data-dashboard-form-count
+                        >
+                          <CategoryIcon category={category} small />
+                          <span>{REPORT_CATEGORIES[category]}</span>
+                          <span className="ml-auto font-semibold">
+                            {loading
+                              ? "…"
+                              : (summary?.by_form[
+                                  `${category === "general" ? "satisfaction" : type}:${type === "environment" ? "environment" : "health"}:${category}`
+                                ] ?? 0)}
+                          </span>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                </div>
               );
             })}
           </div>
-
-          {/* Custom Date Pickers */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <div className="flex items-center gap-1 bg-gray-50/80 rounded-lg border border-gray-200 p-1 text-[11px]">
-              <input
-                type="date"
-                value={startDate}
-                max={endDate || undefined}
-                onChange={(e) => handleStartDateChange(e.target.value)}
-                className="bg-white border border-gray-200 rounded px-1.5 py-0.5 text-gray-700 text-[11px] focus:outline-none focus:border-primary cursor-pointer"
-                title="วันที่เริ่มต้น"
-              />
-              <span className="text-gray-400 font-medium text-[10px]">ถึง</span>
-              <input
-                type="date"
-                value={endDate}
-                min={startDate || undefined}
-                onChange={(e) => handleEndDateChange(e.target.value)}
-                className="bg-white border border-gray-200 rounded px-1.5 py-0.5 text-gray-700 text-[11px] focus:outline-none focus:border-primary cursor-pointer"
-                title="วันที่สิ้นสุด"
-              />
-            </div>
-
-            {/* Clear Filters Button */}
-            {isFilterActive && (
-              <button
-                type="button"
-                onClick={handleResetFilters}
-                className="inline-flex h-7 items-center gap-1 rounded-md px-2 text-[11px] font-medium text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-                title="ล้างตัวกรองทั้งหมด"
-              >
-                <RotateCcw className="h-3 w-3" />
-                <span>ล้างตัวกรอง</span>
-              </button>
-            )}
-          </div>
         </div>
-
-        {/* Filter Summary Status */}
-        <div className="flex items-center justify-between text-[11px] text-gray-500 pt-1">
-          <div className="flex items-center gap-1.5">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            <span>
-              แสดง <strong>{totalItems}</strong> รายการ
-            </span>
-            {(startDate || endDate) && (
-              <span className="text-primary font-medium ml-1">
-                • ช่วงวันที่: {startDate ? formatDateThai(startDate) : "เริ่มต้น"} –{" "}
-                {endDate ? formatDateThai(endDate) : "ปัจจุบัน"}
-              </span>
-            )}
-            {debouncedSearch && (
-              <span className="text-gray-600 font-medium ml-1">
-                • คำค้น: &quot;{debouncedSearch}&quot;
-              </span>
-            )}
-            {selectedCategory !== "all" && selectedType !== "satisfaction" && (
-              <span className="text-primary font-medium ml-1">
-                • หมวดหมู่: {ASSESSMENT_CATEGORY_LABELS[selectedCategory as keyof typeof ASSESSMENT_CATEGORY_LABELS] || selectedCategory}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Main Table Container */}
-      <div className="rounded-xl border border-gray-200 bg-white shadow-xs overflow-hidden">
-        {isLoading ? (
-          <div className="py-8 px-4">
-            {/* Desktop Skeleton View */}
-            <div className="hidden md:block">
-              <div className="mb-3 flex items-center justify-center gap-2 text-primary">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                <span className="text-[12px] font-medium">กำลังค้นหาข้อมูลจากระบบ...</span>
+        <div className="grid grid-cols-1 gap-3 min-[1440px]:grid-cols-2">
+          {(["environment", "health"] as const).map((group) => (
+            <div className="glass-card rounded-2xl p-4" key={group}>
+              <div className="flex items-center gap-3">
+                <span
+                  className="icon-container icon-container-sm icon-satisfaction"
+                  aria-hidden="true"
+                >
+                  <Star className="h-5 w-5" />
+                </span>
+                <h3 className="font-semibold">
+                  <span className="text-caption text-text-secondary block">
+                    ความพึงพอใจ
+                  </span>
+                  {REPORT_GROUPS[group]}
+                </h3>
               </div>
-              <div className="divide-y divide-gray-100 rounded-lg border border-gray-100 overflow-hidden">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between gap-4 py-3 px-4 bg-gray-50/40 animate-pulse"
-                  >
-                    <div className="h-3.5 w-24 bg-gray-200 rounded" />
-                    <div className="h-3.5 w-32 bg-gray-200 rounded" />
-                    <div className="h-5 w-20 bg-gray-200 rounded-full" />
-                    <div className="h-3.5 w-16 bg-gray-200 rounded" />
-                    <div className="h-5 w-24 bg-gray-200 rounded-full" />
-                    <div className="h-3.5 w-12 bg-gray-200 rounded" />
-                    <div className="h-3.5 w-10 bg-gray-200 rounded" />
+              <p className="text-small mt-3 font-semibold text-amber-500">
+                คะแนนเฉลี่ยรวม {average(group)}
+              </p>
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                {[
+                  "ด้านเนื้อหา",
+                  "ด้านการออกแบบ",
+                  "ด้านการใช้งาน",
+                  "ด้านประโยชน์",
+                ].map((label, i) => (
+                  <div key={label}>
+                    <p className="text-caption">{label}</p>
+                    <p className="font-semibold">
+                      {loading ||
+                      summary?.satisfaction_dimensions_by_group[group]?.[i] ==
+                        null
+                        ? "—"
+                        : `${summary.satisfaction_dimensions_by_group[group][i]!.toFixed(2)} / 5`}
+                    </p>
                   </div>
                 ))}
               </div>
             </div>
-
-            {/* Mobile Skeleton View */}
-            <div className="md:hidden space-y-2.5">
-              <div className="mb-2 flex items-center justify-center gap-2 text-primary">
-                <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                <span className="text-[11px] font-medium">กำลังโหลดข้อมูล...</span>
-              </div>
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className="p-3 rounded-lg border border-gray-100 bg-gray-50/40 animate-pulse space-y-2"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="h-3.5 w-28 bg-gray-200 rounded" />
-                    <div className="h-4 w-14 bg-gray-200 rounded-full" />
-                  </div>
-                  <div className="h-3 w-36 bg-gray-200 rounded" />
-                  <div className="h-2.5 w-24 bg-gray-200 rounded" />
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : items.length === 0 ? (
-          <div className="py-10 text-center text-gray-500">
-            <p className="text-[13px] font-medium text-gray-700">
-              {isFilterActive
-                ? "ไม่พบข้อมูลที่ตรงกับเงื่อนไขการค้นหาหรือตัวกรองที่เลือก"
-                : "ยังไม่มีรายการประเมินในระบบ"}
-            </p>
-            {isFilterActive ? (
-              <button
-                type="button"
-                onClick={handleResetFilters}
-                className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 text-[12px] font-medium transition-colors cursor-pointer"
-              >
-                <RotateCcw className="h-3.5 w-3.5" />
-                <span>ล้างตัวกรองทั้งหมด</span>
-              </button>
-            ) : (
-              <p className="mt-1 text-[11px] text-gray-400">
-                เมื่อบันทึกแบบประเมิน ข้อมูลจะแสดงที่นี่อัตโนมัติ
-              </p>
+          ))}
+        </div>
+      </section>
+      <section
+        className="legacy-report-heading print:hidden"
+        aria-label="ส่งออกตามตัวกรอง"
+      >
+        <div>
+          <h2 className="text-card-title font-semibold">ประวัติการประเมิน</h2>
+          <p className="text-small text-text-secondary mt-1">
+            ประวัติการประเมินทั้งหมด พร้อมค้นหาและแบ่งหน้า
+          </p>
+        </div>
+        <Button
+          size="sm"
+          className="legacy-export-button"
+          disabled={loading || exporting || !!error || !total}
+          onClick={exportAll}
+        >
+          {exporting ? "กำลังส่งออก…" : "ส่งออก Excel ทุกงานตามตัวกรอง"}
+        </Button>
+        {exportProgress && (
+          <p role="status" className="mt-2">
+            {exportProgress}
+          </p>
+        )}
+        {exportError && <p role="alert">{exportError}</p>}
+      </section>
+      <section
+        className="dashboard-filters legacy-report-filters"
+        aria-label="ตัวกรองรายงาน"
+      >
+        <div className="legacy-filter-top">
+          <label className="legacy-report-search">
+            <Search aria-hidden="true" />
+            <input
+              aria-label="ค้นหารายงาน"
+              placeholder="ค้นหารหัส / ชื่อ / สถานที่"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              maxLength={100}
+            />
+          </label>
+          <div className="legacy-filter-options">
+            {/* UI types are assessment groups; satisfaction is the general category within each group. */}
+            {select("ประเภท", "group", { all: "ทุกประเภท", ...REPORT_GROUPS })}
+            {select("หมวด", "category", {
+              all: "ทุกหมวด",
+              ...REPORT_CATEGORIES,
+            })}
+            {select(
+              "เรียงวันที่",
+              "sort_order",
+              { desc: "ใหม่ไปเก่า", asc: "เก่าไปใหม่" },
+              "desc",
             )}
           </div>
+        </div>
+        <div className="legacy-filter-bottom">
+          <div className="legacy-date-presets" aria-label="ช่วงเวลา">
+            <span className="legacy-period-label">
+              <CalendarDays aria-hidden="true" />
+              ช่วงเวลา:
+            </span>
+            {(
+              [
+                { id: "all", label: "ทั้งหมด" },
+                { id: "today", label: "วันนี้" },
+                { id: "7d", label: "7 วันล่าสุด" },
+                { id: "30d", label: "30 วันล่าสุด" },
+              ] as const
+            ).map((preset) => (
+              <button
+                key={preset.id}
+                type="button"
+                aria-pressed={datePreset === preset.id}
+                onClick={() => applyDatePreset(preset.id)}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+          <div className="legacy-filter-dates">
+            {select(
+              "กรองช่วงวันที่ตาม",
+              "date_basis",
+              {
+                latest_measurement: "วันตรวจล่าสุด / ส่งแบบประเมิน",
+                created: "วันสร้างงาน",
+              },
+              "created",
+            )}
+            <div className="dashboard-date-range sm:w-72">
+              <label className="min-w-0">
+                <span className="sr-only">วันที่เริ่ม</span>
+                <span className="dashboard-filter-control temporal-input-shell">
+                  <input
+                    aria-label="วันที่เริ่ม"
+                    type="date"
+                    className="temporal-input h-full outline-none"
+                    value={filters.start_date ?? ""}
+                    onChange={(e) => change("start_date", e.target.value)}
+                  />
+                </span>
+              </label>
+              <span className="text-text-secondary text-xs">ถึง</span>
+              <label className="min-w-0">
+                <span className="sr-only">วันที่สิ้นสุด</span>
+                <span className="dashboard-filter-control temporal-input-shell">
+                  <input
+                    aria-label="วันที่สิ้นสุด"
+                    type="date"
+                    className="temporal-input h-full outline-none"
+                    value={filters.end_date ?? ""}
+                    onChange={(e) => change("end_date", e.target.value)}
+                  />
+                </span>
+              </label>
+            </div>
+
+            <button
+              type="button"
+              className="legacy-clear-filters"
+              onClick={resetFilters}
+            >
+              <RotateCcw aria-hidden="true" />
+              ล้างตัวกรอง
+            </button>
+          </div>
+        </div>
+        <p className="legacy-filter-count">
+          <span aria-hidden="true" />
+          แสดง <strong>{total}</strong> รายการ
+        </p>
+      </section>
+      <p className="sr-only">
+        วันที่แสดงตามเวลาไทย (UTC+7) · สภาพแวดล้อมใช้เวลาตรวจของรอบล่าสุด
+        ส่วนแบบสอบถามใช้เวลาส่งแบบประเมิน ·
+        การแก้ไขข้อมูลมีเวลาบันทึกแยกในประวัติ
+      </p>
+      {error && (
+        <div role="alert">
+          {error}{" "}
+          <Button variant="outline" onClick={() => setRefresh((n) => n + 1)}>
+            ลองใหม่
+          </Button>
+        </div>
+      )}
+      <section
+        className="legacy-report-table overflow-hidden"
+        aria-label="รายการงาน"
+      >
+        <p className="sr-only">รายการงาน ({total}) · แสดงผลล่าสุดต่อรหัส</p>
+        {loading ? (
+          <LoadingState />
         ) : (
-          <>
-            {/* Desktop Table View (>= md) */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-170">
-                <thead>
-                  <tr className="border-b border-gray-100 bg-gray-50/50 text-[12px] font-semibold text-gray-500">
-                    <th className="py-2.5 px-3.5 whitespace-nowrap">วันที่และเวลา</th>
-                    <th className="py-2.5 px-3.5 whitespace-nowrap">รหัสการประเมิน</th>
-                    <th className="py-2.5 px-3.5 whitespace-nowrap text-center">ประเภท</th>
-                    <th className="py-2.5 px-3.5 whitespace-nowrap">หมวดหมู่</th>
-                    <th className="py-2.5 px-3.5 whitespace-nowrap text-center">ผลการประเมิน</th>
-                    <th className="py-2.5 px-3.5 whitespace-nowrap text-center">ผังห้อง</th>
-                    <th className="py-2.5 px-3.5 whitespace-nowrap text-right">ดำเนินการ</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100 text-[13px] text-gray-800">
-                  {items.map((item) => {
-                    const categoryLabel =
-                      ASSESSMENT_CATEGORY_LABELS[item.assessment_category] ||
-                      item.assessment_category;
-
-                    return (
-                      <tr
-                        key={item.submission_code}
-                        className="hover:bg-blue-50/30 transition-colors"
-                      >
-                        {/* Date & Time */}
-                        <td
-                          suppressHydrationWarning
-                          className="py-2.5 px-3.5 text-gray-500 text-[12px] whitespace-nowrap"
-                        >
-                          {formatDateTimeThai(item.completed_at || (item as any).created_at)}
-                        </td>
-
-                        {/* Submission Code */}
-                        <td className="py-2.5 px-3.5 whitespace-nowrap">
-                          <Link
-                            href={`${ROUTES.RESULT}?submissionId=${item.submission_code}`}
-                            className="font-mono text-primary font-semibold hover:underline"
-                          >
-                            {item.submission_code}
-                          </Link>
-                        </td>
-
-                        {/* Type Badge */}
-                        <td className="py-2.5 px-3.5 text-center whitespace-nowrap">
-                          {getTypeBadge(item.assessment_type)}
-                        </td>
-
-                        {/* Category */}
-                        <td className="py-2.5 px-3.5 font-medium text-gray-700 whitespace-nowrap">
-                          {categoryLabel}
-                        </td>
-
-                        {/* Result Status */}
-                        <td className="py-2.5 px-3.5 text-center whitespace-nowrap">
-                          {item.overall_level ? (
-                            <div className="inline-flex items-center gap-1">
-                              <StatusBadge status={item.overall_level} />
-                              {item.overall_score !== undefined &&
-                                item.overall_score !== null && (
-                                  <span className="text-[11px] font-medium text-gray-500">
-                                    ({item.overall_score})
-                                  </span>
-                                )}
-                            </div>
-                          ) : (
-                            <span className="text-gray-400">—</span>
-                          )}
-                        </td>
-
-                        {/* Layout Status */}
-                        <td className="py-2.5 px-3.5 text-center whitespace-nowrap">
-                          {item.assessment_type === "environment" ? (
-                            item.has_layout ? (
-                              <span className="inline-flex items-center rounded-md bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700">
-                                มีผังห้อง
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center rounded-md bg-amber-50 border border-amber-200 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700">
-                                รอแนบ
-                              </span>
-                            )
-                          ) : (
-                            <span className="text-gray-300">—</span>
-                          )}
-                        </td>
-
-                        {/* Action */}
-                        <td className="py-2.5 px-3.5 text-right whitespace-nowrap">
-                          <Link
-                            href={`${ROUTES.RESULT}?submissionId=${item.submission_code}`}
-                            className="inline-flex items-center gap-1 text-[12px] font-medium text-primary hover:underline"
-                          >
-                            <span>ดูผล</span>
-                            <ChevronRightIcon className="h-3.5 w-3.5" />
-                          </Link>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile Compact List View (< md) */}
-            <div className="md:hidden divide-y divide-gray-100">
-              {items.map((item) => {
-                const typeLabel =
-                  ASSESSMENT_TYPE_LABELS[item.assessment_type] || item.assessment_type;
-                const categoryLabel =
-                  ASSESSMENT_CATEGORY_LABELS[item.assessment_category] ||
-                  item.assessment_category;
-
-                return (
-                  <Link
+          <div
+            className="overflow-x-auto"
+            role="region"
+            aria-label="ตารางรายการประเมิน"
+            tabIndex={0}
+          >
+            <table
+              className="w-full min-w-[960px] border-collapse text-left"
+              aria-label="รายการประเมิน"
+            >
+              <thead>
+                <tr className="border-b border-gray-100 bg-gray-50/50 text-xs font-semibold text-gray-500">
+                  {[
+                    "วันที่และเวลา",
+                    "รหัสการประเมิน",
+                    "ประเภท",
+                    "หมวดหมู่",
+                    "ผู้ตรวจ / ผู้ตอบ",
+                    "ผลการประเมิน",
+                    "แผนผัง",
+                    "ดำเนินการ",
+                  ].map((label) => (
+                    <th
+                      scope="col"
+                      className="px-4 py-3 whitespace-nowrap"
+                      key={label}
+                    >
+                      {label}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody
+                className="divide-y divide-gray-100 text-sm text-gray-800"
+                data-dashboard-list
+              >
+                {items.map((item) => (
+                  <tr
                     key={item.submission_code}
-                    href={`${ROUTES.RESULT}?submissionId=${item.submission_code}`}
-                    className="flex items-center justify-between py-2 px-3 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                    className="transition-colors hover:bg-blue-50/30"
                   >
-                    {/* Left Column: Code + Info */}
-                    <div className="min-w-0 flex-1 pr-2">
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-mono text-[12px] font-bold text-primary truncate">
-                          {item.submission_code}
-                        </span>
-                        {item.assessment_type === "environment" && (
-                          item.has_layout ? (
-                            <span className="rounded bg-emerald-50 border border-emerald-200 px-1 py-0.2 text-[9px] font-semibold text-emerald-700 shrink-0">
-                              มีผัง
-                            </span>
-                          ) : (
-                            <span className="rounded bg-amber-50 border border-amber-200 px-1 py-0.2 text-[9px] font-semibold text-amber-700 shrink-0">
-                              รอแนบ
-                            </span>
-                          )
-                        )}
-                      </div>
-                      <p className="mt-0.5 text-[11px] text-gray-500 truncate">
-                        {typeLabel} • {categoryLabel}
-                      </p>
-                      <p
-                        suppressHydrationWarning
-                        className="text-[10px] text-gray-400"
+                    <td className="px-4 py-3 text-xs whitespace-nowrap text-gray-500">
+                      {formatDateTimeThai(item.created_at)}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <Link
+                        className="action-button action-button-sm font-mono"
+                        href={`/result?submissionId=${encodeURIComponent(item.submission_code)}`}
                       >
-                        {formatDateTimeThai(item.completed_at || (item as any).created_at)}
-                      </p>
-                    </div>
-
-                    {/* Right Column: Status Badge & Chevron */}
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      {item.overall_level && (
-                        <StatusBadge status={item.overall_level} className="text-[10px] px-2 py-0.5" />
+                        {item.submission_code}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span
+                        className={`legacy-type-badge type-${item.assessment_group === "environment" ? "environment" : "health_risk"}`}
+                      >
+                        {REPORT_GROUPS[item.assessment_group]}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      {REPORT_CATEGORIES[item.assessment_category]}
+                    </td>
+                    <td className="px-4 py-3">
+                      {item.display_name || "—"}
+                      {item.location && (
+                        <p className="text-caption text-text-secondary">
+                          {item.location}
+                        </p>
                       )}
-                      <ChevronRightIcon className="h-4 w-4 text-gray-400" />
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </>
-        )}
-
-        {/* Compact Pagination Footer */}
-        {totalItems > 0 && (
-          <div className="flex items-center justify-between border-t border-gray-100 bg-gray-50/50 px-3 py-2 text-[11px] text-gray-500">
-            {/* Range and page size */}
-            <div className="flex items-center gap-2">
-              <span>
-                <strong>{startIndex + 1}</strong>-
-                <strong>{Math.min(startIndex + pageSize, totalItems)}</strong> จาก{" "}
-                <strong>{totalItems}</strong>
-              </span>
-
-              <div className="hidden sm:flex items-center gap-1">
-                <span className="text-gray-400">|</span>
-                <select
-                  value={pageSize}
-                  onChange={(e) => {
-                    setPageSize(Number(e.target.value));
-                    setCurrentPage(1);
-                  }}
-                  className="rounded border border-gray-200 bg-white px-1.5 py-0.5 text-[11px] text-gray-700 focus:outline-none cursor-pointer"
-                >
-                  <option value={10}>10/หน้า</option>
-                  <option value={20}>20/หน้า</option>
-                  <option value={50}>50/หน้า</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Navigation Buttons */}
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => handlePageChange(1)}
-                disabled={currentPage === 1}
-                title="หน้าแรก"
-                className="inline-flex h-6 w-6 items-center justify-center rounded border border-gray-200 bg-white text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
-              >
-                <ChevronsLeft className="h-3 w-3" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                title="ก่อนหน้า"
-                className="inline-flex h-6 w-6 items-center justify-center rounded border border-gray-200 bg-white text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
-              >
-                <ChevronLeft className="h-3 w-3" />
-              </button>
-
-              <span className="px-2 text-[11px] font-medium text-gray-700">
-                {currentPage} / {totalPages}
-              </span>
-
-              <button
-                type="button"
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                title="ถัดไป"
-                className="inline-flex h-6 w-6 items-center justify-center rounded border border-gray-200 bg-white text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
-              >
-                <ChevronRight className="h-3 w-3" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handlePageChange(totalPages)}
-                disabled={currentPage === totalPages}
-                title="หน้าสุดท้าย"
-                className="inline-flex h-6 w-6 items-center justify-center rounded border border-gray-200 bg-white text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
-              >
-                <ChevronsRight className="h-3 w-3" />
-              </button>
-            </div>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span
+                        className={`legacy-result-badge ${item.assessment_type === "satisfaction" ? "bg-violet-50 text-violet-600" : item.overall_level === "high_risk" ? "bg-red-50 text-red-600" : item.overall_level === "medium" ? "bg-amber-50 text-amber-700" : item.overall_level === "pass" ? "bg-green-50 text-green-700" : "bg-gray-50 text-gray-500"}`}
+                      >
+                        {resultLabel(item)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {item.assessment_type === "environment"
+                        ? item.has_layout
+                          ? "แนบแล้ว"
+                          : "ยังไม่แนบ"
+                        : "—"}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <Link
+                        className="action-button action-button-sm"
+                        href={`/result?submissionId=${encodeURIComponent(item.submission_code)}`}
+                      >
+                        ดูผลล่าสุด{" "}
+                        <ChevronRight
+                          aria-hidden="true"
+                          className="h-3.5 w-3.5"
+                        />
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+              {!items.length && (
+                <tbody>
+                  <tr>
+                    <td
+                      colSpan={8}
+                      className="text-text-secondary p-6 text-center"
+                    >
+                      ไม่พบรายการตรงตัวกรอง
+                    </td>
+                  </tr>
+                </tbody>
+              )}
+            </table>
           </div>
         )}
-      </div>
+        <div className="dashboard-pagination legacy-report-pagination print:hidden">
+          <div className="legacy-page-count">
+            <span>
+              {total ? (page - 1) * limit + 1 : 0}–
+              {Math.min(page * limit, total)} จาก <strong>{total}</strong>
+            </span>
+            <span aria-hidden="true">|</span>
+            <select
+              aria-label="จำนวนต่อหน้า"
+              value={limit}
+              onChange={(e) => {
+                setLimit(Number(e.target.value));
+                setPage(1);
+              }}
+            >
+              {[10, 20, 50].map((n) => (
+                <option key={n} value={n}>
+                  {n}/หน้า
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="legacy-page-actions">
+            <button
+              type="button"
+              aria-label="หน้าแรกของตาราง"
+              disabled={loading || page === 1}
+              onClick={() => setPage(1)}
+            >
+              <ChevronsLeft />
+            </button>
+            <button
+              type="button"
+              aria-label="ก่อนหน้า"
+              disabled={loading || page === 1}
+              onClick={() => setPage(page - 1)}
+            >
+              <ChevronLeft />
+            </button>
+            <span>
+              หน้า {page} / {Math.max(1, Math.ceil(total / limit))}
+            </span>
+            <button
+              type="button"
+              aria-label="ถัดไป"
+              disabled={loading || page * limit >= total}
+              onClick={() => setPage(page + 1)}
+            >
+              <ChevronRight />
+            </button>
+            <button
+              type="button"
+              aria-label="หน้าสุดท้าย"
+              disabled={loading || page * limit >= total}
+              onClick={() => setPage(Math.max(1, Math.ceil(total / limit)))}
+            >
+              <ChevronsRight />
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

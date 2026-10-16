@@ -1,0 +1,59 @@
+{
+  "original_fields_unchanged": true,
+  "tables": {
+    "submissions": {
+      "before": 1159,
+      "after": 1159,
+      "original_rows_preserved": 1159
+    },
+    "respondent_profiles": {
+      "before": 1010,
+      "after": 1010,
+      "original_rows_preserved": 1010
+    },
+    "respondent_work_infos": {
+      "before": 1010,
+      "after": 1010,
+      "original_rows_preserved": 1010
+    },
+    "environment_inspections": {
+      "before": 96,
+      "after": 96,
+      "original_rows_preserved": 96
+    },
+    "environment_measurement_points": {
+      "before": 962,
+      "after": 962,
+      "original_rows_preserved": 962
+    },
+    "health_risk_answers": {
+      "before": 10100,
+      "after": 10100,
+      "original_rows_preserved": 10100
+    },
+    "satisfaction_answers": {
+      "before": 848,
+      "after": 848,
+      "original_rows_preserved": 848
+    },
+    "assessment_results": {
+      "before": 0,
+      "after": 0,
+      "original_rows_preserved": 0
+    }
+  },
+  "legacy_files": 80,
+  "migration_ledger": [
+    "0001_legacy_baseline.sql",
+    "0002_v3_domain.sql",
+    "0003_legacy_revision_snapshots.sql",
+    "0004_worker_v3_services.sql",
+    "0005_optional_layout.sql",
+    "0006_health_pending.sql",
+    "0007_retire_archive.sql",
+    "0008_d1_file_chunks.sql"
+  ],
+  "foreign_key_violations": 0,
+  "backup_sha256": "952a38f5dac1286ce547203c9401b76ba71be37609e5f4ef3a6b707e729d1028",
+  "after_sha256": "f9238e3d97057effe8dc8637cb94a448d1a600a17f86d9d2eb90a98afa76ea00"
+}

@@ -1,0 +1,28 @@
+{
+  "phase": "P8",
+  "date": "2026-10-16T09:57:31.430Z",
+  "mode": "browser",
+  "runs": [
+    {
+      "command": "npm run test:satisfaction:browser",
+      "exit_code": 0,
+      "elapsed_seconds": 110.476,
+      "log": "docs/v3/baseline/p8-logs/test-satisfaction-browser.log"
+    },
+    {
+      "command": "npm run test:p5:browser",
+      "exit_code": 0,
+      "elapsed_seconds": 138.388,
+      "log": "docs/v3/baseline/p8-logs/test-p5-browser.log"
+    },
+    {
+      "command": "npm run test:p6:browser",
+      "exit_code": 1,
+      "elapsed_seconds": 36.648,
+      "log": "docs/v3/baseline/p8-logs/test-p6-browser.log"
+    }
+  ],
+  "passed": false,
+  "owner_uat": "pending",
+  "deployed": false
+}

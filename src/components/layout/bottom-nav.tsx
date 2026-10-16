@@ -38,7 +38,7 @@ export function BottomNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-[20px] px-2 py-2 text-caption transition-all",
+                "text-caption flex min-h-12 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl px-2 py-2 transition-all",
                 isActive
                   ? "bg-[linear-gradient(135deg,#2563EB,#4F6BFF,#8B5CF6)] font-semibold text-white shadow-[0_8px_18px_rgba(79,107,255,.25)]"
                   : "text-text-secondary hover:text-text-primary",

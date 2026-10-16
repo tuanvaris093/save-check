@@ -1,0 +1,17 @@
+{
+  "phase": "P7",
+  "passed": 11,
+  "checks": [
+    "classic report opens with forms grouped by type/category, technical tables stay hidden",
+    "selected immutable result/version never evaluates against current catalog",
+    "health export keeps paired question IDs/phases, frozen wording, stored delta/level and weekly hours",
+    "legacy single health preserves recorded totals without fabricated before/after or current wording",
+    "one row per job, separate revisions, carry source/date and area samples persist",
+    "complete large snapshot is split into Excel-safe cells and reconstructs exactly",
+    "bulk collector reads all 103 jobs through sequential pages with identical filters",
+    "history collector uses exact job and follows more than ten revisions without duplicates",
+    "bulk aborts partial, duplicate, changed count/version and missing revision responses",
+    "oversized export page restarts with smaller batches without partial downloads",
+    "Worker bounds record payload bytes before accumulating a large response"
+  ]
+}

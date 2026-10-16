@@ -1,316 +1,216 @@
 "use client";
-
-import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense, useState } from "react";
-import { AlertTriangle, AlertCircle } from "lucide-react";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { PageHeader } from "@/components/layout";
-import { ROUTES } from "@/lib/constants";
-import { ASSESSMENT_CATEGORY_LABELS } from "@/lib/constants";
-import { isValidCategory } from "@/lib/utils";
-import type { AssessmentCategory } from "@/types";
-import { createSubmission, updateSubmission } from "@/lib/api";
+import { LoadingState, SubmitLoadingOverlay, Button } from "@/components/ui";
+import { ROUTES, ASSESSMENT_CATEGORY_LABELS } from "@/lib/constants";
 import { useAssessmentForm } from "@/hooks/use-assessment";
-import { LoadingState, SubmitLoadingOverlay } from "@/components/ui";
+import { StepProgress } from "@/components/assessment";
 import {
-  StepProgress,
-  ProfileStep,
-  WorkInfoStep,
-  ReviewStep,
-} from "@/components/assessment";
-import { HealthRiskStep } from "@/components/assessment/health-risk-step";
+  HealthProfileStep,
+  HealthWorkStep,
+  HealthQuestionsStep,
+} from "@/components/health/health-steps";
+import { HealthPreview } from "@/components/health/health-summary";
 import {
-  calculateHealthRiskScore,
-  evaluateHealthRiskResult,
-} from "@/lib/health-risk-schema";
-
-const TOTAL_STEPS = 4; // 1: Profile, 2: Work Info, 3: Questions, 4: Review
-
-function HealthRiskFormContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const categoryParam = searchParams.get("category");
-  const editCode = searchParams.get("edit");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-
-  // Use the form wizard hook
-  const {
-    currentStep,
-    totalSteps,
-    isLoaded,
-    draftData,
-    loadError,
-    nextStep,
-    prevStep,
-    saveDraft,
-    clearDraft,
-  } = useAssessmentForm({
+  emptyHealthDraft,
+  buildHealthPayload,
+  type HealthDraft,
+  type HealthCategory,
+} from "@/lib/v3/health-form";
+import { createSubmissionV3 } from "@/lib/api";
+import { submitAssessment, submissionErrorMessage } from "@/lib/v3/submit";
+import {
+  completedResultUrl,
+  completionDestination,
+} from "@/lib/v3/completion-navigation";
+function HealthRiskFormContent({ category }: { category: HealthCategory }) {
+  const params = useSearchParams(),
+    router = useRouter(),
+    editCode = params.get("edit"),
+    pendingId = params.get("pending");
+  const form = useAssessmentForm({
     type: "health_risk",
-    category: categoryParam as AssessmentCategory,
-    totalSteps: TOTAL_STEPS,
+    category,
+    totalSteps: 4,
     editCode,
+    baseRevision: params.get("base"),
   });
-
-  // Validate category query string
-  if (!isValidCategory(categoryParam) || categoryParam === "general") {
-    return (
-      <div className="flex min-h-dvh flex-col">
-        <PageHeader
-          title="ไม่พบหัวข้อที่เลือก"
-          showBack
-          backHref={ROUTES.HEALTH_RISK}
-        />
-        <main className="flex flex-1 flex-col items-center justify-center px-4 py-10">
-          <div className="text-center">
-            <div
-              className="icon-container mx-auto mb-4"
-              style={{
-                background:
-                  "linear-gradient(135deg, rgba(254, 243, 199, 0.95), rgba(255, 251, 235, 0.8))",
-              }}
-            >
-              <AlertTriangle className="text-warning h-7 w-7" strokeWidth={2} />
-            </div>
-            <h2 className="text-section-title text-text-primary font-semibold">
-              ไม่พบหัวข้อที่เลือก
-            </h2>
-            <p className="text-small text-text-secondary mt-2">
-              กรุณาเลือกหัวข้อจากหน้าประเมินความเสี่ยงสุขภาพ
-            </p>
-            <a
-              href={ROUTES.HEALTH_RISK}
-              className="btn-primary-gradient text-small mt-6 inline-block px-6 py-3 font-semibold"
-            >
-              กลับไปเลือกหัวข้อ
-            </a>
-          </div>
-        </main>
-      </div>
-    );
-  }
-
-  const category = categoryParam as Exclude<AssessmentCategory, "general">;
-
-  // Show loading until draft is restored from localStorage
-  if (!isLoaded) {
-    return (
-      <div className="flex min-h-dvh flex-col">
-        <PageHeader
-          title={`ความเสี่ยงสุขภาพ — ${ASSESSMENT_CATEGORY_LABELS[category]}`}
-          showBack
-          backHref={ROUTES.HEALTH_RISK}
-        />
-        <LoadingState text="กำลังเตรียมแบบประเมิน..." />
-      </div>
-    );
-  }
-
-  if (loadError) {
-    return (
-      <div className="flex min-h-dvh flex-col">
-        <PageHeader title="ไม่พบข้อมูลที่ต้องการแก้ไข" showBack />
-        <main className="text-danger flex flex-1 items-center justify-center px-4 text-center">
-          {loadError}
-        </main>
-      </div>
-    );
-  }
-
-  const handleProfileNext = (data: any) => {
-    saveDraft({ profile: data });
-    nextStep();
-  };
-
-  const handleWorkInfoNext = (data: any) => {
-    saveDraft({ workInfo: data });
-    nextStep();
-  };
-
-  const handleHealthRiskNext = (data: any) => {
-    saveDraft({ answers: data });
-    nextStep();
-  };
-
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    setSubmitError(null);
-
-    const now = new Date();
-    const datePart = now.toISOString().slice(0, 10).replace(/-/g, "");
-    const randPart = Math.floor(1000 + Math.random() * 9000);
-    const submissionCode = editCode || `SUB-${datePart}-${randPart}`;
-    const original = draftData.editingSubmission;
-
-    let score = 0;
-    let level: any = "pass";
-    if (draftData.answers) {
-      score = calculateHealthRiskScore(draftData.answers as any);
-      const evalResult = evaluateHealthRiskResult(score, category);
-      level = evalResult.level === "high" ? "high_risk" : evalResult.level;
+  const data = form.draftData.healthV3 ?? emptyHealthDraft(),
+    save = (healthV3: HealthDraft) => form.saveDraft({ healthV3 });
+  const [isSubmitting, setSubmitting] = useState(false),
+    [submitError, setError] = useState<string | null>(null),
+    [redirecting, setRedirecting] = useState(false),
+    completed = useRef(false),
+    lock = useRef(false);
+  useEffect(() => {
+    if (submitError) {
+      const el = document.querySelector<HTMLElement>("[data-submit-error]");
+      el?.focus();
+      el?.scrollIntoView({ block: "center", behavior: "smooth" });
     }
-
-    const newSubmission = {
-      id: original?.id || Date.now(),
-      submission_code: submissionCode,
-      assessment_type: "health_risk",
-      assessment_category: category,
-      started_at:
-        original?.started_at ||
-        draftData.lastSavedAt ||
-        new Date().toISOString(),
-      completed_at: new Date().toISOString(),
-      status: "completed",
-      overall_score: score,
-      overall_level: level,
-      profile: draftData.profile,
-      workInfo: draftData.workInfo,
-      answers: draftData.answers,
-      created_at: original?.created_at || new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-
+  }, [submitError]);
+  const handleSubmit = async () => {
+    if (lock.current) return;
+    const payload = buildHealthPayload(data, category, form.requestKey ?? "");
+    if (!payload.success) {
+      setError(submissionErrorMessage(payload.error));
+      return;
+    }
+    lock.current = true;
+    setSubmitting(true);
+    setError(null);
     try {
-      // 1. Send to Cloudflare Workers Backend API
-      const response = editCode
-        ? await updateSubmission(editCode, newSubmission)
-        : await createSubmission(newSubmission);
-      if (!response.success && response.error.code !== "NETWORK_ERROR") {
-        throw new Error(response.error.message);
-      }
-    } catch (apiErr: any) {
-      if (editCode) {
-        setSubmitError(
-          apiErr?.message || "บันทึกการแก้ไขไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
-        );
-        setIsSubmitting(false);
+      const response = await submitAssessment(payload.data, createSubmissionV3);
+      if (!response.success) {
+        setError(submissionErrorMessage(response.error));
         return;
       }
-      console.warn(
-        "Backend API unavailable, continuing with local storage",
-        apiErr,
+      completed.current = true;
+      setRedirecting(true);
+      form.clearDraft();
+      router.push(
+        completedResultUrl(
+          response.data.submission_code,
+          completionDestination(params.get("returnTo"), ROUTES.HEALTH_RISK),
+        ),
       );
-    }
-
-    try {
-      // 2. Persist to localStorage for offline cache
-      const stored = localStorage.getItem("save_check_submissions");
-      const list = stored ? JSON.parse(stored) : [];
-      const remaining = editCode
-        ? list.filter((item: any) => item.submission_code !== editCode)
-        : list;
-      localStorage.setItem(
-        "save_check_submissions",
-        JSON.stringify([newSubmission, ...remaining]),
-      );
-      sessionStorage.removeItem(`save_check_edit_source_${submissionCode}`);
-      clearDraft();
-    } catch (err) {
-      console.error(
-        "Failed to save health risk submission to localStorage",
-        err,
-      );
-    }
-
-    const resultHref = `${ROUTES.RESULT}?submissionId=${submissionCode}`;
-    if (editCode) {
-      router.replace(resultHref);
-    } else {
-      router.push(resultHref);
+    } finally {
+      if (!completed.current) {
+        lock.current = false;
+        setSubmitting(false);
+      }
     }
   };
-
-  return (
-    <div className="app-mobile-shell pb-safe-nav mx-auto flex min-h-dvh w-full max-w-[800px] flex-col md:px-8 md:py-6">
-      <PageHeader
-        title={`ความเสี่ยงสุขภาพ — ${ASSESSMENT_CATEGORY_LABELS[category]}`}
-        subtitle={
-          editCode ? `แก้ไขรหัสเอกสาร: ${editCode}` : "ตอบคำถามตามขั้นตอน"
-        }
-        showBack
-        replaceBack={!!editCode}
-        backHref={
-          editCode
-            ? `${ROUTES.RESULT}?submissionId=${encodeURIComponent(editCode)}`
-            : ROUTES.HEALTH_RISK
-        }
-        className="border-none md:border-none md:bg-transparent md:px-0 md:backdrop-blur-none"
-      />
-
-      <main className="md:glass-card flex-1 px-4 py-2 md:mt-4 md:mb-10 md:px-8 md:py-6">
-        <StepProgress
-          currentStep={currentStep}
-          totalSteps={totalSteps}
-          className="md:pt-0"
+  if (!form.isLoaded) return <LoadingState text="กำลังเตรียมแบบประเมิน..." />;
+  if (form.loadError || editCode || pendingId)
+    return (
+      <div className="app-mobile-shell pb-safe-nav mx-auto min-h-dvh max-w-[800px]">
+        <PageHeader
+          title="ไม่สามารถเปิดการแก้ไข"
+          showBack
+          backHref={pendingId ? ROUTES.DASHBOARD : ROUTES.HEALTH_RISK}
         />
-
-        {submitError && (
-          <div className="text-small animate-fade-in mt-4 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-3.5 text-red-700">
-            <AlertCircle className="h-5 w-5 shrink-0 text-red-500" />
-            <span>{submitError}</span>
-          </div>
+        <main className="p-5">
+          <p role="alert">
+            {pendingId
+              ? "กรุณาเริ่มแบบประเมินใหม่และตอบส่วนก่อนกับส่วนหลังให้ครบก่อนบันทึกผล"
+              : (form.loadError ??
+                "การแก้ไขต้องเปิดจากข้อมูลล่าสุดพร้อมเหตุผล กรุณากลับไปดูผลการประเมิน")}
+          </p>
+          <Link href={pendingId ? ROUTES.DASHBOARD : ROUTES.HEALTH_RISK}>
+            {pendingId ? "กลับ Dashboard" : "กลับไปเลือกหัวข้อ"}
+          </Link>
+        </main>
+      </div>
+    );
+  const preview = buildHealthPayload(data, category, form.requestKey ?? "");
+  return (
+    <div className="app-mobile-shell pb-safe-nav mx-auto flex min-h-dvh w-full max-w-[1000px] flex-col min-[1440px]:px-8 min-[1440px]:py-6">
+      <PageHeader
+        title={`อาการทางสุขภาพด้าน${ASSESSMENT_CATEGORY_LABELS[category]}`}
+        showBack
+        backHref={ROUTES.HEALTH_RISK}
+      />
+      <main className="min-[1440px]:glass-card flex-1 px-4 py-5 min-[1440px]:mt-4 min-[1440px]:px-8">
+        <StepProgress currentStep={form.currentStep} totalSteps={4} />
+        {form.draftWarning && (
+          <p role="status" className="text-warning mb-4">
+            {form.draftWarning}
+          </p>
         )}
-
-        <div className="mt-4 pb-8">
-          {currentStep === 1 && (
-            <ProfileStep
-              defaultValues={draftData.profile}
-              onNext={handleProfileNext}
-            />
+        {submitError && (
+          <p
+            role="alert"
+            tabIndex={-1}
+            data-submit-error
+            className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700"
+          >
+            {submitError}
+          </p>
+        )}
+        <div className="mt-5 pb-8">
+          {form.currentStep === 1 && (
+            <HealthProfileStep data={data} save={save} next={form.nextStep} />
           )}
-
-          {currentStep === 2 && (
-            <WorkInfoStep
-              defaultValues={draftData.workInfo}
-              onNext={handleWorkInfoNext}
-              onPrev={prevStep}
-            />
-          )}
-
-          {currentStep === 3 && (
-            <HealthRiskStep
+          {form.currentStep === 2 && (
+            <HealthWorkStep
               category={category}
-              defaultValues={draftData.answers as any}
-              onNext={handleHealthRiskNext}
-              onPrev={prevStep}
+              data={data}
+              save={save}
+              next={form.nextStep}
+              prev={form.prevStep}
             />
           )}
-
-          {currentStep === 4 && (
-            <ReviewStep
-              type="health_risk"
+          {form.currentStep === 3 && (
+            <HealthQuestionsStep
+              data={data}
+              save={save}
+              next={form.nextStep}
+              prev={form.prevStep}
               category={category}
-              draftData={draftData}
-              isSubmitting={isSubmitting}
-              onSubmit={handleSubmit}
-              onPrev={prevStep}
+              tab={form.currentTab}
+              setTab={form.setTab}
+              busy={isSubmitting}
             />
           )}
+          {form.currentStep === 4 &&
+            (preview.success &&
+            preview.data.assessment_type === "health_risk" ? (
+              <HealthPreview
+                payload={preview.data}
+                onSubmit={handleSubmit}
+                onPrev={form.prevStep}
+                isSubmitting={isSubmitting}
+              />
+            ) : (
+              <section>
+                <p role="alert">
+                  ข้อมูลร่างยังไม่ครบ กรุณากลับไปตรวจข้อมูลก่อนส่ง
+                </p>
+                <Button onClick={() => form.setStep(1)}>
+                  กลับไปแก้ข้อมูลส่วนตัว
+                </Button>
+              </section>
+            ))}
         </div>
       </main>
-
-      {/* Fullscreen Loading Overlay during submission */}
       <SubmitLoadingOverlay
         isOpen={isSubmitting}
-        text={
-          editCode
-            ? "กำลังบันทึกการแก้ไข..."
-            : "กำลังบันทึกข้อมูลผลการประเมิน..."
-        }
+        phase={redirecting ? "redirecting" : "saving"}
+        text="กำลังบันทึกข้อมูลผลการประเมิน..."
       />
     </div>
   );
 }
-
+function HealthRoute() {
+  const params = useSearchParams(),
+    category = params.get("category");
+  if (category === "light" || category === "noise" || category === "heat")
+    return (
+      <HealthRiskFormContent
+        key={`${category}:${params.get("pending")}:${params.get("pendingVersion")}`}
+        category={category}
+      />
+    );
+  return (
+    <div className="app-mobile-shell pb-safe-nav mx-auto min-h-dvh max-w-[800px]">
+      <PageHeader
+        title="ไม่พบหัวข้อที่เลือก"
+        showBack
+        backHref={ROUTES.HEALTH_RISK}
+      />
+      <main className="p-5">
+        <Link href={ROUTES.HEALTH_RISK}>กลับไปเลือกหัวข้อ</Link>
+      </main>
+    </div>
+  );
+}
 export default function HealthRiskFormPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-dvh items-center justify-center">
-          <p className="text-text-secondary">กำลังโหลด...</p>
-        </div>
-      }
-    >
-      <HealthRiskFormContent />
+    <Suspense fallback={<LoadingState text="กำลังเตรียมแบบประเมิน..." />}>
+      <HealthRoute />
     </Suspense>
   );
 }

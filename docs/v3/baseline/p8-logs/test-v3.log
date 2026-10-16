@@ -1,0 +1,127 @@
+
+> save-check@0.1.1 test:v3
+> node scripts/test-v3.mjs
+
+TAP version 13
+# Subtest: programs are exact official supplied labels and study year is independent
+ok 1 - programs are exact official supplied labels and study year is independent
+  ---
+  duration_ms: 2.84325
+  type: 'test'
+  ...
+# Subtest: health boundaries, signed deltas and per-item comparison
+ok 2 - health boundaries, signed deltas and per-item comparison
+  ---
+  duration_ms: 0.638583
+  type: 'test'
+  ...
+# Subtest: answers must be complete, finite and closed enums; metadata never contributes
+ok 3 - answers must be complete, finite and closed enums; metadata never contributes
+  ---
+  duration_ms: 2.275833
+  type: 'test'
+  ...
+# Subtest: required fields, conditional disease/year/work and missing zero distinguish
+ok 4 - required fields, conditional disease/year/work and missing zero distinguish
+  ---
+  duration_ms: 2.239416
+  type: 'test'
+  ...
+# Subtest: noise sources are unique, none exclusive, other text conditional
+ok 5 - noise sources are unique, none exclusive, other text conditional
+  ---
+  duration_ms: 0.244625
+  type: 'test'
+  ...
+# Subtest: satisfaction complete 16 scores, notes optional, manual units normalized
+ok 6 - satisfaction complete 16 scores, notes optional, manual units normalized
+  ---
+  duration_ms: 0.595292
+  type: 'test'
+  ...
+# Subtest: light Spot target, full precision and surrounding thresholds
+ok 7 - light Spot target, full precision and surrounding thresholds
+  ---
+  duration_ms: 1.048875
+  type: 'test'
+  ...
+# Subtest: Area average and minimum both evaluated, zero/missing handled
+ok 8 - Area average and minimum both evaluated, zero/missing handled
+  ---
+  duration_ms: 0.538208
+  type: 'test'
+  ...
+# Subtest: noise table takes precedence, formula floors limit only, TWA8 not normalized twice
+ok 9 - noise table takes precedence, formula floors limit only, TWA8 not normalized twice
+  ---
+  duration_ms: 0.732583
+  type: 'test'
+  ...
+# Subtest: WBGT formula, time weighting, source modes and equality before display rounding
+ok 10 - WBGT formula, time weighting, source modes and equality before display rounding
+  ---
+  duration_ms: 1.281208
+  type: 'test'
+  ...
+# Subtest: failed-only retest preserves original measurement provenance across three rounds
+ok 11 - failed-only retest preserves original measurement provenance across three rounds
+  ---
+  duration_ms: 1.369584
+  type: 'test'
+  ...
+# Subtest: Area retest cannot omit or rename samples; archive rejects retest
+ok 12 - Area retest cannot omit or rename samples; archive rejects retest
+  ---
+  duration_ms: 0.913333
+  type: 'test'
+  ...
+# Subtest: legacy adapter preserves zero, old units and unknown group without invented before/after
+ok 13 - legacy adapter preserves zero, old units and unknown group without invented before/after
+  ---
+  duration_ms: 0.175334
+  type: 'test'
+  ...
+# Subtest: frontend and Worker expose matching validation and scoring results
+ok 14 - frontend and Worker expose matching validation and scoring results
+  ---
+  duration_ms: 0.889
+  type: 'test'
+  ...
+# Subtest: all eight entry flows parse and reject cross-group/category metadata
+ok 15 - all eight entry flows parse and reject cross-group/category metadata
+  ---
+  duration_ms: 6.33175
+  type: 'test'
+  ...
+# Subtest: server snapshots preserve program labels and phase-specific question wording
+ok 16 - server snapshots preserve program labels and phase-specific question wording
+  ---
+  duration_ms: 0.260583
+  type: 'test'
+  ...
+# Subtest: validation errors identify the relevant form field without unrelated branches
+ok 17 - validation errors identify the relevant form field without unrelated branches
+  ---
+  duration_ms: 0.141833
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 119.754917
+test_all_original_columns_preserved_including_zero_null_old_week_units (__main__.Migrations.test_all_original_columns_preserved_including_zero_null_old_week_units) ... ok
+test_empty_install_and_ledger_resume (__main__.Migrations.test_empty_install_and_ledger_resume) ... ok
+test_legacy_snapshots_complete_and_immutable (__main__.Migrations.test_legacy_snapshots_complete_and_immutable) ... ok
+test_new_domain_constraints (__main__.Migrations.test_new_domain_constraints) ... ok
+test_retest_branch_constraints_provenance_and_finalized_sample_guards (__main__.Migrations.test_retest_branch_constraints_provenance_and_finalized_sample_guards) ... ok
+test_v3_cannot_finalize_incomplete_points_or_staged_file (__main__.Migrations.test_v3_cannot_finalize_incomplete_points_or_staged_file) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.070s
+
+OK

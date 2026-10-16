@@ -1,0 +1,51 @@
+{
+  "version": "programs-v3-2026-10-12",
+  "source": "รายชื่อที่เจ้าของงานส่งจากลูกค้าในแชตวันที่ 2026-10-12",
+  "status": "confirmed",
+  "programs": [
+    {
+      "code": "program-01",
+      "label": "หลักสูตรสาธารณสุขศาสตรบัณฑิต สาขาวิชาสาธารณสุขชุมชน",
+      "qualification": "bachelor"
+    },
+    {
+      "code": "program-02",
+      "label": "หลักสูตรการแพทย์แผนไทยบัณฑิต สาขาวิชาการแพทย์แผนไทย",
+      "qualification": "bachelor"
+    },
+    {
+      "code": "program-03",
+      "label": "หลักสูตรสาธารณสุขศาสตรบัณฑิต สาขาวิชาทันตสาธารณสุข",
+      "qualification": "bachelor"
+    },
+    {
+      "code": "program-04",
+      "label": "หลักสูตรวิทยาศาสตรบัณฑิต สาขาวิชาอาชีวอนามัยและความปลอดภัย",
+      "qualification": "bachelor"
+    },
+    {
+      "code": "program-05",
+      "label": "หลักสูตรวิทยาศาสตรบัณฑิต สาขาวิชาฉุกเฉินการแพทย์",
+      "qualification": "bachelor"
+    },
+    {
+      "code": "program-06",
+      "label": "หลักสูตรประกาศนียบัตรวิชาชีพชั้นสูง สาขาวิชาเทคนิคเภสัชกรรม",
+      "qualification": "higher-vocational"
+    },
+    {
+      "code": "program-07",
+      "label": "หลักสูตรประกาศนียบัตรวิชาชีพชั้นสูง สาขาวิชาปฏิบัติการฉุกเฉินการแพทย์",
+      "qualification": "higher-vocational"
+    }
+  ],
+  "studyYearOptions": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "studyYearPolicy": "field แยกจากหลักสูตร ใช้ตัวเลือก 1–6 เหมือนกันทุกหลักสูตร ตามคำยืนยันเจ้าของงาน"
+}

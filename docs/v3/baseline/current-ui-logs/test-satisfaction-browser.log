@@ -1,0 +1,27 @@
+
+> save-check@0.1.1 test:satisfaction:browser
+> SAT_QUESTION_CHECK=1 node scripts/test-p4-browser.mjs
+
+PASS 1: all health profile fields required, no implicit gender/disease answer; conditional details
+PASS 2: select exact seven programs and separate years 1–6 including higher vocational year 6
+PASS 3: before gate, zero hours/answers valid, after retained while editing before and refresh
+PASS 4: API failure preserves full 20 answers/draft/key; retry persists real Worker result and D1 snapshots
+PASS 5: staff N/A, zero experience, noise multiple/none/other conditional and new ten questions
+PASS 6: heat ten new questions and all zero answers save as zero total
+PASS 7: six official compare examples agree in browser result and Worker API, including decreased-but-high
+PASS 8: legacy light remains single old questionnaire without fabricated before/after
+PASS 9: desktop result fits layout and server version/snapshot wording displayed
+Satisfaction question browser/API PASS 5
+PASS home two groups and responsive mobile/desktop without horizontal overflow
+PASS each group has four routes, correct satisfaction group and back link
+PASS all eight direct entry routes render in correct group
+PASS missing/invalid satisfaction group chooses group with no draft guess
+PASS autosave during typing survives immediate navigation, refresh and restores wizard step
+PASS category and satisfaction group drafts do not share answers
+PASS bad cached envelope and invalid category show safe recovery
+PASS required validation focuses first invalid field with accessible error
+PASS submit invalid incomplete v3 form keeps draft and never shows fake server success
+PASS failed server result/edit never uses locally fabricated cache as authority
+PASS valid v3 fixture retries API failure with same key, then uses verified server code
+P3 browser PASS 11
+P4 browser integration PASS 9

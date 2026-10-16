@@ -1,0 +1,111 @@
+{
+  "scope": "Post-UAT UI/layout corrections D17/D18",
+  "date": "2026-10-14T06:50:03.403Z",
+  "expected_commands": 17,
+  "runs": [
+    {
+      "command": "npm run test:v3",
+      "exit_code": 0,
+      "elapsed_seconds": 1.404,
+      "log": "docs/v3/baseline/current-ui-logs/test-v3.log"
+    },
+    {
+      "command": "npm run test:p3",
+      "exit_code": 0,
+      "elapsed_seconds": 0.283,
+      "log": "docs/v3/baseline/current-ui-logs/test-p3.log"
+    },
+    {
+      "command": "npm run test:p4",
+      "exit_code": 0,
+      "elapsed_seconds": 0.209,
+      "log": "docs/v3/baseline/current-ui-logs/test-p4.log"
+    },
+    {
+      "command": "npm run test:satisfaction-questions",
+      "exit_code": 0,
+      "elapsed_seconds": 0.408,
+      "log": "docs/v3/baseline/current-ui-logs/test-satisfaction-questions.log"
+    },
+    {
+      "command": "npm run test:p5",
+      "exit_code": 0,
+      "elapsed_seconds": 0.28,
+      "log": "docs/v3/baseline/current-ui-logs/test-p5.log"
+    },
+    {
+      "command": "npm run test:p6",
+      "exit_code": 0,
+      "elapsed_seconds": 0.502,
+      "log": "docs/v3/baseline/current-ui-logs/test-p6.log"
+    },
+    {
+      "command": "npm run test:p7",
+      "exit_code": 0,
+      "elapsed_seconds": 0.482,
+      "log": "docs/v3/baseline/current-ui-logs/test-p7.log"
+    },
+    {
+      "command": "npm run test:p2",
+      "exit_code": 0,
+      "elapsed_seconds": 1.269,
+      "log": "docs/v3/baseline/current-ui-logs/test-p2.log"
+    },
+    {
+      "command": "npm run test:current-ui",
+      "exit_code": 0,
+      "elapsed_seconds": 17.525,
+      "log": "docs/v3/baseline/current-ui-logs/test-current-ui.log"
+    },
+    {
+      "command": "npm run test:satisfaction:browser",
+      "exit_code": 0,
+      "elapsed_seconds": 46.749,
+      "log": "docs/v3/baseline/current-ui-logs/test-satisfaction-browser.log"
+    },
+    {
+      "command": "npm run test:p5:browser",
+      "exit_code": 0,
+      "elapsed_seconds": 51.701,
+      "log": "docs/v3/baseline/current-ui-logs/test-p5-browser.log"
+    },
+    {
+      "command": "npm run test:p6:browser",
+      "exit_code": 0,
+      "elapsed_seconds": 71.733,
+      "log": "docs/v3/baseline/current-ui-logs/test-p6-browser.log"
+    },
+    {
+      "command": "npm run test:p7:browser",
+      "exit_code": 0,
+      "elapsed_seconds": 23.292,
+      "log": "docs/v3/baseline/current-ui-logs/test-p7-browser.log"
+    },
+    {
+      "command": "npm run typecheck:worker",
+      "exit_code": 0,
+      "elapsed_seconds": 1.818,
+      "log": "docs/v3/baseline/current-ui-logs/typecheck-worker.log"
+    },
+    {
+      "command": "npm run lint",
+      "exit_code": 0,
+      "elapsed_seconds": 3.09,
+      "log": "docs/v3/baseline/current-ui-logs/lint.log"
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "elapsed_seconds": 15.333,
+      "log": "docs/v3/baseline/current-ui-logs/build.log"
+    },
+    {
+      "command": "npm run typecheck",
+      "exit_code": 0,
+      "elapsed_seconds": 3.945,
+      "log": "docs/v3/baseline/current-ui-logs/typecheck.log"
+    }
+  ],
+  "passed": true,
+  "deployed": false
+}

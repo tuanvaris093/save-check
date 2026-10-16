@@ -13,6 +13,8 @@ import {
 import { ImageLightboxModal } from "@/components/ui";
 import type { LayoutFileInfo } from "@/types";
 import { formatFileSize } from "@/lib/utils";
+import { beginGlobalLoading } from "@/lib/global-loading";
+import { prepareLayoutImage } from "@/lib/v3/prepare-layout-image";
 
 interface FileUploadProps {
   value?: LayoutFileInfo | null;
@@ -22,6 +24,8 @@ interface FileUploadProps {
   label?: string;
   description?: string;
   className?: string;
+  downloadUrl?: string;
+  readOnly?: boolean;
 }
 
 export function FileUpload({
@@ -30,17 +34,24 @@ export function FileUpload({
   onDelete,
   maxSizeMB = 10,
   label = "แนบผังพื้นที่ห้อง / Layout",
-  description = "รองรับไฟล์ภาพ (JPG, PNG, WebP) หรือเอกสาร PDF ขนาดไม่เกิน 10MB",
+  description = "รับรูปภาพหรือ PDF ไม่เกิน 10 MB · ลดขนาดรูปก่อนบันทึกให้ไม่เกิน 5 MB และคงต้นฉบับหาก JPG ไม่เล็กลง",
   className = "",
+  downloadUrl,
+  readOnly = false,
 }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const selection = useRef(0);
 
-  const processFile = (file: File) => {
+  const processFile = async (file: File) => {
     setErrorMessage(null);
 
+    if (!file.size) {
+      setErrorMessage("ไฟล์ว่าง กรุณาเลือกไฟล์ที่มีข้อมูล");
+      return;
+    }
     // Validate size
     const maxBytes = maxSizeMB * 1024 * 1024;
     if (file.size > maxBytes) {
@@ -49,31 +60,48 @@ export function FileUpload({
     }
 
     // Validate type
-    const isImage = file.type.startsWith("image/");
-    const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+    const isImage = ["image/jpeg", "image/png", "image/webp"].includes(
+      file.type,
+    );
+    const isPdf =
+      file.type === "application/pdf" ||
+      (!file.type && file.name.toLowerCase().endsWith(".pdf"));
 
     if (!isImage && !isPdf) {
-      setErrorMessage("รองรับเฉพาะไฟล์รูปภาพ (JPG, PNG, WebP) หรือไฟล์ PDF เท่านั้น");
+      setErrorMessage(
+        "รองรับเฉพาะไฟล์รูปภาพ (JPG, PNG, WebP) หรือไฟล์ PDF เท่านั้น",
+      );
       return;
     }
 
-    // Convert to Base64
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64Data = reader.result as string;
+    const current = ++selection.current;
+    const finishLoading = beginGlobalLoading();
+    try {
+      const prepared = isImage ? await prepareLayoutImage(file) : file;
+      const base64Data = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error("File read failed"));
+        reader.onabort = () => reject(new Error("File read aborted"));
+        reader.readAsDataURL(prepared);
+      });
+      if (current !== selection.current) return;
       const layoutFile: LayoutFileInfo = {
-        fileName: file.name,
-        fileType: file.type || (isPdf ? "application/pdf" : "image/jpeg"),
-        fileSize: file.size,
+        fileName: prepared.name,
+        fileType: prepared.type || (isPdf ? "application/pdf" : "image/jpeg"),
+        fileSize: prepared.size,
         fileData: base64Data,
         uploadedAt: new Date().toISOString(),
       };
       onChange(layoutFile);
-    };
-    reader.onerror = () => {
-      setErrorMessage("เกิดข้อผิดพลาดในการอ่านไฟล์ กรุณาลองใหม่อีกครั้ง");
-    };
-    reader.readAsDataURL(file);
+    } catch {
+      if (current === selection.current)
+        setErrorMessage(
+          "อ่านหรือแปลงไฟล์ไม่สำเร็จ กรุณาเลือกไฟล์ที่เปิดอ่านได้แล้วลองอีกครั้ง",
+        );
+    } finally {
+      finishLoading();
+    }
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -107,29 +135,36 @@ export function FileUpload({
   };
 
   const handleRemove = () => {
+    selection.current++;
     onChange(null);
     setErrorMessage(null);
   };
 
   const handleOpenPdf = () => {
     if (!value?.fileData) return;
+    if (!value.fileData.startsWith("data:")) {
+      window.open(value.fileData, "_blank", "noopener,noreferrer");
+      return;
+    }
     const newWindow = window.open();
     if (newWindow) {
       newWindow.document.write(
-        `<iframe src="${value.fileData}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`
+        `<iframe src="${value.fileData}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`,
       );
       newWindow.document.title = value.fileName;
     }
   };
 
   const isImage = value?.fileType.startsWith("image/");
-  const isPdf = value?.fileType === "application/pdf" || value?.fileName.toLowerCase().endsWith(".pdf");
+  const isPdf =
+    value?.fileType === "application/pdf" ||
+    value?.fileName.toLowerCase().endsWith(".pdf");
 
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
       {label && (
         <div className="flex items-center justify-between">
-          <label className="text-small font-medium text-text-primary">
+          <label className="text-small text-text-primary font-medium">
             {label}
           </label>
           <span className="text-caption text-text-tertiary">ไม่บังคับ</span>
@@ -137,60 +172,75 @@ export function FileUpload({
       )}
 
       {description && (
-        <p className="text-caption text-text-secondary -mt-1">
-          {description}
-        </p>
+        <p className="text-caption text-text-secondary -mt-1">{description}</p>
       )}
 
       {/* Hidden File Input */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/png,image/jpeg,image/webp,application/pdf"
-        className="hidden"
-        onChange={handleFileChange}
-      />
+      {!readOnly && (
+        <input
+          ref={fileInputRef}
+          name="layout"
+          aria-label={label || "เลือกไฟล์ผังพื้นที่ห้อง"}
+          type="file"
+          accept="image/png,image/jpeg,image/webp,application/pdf"
+          className="hidden"
+          onChange={handleFileChange}
+        />
+      )}
 
       {/* Error Banner */}
       {errorMessage && (
-        <div className="flex items-center gap-2 rounded-lg bg-red-50/80 border border-red-200/80 px-3 py-2 text-caption text-red-600 animate-fade-in">
+        <div className="text-caption animate-fade-in flex items-center gap-2 rounded-lg border border-red-200/80 bg-red-50/80 px-3 py-2 text-red-600">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>{errorMessage}</span>
         </div>
       )}
 
       {/* File Not Attached: Drag & Drop Dropzone */}
-      {!value ? (
+      {!value && readOnly ? (
+        <p className="text-text-secondary text-sm">
+          ไม่มีผังที่บันทึกไว้ในรอบนี้
+        </p>
+      ) : !value ? (
         <div
+          role="button"
+          tabIndex={0}
+          aria-label="เลือกไฟล์แผนผัง"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              fileInputRef.current?.click();
+            }
+          }}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
-          className={`cursor-pointer rounded-card border-2 border-dashed p-6 text-center transition-all duration-200 ${
+          className={`rounded-card cursor-pointer border-2 border-dashed p-6 text-center transition-all duration-200 ${
             isDragging
               ? "border-primary bg-primary-tint/40 scale-[1.01]"
-              : "border-gray-200/80 hover:border-primary/50 bg-white/40 hover:bg-white/60"
+              : "hover:border-primary/50 border-gray-200/80 bg-white/40 hover:bg-white/60"
           }`}
         >
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-3">
+          <div className="bg-primary/10 text-primary mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full">
             <UploadCloud className="h-6 w-6" />
           </div>
-          <p className="text-small font-medium text-text-primary">
+          <p className="text-small text-text-primary font-medium">
             คลิกเพื่อเลือกไฟล์ หรือลากไฟล์มาวางที่นี่
           </p>
-          <p className="mt-1 text-caption text-text-tertiary">
+          <p className="text-caption text-text-tertiary mt-1">
             รูปภาพ (PNG, JPG, WEBP) หรือเอกสาร PDF (สูงสุด 10MB)
           </p>
         </div>
       ) : (
         /* File Attached: Preview Card */
-        <div className="rounded-card border border-white/60 bg-white/80 backdrop-blur-md p-4 shadow-sm animate-fade-in">
+        <div className="rounded-card animate-fade-in border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md">
           <div className="flex items-center gap-3">
             {/* Thumbnail / Icon */}
             {isImage ? (
               <div
                 onClick={() => setIsPreviewOpen(true)}
-                className="relative h-16 w-16 shrink-0 cursor-pointer overflow-hidden rounded-lg border border-gray-200/80 bg-gray-100 group"
+                className="group relative h-16 w-16 shrink-0 cursor-pointer overflow-hidden rounded-lg border border-gray-200/80 bg-gray-100"
                 title="คลิกเพื่อดูรูปขยาย"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -199,12 +249,12 @@ export function FileUpload({
                   alt={value.fileName}
                   className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 transition-opacity group-hover:opacity-100 text-white">
+                <div className="absolute inset-0 flex items-center justify-center bg-black/30 text-white opacity-0 transition-opacity group-hover:opacity-100">
                   <Eye className="h-5 w-5" />
                 </div>
               </div>
             ) : (
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-500 border border-red-100">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border border-red-100 bg-red-50 text-red-500">
                 <FileText className="h-8 w-8" />
               </div>
             )}
@@ -212,7 +262,10 @@ export function FileUpload({
             {/* File Info */}
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <span className="truncate text-small font-medium text-text-primary" title={value.fileName}>
+                <span
+                  className="text-small text-text-primary truncate font-medium"
+                  title={value.fileName}
+                >
                   {value.fileName}
                 </span>
                 {isPdf && (
@@ -226,15 +279,28 @@ export function FileUpload({
                   </span>
                 )}
               </div>
-              <p className="mt-0.5 text-caption text-text-secondary">
-                {formatFileSize(value.fileSize)}
-              </p>
-              <div className="mt-2 flex flex-wrap items-center gap-2">
+              {value.fileSize > 0 && (
+                <p className="text-caption text-text-secondary mt-0.5">
+                  {formatFileSize(value.fileSize)}
+                </p>
+              )}
+              <div className="mt-2 flex flex-wrap items-center gap-2 print:hidden">
+                {downloadUrl && (
+                  <a
+                    href={downloadUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download
+                    className="action-button action-button-sm"
+                  >
+                    ดาวน์โหลดผัง
+                  </a>
+                )}
                 {isImage && (
                   <button
                     type="button"
                     onClick={() => setIsPreviewOpen(true)}
-                    className="inline-flex items-center gap-1 rounded px-2 py-1 text-caption text-primary hover:bg-primary-tint transition-colors"
+                    className="action-button action-button-sm"
                   >
                     <Eye className="h-3.5 w-3.5" />
                     ดูรูปขยาย
@@ -244,28 +310,32 @@ export function FileUpload({
                   <button
                     type="button"
                     onClick={handleOpenPdf}
-                    className="inline-flex items-center gap-1 rounded px-2 py-1 text-caption text-primary hover:bg-primary-tint transition-colors"
+                    className="action-button action-button-sm"
                   >
                     <ExternalLink className="h-3.5 w-3.5" />
                     เปิดดู PDF
                   </button>
                 )}
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="inline-flex items-center gap-1 rounded px-2 py-1 text-caption text-text-secondary hover:bg-gray-100 transition-colors"
-                >
-                  <RefreshCw className="h-3.5 w-3.5" />
-                  เปลี่ยนไฟล์
-                </button>
-                <button
-                  type="button"
-                  onClick={onDelete || handleRemove}
-                  className="inline-flex items-center gap-1 rounded px-2 py-1 text-caption text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                  ลบ
-                </button>
+                {!readOnly && (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="action-button action-button-sm"
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" />
+                    เปลี่ยนไฟล์
+                  </button>
+                )}
+                {!readOnly && (
+                  <button
+                    type="button"
+                    onClick={onDelete || handleRemove}
+                    className="action-button action-button-sm border-red-200 text-red-500"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    ลบ
+                  </button>
+                )}
               </div>
             </div>
           </div>

@@ -35,6 +35,7 @@ export function formatDateThai(dateString: string): string {
 export function formatDateTimeThai(dateString: string): string {
   const date = new Date(dateString);
   return date.toLocaleDateString("th-TH", {
+    timeZone: "Asia/Bangkok",
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -92,5 +93,3 @@ export function formatFileSize(bytes: number): string {
 export function cn(...classes: (string | undefined | null | false)[]): string {
   return classes.filter(Boolean).join(" ");
 }
-
-

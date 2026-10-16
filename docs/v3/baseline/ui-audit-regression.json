@@ -1,0 +1,88 @@
+{
+  "scope": "All-page original UI audit with current requirements",
+  "date": "2026-10-14T11:08:48.221Z",
+  "mode": "audit-resume",
+  "runs": [
+    {
+      "command": "npm run test:v3",
+      "exit_code": 0,
+      "elapsed_seconds": 1.689,
+      "log": "docs/v3/baseline/ui-audit-logs/test-v3.log"
+    },
+    {
+      "command": "npm run test:p5",
+      "exit_code": 0,
+      "elapsed_seconds": 0.774,
+      "log": "docs/v3/baseline/ui-audit-logs/test-p5.log"
+    },
+    {
+      "command": "npm run test:p7",
+      "exit_code": 0,
+      "elapsed_seconds": 0.821,
+      "log": "docs/v3/baseline/ui-audit-logs/test-p7.log"
+    },
+    {
+      "command": "npm run test:p2",
+      "exit_code": 0,
+      "elapsed_seconds": 1.896,
+      "log": "docs/v3/baseline/ui-audit-logs/test-p2.log"
+    },
+    {
+      "command": "npm run test:ui-restore",
+      "exit_code": 0,
+      "elapsed_seconds": 172.346,
+      "log": "docs/v3/baseline/ui-audit-logs/test-ui-restore.log"
+    },
+    {
+      "command": "npm run test:p7:browser",
+      "exit_code": 0,
+      "elapsed_seconds": 41.65,
+      "log": "docs/v3/baseline/ui-audit-logs/test-p7-browser.log"
+    },
+    {
+      "command": "npm run test:p5:browser",
+      "exit_code": 0,
+      "elapsed_seconds": 25.04,
+      "log": "docs/v3/baseline/ui-audit-logs/test-p5-browser.log"
+    },
+    {
+      "command": "npm run test:satisfaction:browser",
+      "exit_code": 0,
+      "elapsed_seconds": 41.148,
+      "log": "docs/v3/baseline/ui-audit-logs/test-satisfaction-browser.log"
+    },
+    {
+      "command": "npm run test:p6:browser",
+      "exit_code": 0,
+      "elapsed_seconds": 24.793,
+      "log": "docs/v3/baseline/ui-audit-logs/test-p6-browser.log"
+    },
+    {
+      "command": "npm run typecheck:worker",
+      "exit_code": 0,
+      "elapsed_seconds": 1.295,
+      "log": "docs/v3/baseline/ui-audit-logs/typecheck-worker.log"
+    },
+    {
+      "command": "npm run lint",
+      "exit_code": 0,
+      "elapsed_seconds": 2.934,
+      "log": "docs/v3/baseline/ui-audit-logs/lint.log"
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "elapsed_seconds": 14.097,
+      "log": "docs/v3/baseline/ui-audit-logs/build.log"
+    },
+    {
+      "command": "npm run typecheck",
+      "exit_code": 0,
+      "elapsed_seconds": 3.166,
+      "log": "docs/v3/baseline/ui-audit-logs/typecheck.log"
+    }
+  ],
+  "passed": true,
+  "previous_p8_uat": "approved before these corrections",
+  "deployed": false
+}

@@ -8,3 +8,5 @@ export * from "./form-textarea";
 export * from "./radio-card";
 export * from "./choice-button";
 export * from "./file-upload";
+
+export { ExplicitChoiceGroup } from "./explicit-choice-group";

@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-16T10:39:00.717Z",
+  "api": "https://save-check-api-p9.ameenahroya.workers.dev/api",
+  "passed": true,
+  "checks": [
+    "Cloudflare D1-only 10MB upload, retry and exact-byte download",
+    "environment/light/spot",
+    "environment/light/area",
+    "environment/noise/environment",
+    "environment/heat/environment",
+    "health_risk/light/health",
+    "health_risk/noise/health",
+    "health_risk/heat/health",
+    "satisfaction/general/environment",
+    "satisfaction/general/health",
+    "Retest retains original inspector, values, dates and attached file",
+    "Dashboard and CORS read/preflight pass"
+  ],
+  "codes": [
+    "SUB-20261016-2677d89b",
+    "SUB-20261016-dd68727f",
+    "SUB-20261016-ff9ef20e",
+    "SUB-20261016-09b1f072",
+    "SUB-20261016-b78355d5",
+    "SUB-20261016-20153f6a",
+    "SUB-20261016-4f6a6eb0",
+    "SUB-20261016-7de7da1d",
+    "SUB-20261016-99ed583d"
+  ]
+}

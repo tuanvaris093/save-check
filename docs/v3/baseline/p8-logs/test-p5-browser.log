@@ -1,0 +1,22 @@
+
+> save-check@0.1.1 test:p5:browser
+> node scripts/test-p5-browser.mjs
+
+PASS 1: required metadata errors focus first field; light technique before standards; optional local layout with upload after review
+PASS 2: Spot first inspection writes metadata/IDs/standards and server failure result
+PASS 3: three real rounds preserve inspectors, dates, values and complete snapshots in history Excel without overwriting old rounds
+PASS 4: Spot surrounding controls, zero measurement, draft refresh and stable IDs work at threshold boundary
+PASS 5: Area direct average passes but minimum fails; no subpoints; mobile PDFs match source with viewer/download fallback
+PASS 6: Area retest locks standard and requires direct average/minimum
+PASS 7: noise exposure minutes selects true threshold, observed bounds and authoritative result
+PASS 8: classic noise fields use the required exposure duration; failed network retains draft/key and retry succeeds
+PASS 9: heat 14:59–15:59 saves outside the inspection window for create/retest and preserves carried values
+PASS 10: heat correction preserves historical timestamps and accepts point times independent of inspection
+PASS 11: classic heat restores all original fields; raw values, meter value, standard and average persist without a forced 120 minute period
+PASS 12: real concurrent retest rejects stale base; draft survives and reload opens new base
+PASS 13: correction needs no reason input, preserves history and cannot change standards
+PASS 14: attach layout directly on result; lost receipt retry creates one revision and preserves old measurements
+PASS 15: legacy record is excluded from current UI while original source remains unchanged
+PASS 16: incomplete retest metadata and forged topology/standards are rejected without extra revisions
+PASS 17: corrupt local environment draft recovers to safe blank form without page crash
+P5 browser integration PASS 17

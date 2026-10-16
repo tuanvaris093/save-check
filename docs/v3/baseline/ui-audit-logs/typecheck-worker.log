@@ -1,0 +1,4 @@
+
+> save-check@0.1.1 typecheck:worker
+> tsc --noEmit -p worker/tsconfig.json
+

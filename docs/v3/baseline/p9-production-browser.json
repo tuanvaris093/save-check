@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-16T10:56:33.918Z",
+  "mode": "production",
+  "front": "https://save-check.pages.dev",
+  "passed": true,
+  "checks": [
+    "Built static pages load all eight form entry routes and both groups",
+    "Dashboard loads with the production API URL",
+    "Mobile layout and no browser runtime errors"
+  ],
+  "page_errors": []
+}

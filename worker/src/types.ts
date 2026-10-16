@@ -3,6 +3,8 @@ export interface Env {
   DB: D1Database;
   ENVIRONMENT?: string;
   FRONTEND_URL?: string;
+  MAINTENANCE_TOKEN?: string;
+  RELEASE_MAINTENANCE?: string;
 }
 
 export interface ApiSuccessResponse<T> {
@@ -79,3 +81,10 @@ export interface CreateSubmissionPayload {
   // Answers payload
   answers?: Record<string, any>;
 }
+
+export type {
+  CreateSubmissionV3,
+  EnvironmentRevisionV3,
+  DomainResponse,
+} from "../../shared/v3";
+export type V3Env = Env;

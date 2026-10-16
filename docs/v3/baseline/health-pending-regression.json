@@ -1,0 +1,87 @@
+{
+  "date": "2026-10-15T04:41:05.239Z",
+  "scope": "Server-backed before/after health pending assessments and current application regression",
+  "expected_commands": 13,
+  "runs": [
+    {
+      "command": "npm run test:v3",
+      "exit_code": 0,
+      "elapsed_seconds": 1.936,
+      "log": "docs/v3/baseline/health-pending-logs/test-v3.log"
+    },
+    {
+      "command": "npm run test:p4",
+      "exit_code": 0,
+      "elapsed_seconds": 0.376,
+      "log": "docs/v3/baseline/health-pending-logs/test-p4.log"
+    },
+    {
+      "command": "npm run test:p2",
+      "exit_code": 0,
+      "elapsed_seconds": 1.355,
+      "log": "docs/v3/baseline/health-pending-logs/test-p2.log"
+    },
+    {
+      "command": "npm run test:p8:migration",
+      "exit_code": 0,
+      "elapsed_seconds": 27.062,
+      "log": "docs/v3/baseline/health-pending-logs/test-p8-migration.log"
+    },
+    {
+      "command": "npm run test:ui-restore",
+      "exit_code": 0,
+      "elapsed_seconds": 75.274,
+      "log": "docs/v3/baseline/health-pending-logs/test-ui-restore.log"
+    },
+    {
+      "command": "npm run test:satisfaction:browser",
+      "exit_code": 0,
+      "elapsed_seconds": 44.26,
+      "log": "docs/v3/baseline/health-pending-logs/test-satisfaction-browser.log"
+    },
+    {
+      "command": "npm run test:p6:browser",
+      "exit_code": 0,
+      "elapsed_seconds": 32.17,
+      "log": "docs/v3/baseline/health-pending-logs/test-p6-browser.log"
+    },
+    {
+      "command": "npm run test:p7:browser",
+      "exit_code": 0,
+      "elapsed_seconds": 16.777,
+      "log": "docs/v3/baseline/health-pending-logs/test-p7-browser.log"
+    },
+    {
+      "command": "npm run typecheck:worker",
+      "exit_code": 0,
+      "elapsed_seconds": 1.691,
+      "log": "docs/v3/baseline/health-pending-logs/typecheck-worker.log"
+    },
+    {
+      "command": "npm run test:health-pending",
+      "exit_code": 0,
+      "elapsed_seconds": 18.311,
+      "log": "docs/v3/baseline/health-pending-logs/test-health-pending.log"
+    },
+    {
+      "command": "npm run lint",
+      "exit_code": 0,
+      "elapsed_seconds": 3.236,
+      "log": "docs/v3/baseline/health-pending-logs/lint.log"
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "elapsed_seconds": 14.502,
+      "log": "docs/v3/baseline/health-pending-logs/build.log"
+    },
+    {
+      "command": "npm run typecheck",
+      "exit_code": 0,
+      "elapsed_seconds": 3.919,
+      "log": "docs/v3/baseline/health-pending-logs/typecheck.log"
+    }
+  ],
+  "passed": true,
+  "deployed": false
+}

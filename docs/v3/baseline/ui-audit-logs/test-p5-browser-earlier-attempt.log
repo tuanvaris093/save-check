@@ -1,0 +1,68 @@
+
+> save-check@0.1.1 test:p5:browser
+> node scripts/test-p5-browser.mjs
+
+PASS 1: required metadata errors focus first field; light technique before standards; optional local layout with upload after review
+PASS 2: Spot first inspection writes metadata/IDs/standards and server failure result
+PASS 3: failed → failed → pass three real revisions; only failed units submitted; carried source and timestamp retained
+PASS 4: Spot surrounding controls, zero measurement, draft refresh and stable IDs work at threshold boundary
+PASS 5: Area average passes but minimum fails; samples persist; mobile PDFs match source with viewer/download fallback
+PASS 6: Area retest locks standard/sample topology and requires every sample
+PASS 7: noise exposure minutes selects true threshold, observed bounds and authoritative result
+PASS 8: TWA8 remains 85 dBA; failed network retains draft and same key, then real retry succeeds
+PASS 9: meter WBGT avoids duplicate raw inputs; heat retest carries old interval while validating new interval
+PASS 10: metadata-only heat correction keeps carried intervals and rejects changed measurements outside the new window
+PASS 11: calculated WBGT with sunlight and 120 minute weighted intervals matches API
+PASS 12: real concurrent retest rejects stale base; draft survives and reload opens new base
+PASS 13: correction has required reason, preserves old snapshot and cannot change standards
+-4dd0413f86a2&retest=SUB-20261014-85bd902c 200 in 317ms
+ GET /result?submissionId=SUB-20261014-85bd902c 200 in 105ms
+ GET /result?submissionId=SUB-20261014-85bd902c&revision=c6b2706c-92c4-46f8-ac8f-a42c4a729677 200 in 519ms
+ GET /assessment/environment-form?category=light 200 in 387ms
+ GET /assessment/environment-form?category=light 200 in 376ms
+ GET /result?submissionId=SUB-20261014-0a09acf8 200 in 385ms
+ GET /assessment/environment-form?category=light 200 in 572ms
+ GET /result?submissionId=SUB-20261014-fdda0a8d 200 in 279ms
+ GET /assessment/environment-form?category=light&base=632b9785-f4c2-4418-8e32-fb8465678a8c&retest=SUB-20261014-fdda0a8d 200 in 210ms
+ GET /result?submissionId=SUB-20261014-fdda0a8d 200 in 220ms
+ GET /assessment/environment-form?category=noise 200 in 632ms
+ GET /result?submissionId=SUB-20261014-1cfdc57a 200 in 322ms
+ GET /assessment/environment-form?category=noise 200 in 343ms
+ GET /result?submissionId=SUB-20261014-bc3916e9 200 in 267ms
+ GET /assessment/environment-form?category=heat 200 in 740ms
+ GET /result?submissionId=SUB-20261014-c81086da 200 in 291ms
+ GET /assessment/environment-form?category=heat&base=637f0c30-d421-4895-9ea2-1dcf74ce010d&retest=SUB-20261014-c81086da 200 in 284ms
+ GET /result?submissionId=SUB-20261014-c81086da 200 in 265ms
+ GET /result?submissionId=SUB-20261014-c81086da 200 in 1115ms
+ GET /assessment/environment-form?category=heat&base=d485bf70-38d3-4471-9e9d-12e8e861a41b&edit=SUB-20261014-c81086da 200 in 157ms
+ GET /result?submissionId=SUB-20261014-c81086da 200 in 385ms
+ GET /assessment/environment-form?category=heat 200 in 424ms
+ GET /result?submissionId=SUB-20261014-6d7a51ef 200 in 301ms
+ GET /assessment/environment-form?category=light 200 in 1062ms
+ GET /result?submissionId=SUB-20261014-6bef55e5 200 in 426ms
+ GET /assessment/environment-form?category=light&base=781568e4-84ed-4247-8101-b3493a926a9b&retest=SUB-20261014-6bef55e5 200 in 171ms
+ GET /assessment/environment-form?category=light&base=781568e4-84ed-4247-8101-b3493a926a9b&retest=SUB-20261014-6bef55e5 200 in 1355ms
+ GET /assessment/environment-form?category=light&retest=SUB-20261014-6bef55e5&base=40261798-5198-4c6c-af8a-97840f52d815 200 in 928ms
+ GET /result?submissionId=SUB-20261014-1cfdc57a 200 in 3032ms
+ GET /assessment/environment-form?category=noise&base=022adcb5-0908-4e9d-9cf9-966c73064ecb&edit=SUB-20261014-1cfdc57a 200 in 3834ms
+ GET /result?submissionId=SUB-20261014-1cfdc57a 200 in 646ms
+ GET /result?submissionId=SUB-20260902-2002 200 in 11233ms
+
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+locator.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('link', { name: 'เติมข้อมูลประกอบสำหรับการตรวจซ้ำ' })[22m
+
+    at /Users/tuanvaris/dev/save-check/scripts/test-p5-browser.mjs:763:10
+    at async check (/Users/tuanvaris/dev/save-check/scripts/test-p5-browser.mjs:107:3)
+    at async file:///Users/tuanvaris/dev/save-check/scripts/test-p5-browser.mjs:755:3 {
+  log: [
+    "  - waiting for getByRole('link', { name: 'เติมข้อมูลประกอบสำหรับการตรวจซ้ำ' })"
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v22.23.0

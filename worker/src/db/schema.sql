@@ -1,3 +1,5 @@
+-- Legacy bootstrap retained for migration/fixture checks.
+-- Install/upgrade v3 via npm run db:migrate, not by executing this file alone.
 -- ============================================
 -- SafeCheck Database Schema (Cloudflare D1 / SQLite)
 -- ============================================

@@ -1,0 +1,211 @@
+{
+  "date": "2026-10-14",
+  "scope": "local development only",
+  "backup": "/var/folders/4_/37jfdd410y7dzytvyc3zt84m0000gn/T/safecheck-local-recovery-crvq5c34/before-current-ui.sqlite",
+  "database": "worker/.wrangler/state/v3/d1/miniflare-D1DatabaseObject/15b7c384d9ecfd76719596d4c43c8150fddb29105e15c2924eced5d9e7197d99.sqlite",
+  "before": {
+    "submissions": {
+      "columns": [
+        "id",
+        "submission_code",
+        "assessment_type",
+        "assessment_category",
+        "status",
+        "overall_score",
+        "overall_level",
+        "has_layout",
+        "layout_file_name",
+        "layout_file_type",
+        "layout_file_size",
+        "layout_file_data",
+        "started_at",
+        "completed_at",
+        "created_at",
+        "updated_at"
+      ],
+      "count": 4,
+      "sha256": "94e84235cd504bcdb7eebd98eebb4b84f39506a78d74822488fd3bff61b85648"
+    },
+    "respondent_profiles": {
+      "columns": [
+        "id",
+        "submission_id",
+        "full_name",
+        "gender",
+        "age",
+        "weight",
+        "height",
+        "education_level",
+        "marital_status",
+        "has_underlying_disease",
+        "underlying_disease_details",
+        "created_at"
+      ],
+      "count": 1,
+      "sha256": "35e07357bf4833c514d53f6bf9337b89b26495b1044b4cca594b644a26b9ad53"
+    },
+    "respondent_work_infos": {
+      "columns": [
+        "id",
+        "submission_id",
+        "position_type",
+        "department",
+        "position",
+        "work_experience_years",
+        "working_hours_per_day",
+        "working_days_per_week",
+        "work_area",
+        "created_at"
+      ],
+      "count": 1,
+      "sha256": "b5d1a359fa750b38d5a4ad271565fff5a4df193b098d4efad63a3f41e5572ef1"
+    },
+    "environment_inspections": {
+      "columns": [
+        "id",
+        "submission_id",
+        "inspector_name",
+        "position",
+        "inspection_location",
+        "inspection_date",
+        "equipment",
+        "measurement_technique",
+        "start_time",
+        "end_time",
+        "created_at"
+      ],
+      "count": 2,
+      "sha256": "77650b1c360cbc897f96df5a72236cd7c2176fc77db4621ebc49e00c3e280716"
+    },
+    "environment_measurement_points": {
+      "columns": [
+        "id",
+        "submission_id",
+        "category",
+        "point_no",
+        "location_desc",
+        "measure_value",
+        "min_value",
+        "max_value",
+        "standard_value",
+        "standard_display",
+        "workload",
+        "temp_db",
+        "temp_wb",
+        "temp_gt",
+        "temp_wbgt",
+        "wbgt_type",
+        "start_time",
+        "end_time",
+        "total_time",
+        "is_pass",
+        "remark",
+        "created_at"
+      ],
+      "count": 5,
+      "sha256": "6ef96b117b54b82069c6c953a5e87d969e3db5ee17e9a3f406768beee0d58a6f"
+    },
+    "health_risk_answers": {
+      "columns": [
+        "id",
+        "submission_id",
+        "category",
+        "question_id",
+        "question_no",
+        "question_text",
+        "score",
+        "created_at"
+      ],
+      "count": 10,
+      "sha256": "d378f1aa8bed335afa0782fc4190a0ccc1968d0a475e6e709a9153285cf47b45"
+    },
+    "satisfaction_answers": {
+      "columns": [
+        "id",
+        "submission_id",
+        "question_id",
+        "category",
+        "rating",
+        "suggestion",
+        "created_at"
+      ],
+      "count": 8,
+      "sha256": "fda2901f37f34edbb35e702535077200a7c7e03eac0defd84248015d3c63d2e7"
+    },
+    "assessment_results": {
+      "columns": [
+        "id",
+        "submission_id",
+        "assessment_type",
+        "assessment_category",
+        "total_score",
+        "risk_level",
+        "calculated_value",
+        "is_pass",
+        "message",
+        "recommendations_json",
+        "created_at"
+      ],
+      "count": 2,
+      "sha256": "6cc4e989effd0af69ddb17a9298927f64f3c37a31aa085a0a528f710de47af7e"
+    }
+  },
+  "remote": false,
+  "deployed": false,
+  "status": "verified-local-repair",
+  "after": {
+    "submissions": {
+      "count": 4,
+      "original_columns_sha256": "94e84235cd504bcdb7eebd98eebb4b84f39506a78d74822488fd3bff61b85648",
+      "preserved": true
+    },
+    "respondent_profiles": {
+      "count": 1,
+      "original_columns_sha256": "35e07357bf4833c514d53f6bf9337b89b26495b1044b4cca594b644a26b9ad53",
+      "preserved": true
+    },
+    "respondent_work_infos": {
+      "count": 1,
+      "original_columns_sha256": "b5d1a359fa750b38d5a4ad271565fff5a4df193b098d4efad63a3f41e5572ef1",
+      "preserved": true
+    },
+    "environment_inspections": {
+      "count": 2,
+      "original_columns_sha256": "77650b1c360cbc897f96df5a72236cd7c2176fc77db4621ebc49e00c3e280716",
+      "preserved": true
+    },
+    "environment_measurement_points": {
+      "count": 5,
+      "original_columns_sha256": "6ef96b117b54b82069c6c953a5e87d969e3db5ee17e9a3f406768beee0d58a6f",
+      "preserved": true
+    },
+    "health_risk_answers": {
+      "count": 10,
+      "original_columns_sha256": "d378f1aa8bed335afa0782fc4190a0ccc1968d0a475e6e709a9153285cf47b45",
+      "preserved": true
+    },
+    "satisfaction_answers": {
+      "count": 8,
+      "original_columns_sha256": "fda2901f37f34edbb35e702535077200a7c7e03eac0defd84248015d3c63d2e7",
+      "preserved": true
+    },
+    "assessment_results": {
+      "count": 2,
+      "original_columns_sha256": "6cc4e989effd0af69ddb17a9298927f64f3c37a31aa085a0a528f710de47af7e",
+      "preserved": true
+    }
+  },
+  "foreign_key_violations": 0,
+  "ledger": [
+    "0001_legacy_baseline.sql",
+    "0002_v3_domain.sql",
+    "0003_legacy_revision_snapshots.sql",
+    "0004_worker_v3_services.sql",
+    "0005_optional_layout.sql"
+  ],
+  "dashboard_summary_http": {
+    "before": 503,
+    "after": 200,
+    "origin": "http://localhost:3001"
+  }
+}

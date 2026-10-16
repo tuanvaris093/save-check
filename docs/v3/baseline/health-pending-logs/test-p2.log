@@ -1,0 +1,28 @@
+
+> save-check@0.1.1 test:p2
+> node scripts/test-p2-api.mjs
+
+PASS 1: upload validates MIME, preserves staged file and retries by hash
+PASS 2: health before/after saved with server score, profile, program and all 20 answers
+PASS 3: invalid fields, fake overall score, malformed JSON and old payload rejected without writes
+PASS 4: satisfaction both groups, optional notes and manual duration persist
+PASS 5: noise/heat health, Area, noise exposure/TWA8 and WBGT environment all create/read
+PASS 6: environment atomic create and idempotent retry, file committed with revision snapshot
+PASS 7: locked fields, omitted failed points and foreign revisions cannot retest
+PASS 8: failed-only retest produces latest r2 then r3 and preserves r1/per-point dates
+PASS 9: concurrent writers from one base allow exactly one revision and retries do not branch
+PASS 10: failure inside batch leaves no header/children/payload/idempotency residue
+PASS 11: generic overwrite/layout routes rejected and corrections keep immutable data versions
+PASS 12: archive/restore preserve revision and exclude records from default list/count/export
+PASS 13: dashboard and export distinguish latest jobs, revisions, groups and filter validation
+PASS 14: CORS exact allowlist rejects arbitrary Pages/localhost substrings
+PASS 15: files download, committed metadata lock and orphan cleanup never remove referenced object
+PASS 16: legacy questionnaires remain readable with zero answers and unknown satisfaction group
+PASS 17: legacy supplement records adoption once, preserves old revision and enables failed-only retest
+PASS 18: environment correction creates audit revision and keeps previous result snapshot intact
+PASS 19: missing R2 and unapplied schema return actionable 503 without exposing internals
+PASS 20: same-key concurrent create replays one job and rejects changed payload
+PASS 21: history export has explicit revision pagination without dropping older rounds
+PASS 22: legacy layout returns original bytes before and after upgrade without rewriting snapshot
+PASS 23: oversized JSON and layout streams fail before persistence
+P2 API integration PASS: 23 scenarios; isolated runtime /var/folders/4_/37jfdd410y7dzytvyc3zt84m0000gn/T/savecheck-p2-api-60m622

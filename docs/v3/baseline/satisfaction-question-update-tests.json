@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-12",
+  "passed": 6,
+  "checks": [
+    "all 32 question texts match source DOCX after documented whitespace/typo normalization",
+    "4 dimensions / 4 questions each, stable q1–q16 IDs, Content title, rating scale unchanged",
+    "environment and health differ, use their own versions and immutable question snapshots",
+    "old results preserve legacy wording; v3 results use stored wording even if catalog differs",
+    "draft key changes with questionnaire version; old scores cannot restore into new wording",
+    "Excel uses generic score headers, group/version columns and versioned question dictionary"
+  ],
+  "source_sha256": "cd31f439e5a21df82ba5b7e692ca18b39d5f72914cb16b9a9a9f414eb0181ed9",
+  "remote": false
+}

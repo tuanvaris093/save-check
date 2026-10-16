@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-12",
+  "passed": 10,
+  "checks": [
+    "retired pending workflow rejects all old APIs and Dashboard has no resume list",
+    "all health profile fields required, no implicit gender/disease answer; conditional details",
+    "select exact seven programs and separate years 1–6 including higher vocational year 6",
+    "before gate, zero hours/answers valid, after retained while editing before and refresh",
+    "API failure preserves full 20 answers/draft/key; retry persists real Worker result and D1 snapshots",
+    "staff N/A, zero experience, noise multiple/none/other conditional and new ten questions",
+    "heat ten new questions and all zero answers save as zero total",
+    "six official compare examples agree in browser result and Worker API, including decreased-but-high",
+    "legacy light is excluded from current UI without rewriting original answers",
+    "desktop result fits layout and server version/snapshot wording displayed"
+  ],
+  "page_errors": [],
+  "runtime": "Chromium + actual local Worker workerd/D1/R2; one mocked 409",
+  "foreign_key_violations": 0,
+  "remote": false
+}

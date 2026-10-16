@@ -1,0 +1,31 @@
+{
+  "phase": "P7",
+  "passed": 20,
+  "checks": [
+    "actual local fixtures cover Spot/Area/noise/WBGT, all health and both satisfaction groups",
+    "one global spinner stays centered until parallel dashboard loads both finish",
+    "dashboard shows created_at and sorts by actual creation time in both directions, including timezone offsets",
+    "health paired result and selected Excel totals/wording/metadata exactly match stored API",
+    "environment selected history retains old failure, date/thresholds; only current failed jobs expose retest",
+    "Area samples, noise duration thresholds and WBGT intervals are exported from snapshots",
+    "satisfaction version correction and history selector keep selected wording, mean and manual duration",
+    "legacy data is excluded from current UI while its stored source remains intact",
+    "API date basis/filter validation, one job per code, SQL grouped satisfaction averages",
+    "dashboard filters apply identically to cards/list/XLSX with mobile without overflow",
+    "bulk export reads more than 100 real jobs through all pages with no lost codes",
+    "dashboard exports latest only after 13 real revisions; previous stored result remains frozen",
+    "old Area sample history opens without subpoints and retests with direct values without rewriting the original",
+    "archive is retired; stored historical flags do not hide results or block retesting",
+    "API failure/invalid selection surfaces errors and retry without stale report",
+    "A4 print/PDF chosen version retains Thai questions/thresholds and hides controls/embedded standard PDF",
+    "mobile/tablet shell stretches below 1440; desktop sidebar only on large screens",
+    "every form summary uses readable shared label/value styles on mobile and desktop",
+    "Done returns saved results to their form entry page and stays out of print",
+    "no browser runtime errors or SQLite foreign-key violations"
+  ],
+  "browser": "Chromium",
+  "viewport": "390x844 / 1280x900",
+  "backend": "actual isolated Miniflare Worker + D1 + R2",
+  "pageErrors": [],
+  "deployed": false
+}

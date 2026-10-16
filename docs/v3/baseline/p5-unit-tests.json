@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-12",
+  "passed": 12,
+  "checks": [
+    "Area direct values validate without samples; legacy sources remain immutable and empty retests stay empty",
+    "empty numeric inputs are not coerced to zero; actual zero is valid",
+    "metadata/technique required, optional layout and real calendar dates rejected",
+    "Thai local datetime converts explicitly to UTC+7 including midnight crossing",
+    "Spot surrounding and Area aggregate use same domain validation as Worker",
+    "noise basis does not mix duration and normalized TWA8; blank duration invalid",
+    "heat modes omit inapplicable values and enforce 120 minute weighted average",
+    "retest resets failed values, preserves carry provenance and records inspection metadata per round",
+    "environment drafts separated by mode/base/form version; stable IDs survive roundtrip",
+    "heat times are independent of inspection times for create/correction; invalid point order still fails",
+    "corrupt environment draft is rejected safely without rendering nested bad shapes",
+    "all public standard PDFs are byte-identical to supplied source assets"
+  ],
+  "remote": false
+}

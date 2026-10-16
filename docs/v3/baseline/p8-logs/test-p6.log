@@ -1,0 +1,11 @@
+
+> save-check@0.1.1 test:p6
+> node scripts/test-p6.mjs
+
+PASS 1: group closed, all 16 scores required 1–5, suggestion optional and version mismatch rejected
+PASS 2: student programs and separate years 1–6; work context requires explicit N/A or program
+PASS 3: duration blank/zero/decimals/overflow are distinct; manual total is 93784
+PASS 4: durations do not change ratings and differences retain negative sign; health omits durations
+PASS 5: typed incomplete draft survives with zeros; groups isolated; corrupted nested shapes rejected
+PASS 6: same-questionnaire draft migration preserves real ratings but requires new metadata/time
+PASS 7: actual workbook carries group/profile/program/year/manual seconds/negative delta and stored wording; legacy unknown stays blank

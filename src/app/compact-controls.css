@@ -1,0 +1,109 @@
+/* Component sizes take precedence over decorative button styles. */
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 38px;
+  max-width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #cbd5ff;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #5367ff;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.action-button:hover {
+  background: #eef2ff;
+  text-decoration: none;
+}
+.action-button:focus-visible {
+  outline: 2px solid #5367ff;
+  outline-offset: 3px;
+}
+.action-button-sm {
+  min-height: 30px;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+button[data-button-size] {
+  box-sizing: border-box;
+  height: auto;
+  min-height: 38px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 20px;
+}
+button[data-button-size="sm"] {
+  min-height: 30px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 20px;
+}
+button[data-button-size="lg"] {
+  min-height: 42px;
+  padding: 10px 18px;
+}
+button[data-button-size="icon"] {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+}
+.floating-pill-nav .floating-pill-nav-surface {
+  height: 54px;
+  padding: 4px;
+  border-radius: 27px;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.12);
+}
+.floating-pill-nav .floating-pill-nav-link {
+  min-height: 44px;
+  border-radius: 22px;
+}
+.floating-pill-nav .floating-pill-nav-link.is-active {
+  box-shadow: 0 3px 10px rgba(79, 107, 255, 0.22);
+}
+.dashboard-date-range {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+}
+.dashboard-date-range .temporal-input-shell {
+  width: 100%;
+  padding-inline: 6px;
+}
+.dashboard-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding: 12px;
+  font-size: 12px;
+}
+.dashboard-pagination select {
+  height: 30px;
+  min-width: 52px;
+  border: 1px solid #d7e2f0;
+  border-radius: 8px;
+  padding: 2px 6px;
+  font-size: 12px;
+}
+@media (max-width: 639px) {
+  .dashboard-date-range {
+    flex: 1 1 100%;
+  }
+  .dashboard-pagination {
+    justify-content: center;
+  }
+}
+[data-global-loading] [role="dialog"]:focus-visible {
+  outline: none;
+}
+

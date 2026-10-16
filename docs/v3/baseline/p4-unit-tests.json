@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-12",
+  "passed": 8,
+  "checks": [
+    "health profile requires all fields and never defaults blank numeric to zero",
+    "disease details conditional, no-disease normalizes hidden text to null",
+    "all seven exact programs allow independent study years 1 through 6",
+    "staff/faculty/other contexts only include applicable year or experience and weekly hours",
+    "20 light answers separated, valid zero accepted, today hours required but not score",
+    "noise source none/other rules and heat has no unwanted context",
+    "server draft adapter preserves before/after zero and questionnaire version",
+    "saved result renders server result and resolved question/program snapshots"
+  ],
+  "remote": false
+}

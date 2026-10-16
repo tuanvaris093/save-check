@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-12",
+  "passed": 11,
+  "checks": [
+    "home two groups and responsive mobile/desktop without horizontal overflow",
+    "each group has four routes, correct satisfaction group and back link",
+    "all eight direct entry routes render in correct group",
+    "missing/invalid satisfaction group chooses group with no draft guess",
+    "autosave during typing survives immediate navigation, refresh and restores wizard step",
+    "category and satisfaction group drafts do not share answers",
+    "bad cached envelope and invalid category show safe recovery",
+    "required validation focuses first invalid field with accessible error",
+    "submit invalid incomplete v3 form keeps draft and never shows fake server success",
+    "failed server result/edit never uses locally fabricated cache as authority",
+    "valid v3 fixture retries API failure with same key, then uses verified server code"
+  ],
+  "viewports": [
+    320,
+    390,
+    1440
+  ],
+  "page_errors": [],
+  "api": "mocked unavailable; no remote mutations",
+  "remote": false
+}

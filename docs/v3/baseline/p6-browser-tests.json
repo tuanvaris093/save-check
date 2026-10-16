@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-14",
+  "passed": 11,
+  "checks": [
+    "independent health entry requires name/type/program/year; real 7 programs and separate years 1–6",
+    "16 ratings required; optional notes, back/refresh preserve profile and answers; real health create/read",
+    "environment name is required, drafts/groups do not share ratings, durations follow ratings",
+    "all 8 manual units required; positive total/int/ranges validated; 93784 seconds and negative difference persist",
+    "downloaded real Excel matches API group, name, seconds, mean and all stored question text",
+    "staff explicit N/A has no student field; other respondents require study/work context",
+    "network failure keeps typed draft/key; retry creates once, clears only its group and uses server result",
+    "correction includes reason and group/time/profile; old version result is immutable",
+    "Worker rejects missing group/duration/name/student year and invalid rating without writes; no 46/309 quota",
+    "legacy satisfaction is excluded from current UI without new profile/time guesses; invalid groups choose explicitly",
+    "same-questionnaire old drafts keep ratings but require respondent data; corrupt typed drafts recover safely"
+  ],
+  "page_errors": [],
+  "runtime": "Chromium + real local Worker/D1/R2; one aborted request for network retry",
+  "foreign_key_violations": 0,
+  "remote": false
+}

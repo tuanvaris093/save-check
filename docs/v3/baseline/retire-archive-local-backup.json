@@ -1,0 +1,107 @@
+{
+  "database": "/Users/tuanvaris/dev/save-check/worker/.wrangler/state/v3/d1/miniflare-D1DatabaseObject/15b7c384d9ecfd76719596d4c43c8150fddb29105e15c2924eced5d9e7197d99.sqlite",
+  "backup": "/var/folders/4_/37jfdd410y7dzytvyc3zt84m0000gn/T/save-check-retire-archive-backup-q6fs_px7/local.sqlite",
+  "tables": {
+    "assessment_audit_events": {
+      "rows": 2,
+      "sha256": "b802586a6141962eb54aa3466b2424e3503b48b7b75aedeb5c7b3a71b7b198e0"
+    },
+    "assessment_files": {
+      "rows": 1,
+      "sha256": "6e06eed5a77e6e7a376b34ed406315febf3fd6e7f61c9e2dab9bdb0df28596f5"
+    },
+    "assessment_results": {
+      "rows": 6,
+      "sha256": "965f0c0ee3135cfb6fa0db8c186faf0ce3ba4a55884c9df152fa9fad92fee713"
+    },
+    "environment_inspections": {
+      "rows": 2,
+      "sha256": "b94d465f4802d8a6251f974969d45c8b29b7da90d21cf5a954729e35eb520d77"
+    },
+    "environment_measurement_points": {
+      "rows": 5,
+      "sha256": "5209cce2f894e413411d353431a4b1e5c4aaff927c58294f23273423ec388991"
+    },
+    "environment_metadata_supplements": {
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "environment_revision_points": {
+      "rows": 8,
+      "sha256": "f4366450cff05c6fae3516a34cc6bf588a7e0a6446e455e6894aaa96993568c9"
+    },
+    "environment_revision_samples": {
+      "rows": 3,
+      "sha256": "c286bd5ff7421fb415b0132cea4192eac40c31758358ac845cf48dfe38116db4"
+    },
+    "environment_revisions": {
+      "rows": 5,
+      "sha256": "d149e8547b3d5d4ddfdd0745b6f994b9be949431f46a071aea7abf28157a586a"
+    },
+    "health_contexts": {
+      "rows": 1,
+      "sha256": "400968999930cd66f83cb19fcba2318ec26142ca4a172cd070924d9075e419b3"
+    },
+    "health_light_draft_completions": {
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "health_light_drafts": {
+      "rows": 1,
+      "sha256": "2f3a0952a0fe1cdbc238012e9473dd205ee282f25ff978b1224f7613a4784852"
+    },
+    "health_noise_sources": {
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "health_risk_answers": {
+      "rows": 40,
+      "sha256": "6d0dfe11cc64a78efd832b2389aadec54d92f6bc27bb50cc6517fb719ce57278"
+    },
+    "legacy_file_mappings": {
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "legacy_layout_snapshots": {
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "mutation_preconditions": {
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "mutation_requests": {
+      "rows": 6,
+      "sha256": "bbdc67bf94762381adb982dd6754ca6e028cf3b6ac2d1df8606cddeb03960faf"
+    },
+    "program_catalog": {
+      "rows": 7,
+      "sha256": "f269d359f039e060ab7bee1b1177cd439149a3bf82b72a37af9c9943c6abf984"
+    },
+    "respondent_profiles": {
+      "rows": 4,
+      "sha256": "9619dc791fcdfbbb43e9d7f1923cc07f025192d8f7fc11856719fbd55cd50d02"
+    },
+    "respondent_work_infos": {
+      "rows": 4,
+      "sha256": "7ddb621dd904fda33e96292ccb1593addf1d4156bf5a57c9e2b569d1e87f1614"
+    },
+    "satisfaction_answers": {
+      "rows": 24,
+      "sha256": "edf5c9e53b473fd0ccabd86e141e664ba667f075147ff3d6c6c00ca84d66b1fc"
+    },
+    "satisfaction_metadata": {
+      "rows": 1,
+      "sha256": "86874678c753284ecddbbdd7cb0458bd8b7a92f324ab78b4f358a68036cc9586"
+    },
+    "submission_payload_versions": {
+      "rows": 6,
+      "sha256": "437383c875f7ee272cb187bc2d88937207d938cee82b52c7facdfbc367701366"
+    },
+    "submissions": {
+      "rows": 8,
+      "sha256": "540996ad97072b0b47dd855e9c86c04bc711b66d30e97b5ae26d0be8fcba6c9e"
+    }
+  },
+  "archived_count": 0
+}

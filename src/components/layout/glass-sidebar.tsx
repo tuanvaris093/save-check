@@ -29,7 +29,7 @@ export function GlassSidebar() {
   return (
     <>
       <aside
-        className="hidden md:flex md:flex-col md:shrink-0 md:sticky md:top-4 md:self-start z-30 print:hidden"
+        className="app-sidebar z-30 hidden min-[1440px]:sticky min-[1440px]:top-4 min-[1440px]:flex min-[1440px]:shrink-0 min-[1440px]:flex-col min-[1440px]:self-start print:hidden"
         style={{
           width: "260px",
           height: "calc(100dvh - 32px)",
@@ -50,7 +50,8 @@ export function GlassSidebar() {
           <div
             className="flex items-center gap-3 rounded-[24px] px-5 py-4"
             style={{
-              background: "linear-gradient(135deg, #2563EB, #4F6BFF 55%, #7C3AED)",
+              background:
+                "linear-gradient(135deg, #2563EB, #4F6BFF 55%, #7C3AED)",
             }}
           >
             <Image
@@ -69,11 +70,15 @@ export function GlassSidebar() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 pt-2 overflow-y-auto">
+        <nav className="flex-1 overflow-y-auto px-4 pt-2">
           <div className="flex flex-col gap-1">
             {SIDEBAR_ITEMS.map((item) => {
               const isActive =
                 pathname === item.href ||
+                (item.href === ROUTES.HOME &&
+                  pathname.startsWith("/assessment/")) ||
+                (item.href === ROUTES.DASHBOARD &&
+                  pathname.startsWith(ROUTES.RESULT)) ||
                 (item.href !== "/" && pathname.startsWith(item.href));
               const Icon = item.icon;
               return (
@@ -89,9 +94,9 @@ export function GlassSidebar() {
                   style={
                     isActive
                       ? {
-                          background: "linear-gradient(135deg, #2563EB, #4F6BFF 58%, #8B5CF6)",
-                          boxShadow:
-                            "0 10px 22px rgba(79, 107, 255, 0.22)",
+                          background:
+                            "linear-gradient(135deg, #2563EB, #4F6BFF 58%, #8B5CF6)",
+                          boxShadow: "0 10px 22px rgba(79, 107, 255, 0.22)",
                         }
                       : undefined
                   }
@@ -110,19 +115,19 @@ export function GlassSidebar() {
           <button
             type="button"
             onClick={() => setIsCreditsOpen(true)}
-            className="w-full text-left rounded-2xl bg-white/60 hover:bg-white/90 border border-slate-200/70 p-3.5 transition-all group hover:shadow-xs active:scale-[0.98]"
+            className="group w-full rounded-2xl border border-slate-200/70 bg-white/60 p-3.5 text-left transition-all hover:bg-white/90 hover:shadow-xs active:scale-[0.98]"
           >
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[11px] font-semibold text-primary flex items-center gap-1.5">
-                <Info className="h-3.5 w-3.5 text-primary" />
+            <div className="mb-1 flex items-center justify-between">
+              <span className="text-primary flex items-center gap-1.5 text-[11px] font-semibold">
+                <Info className="text-primary h-3.5 w-3.5" />
                 ผู้จัดทำ & ลิขสิทธิ์
               </span>
-              <ChevronRight className="h-3.5 w-3.5 text-text-muted group-hover:text-primary transition-colors" />
+              <ChevronRight className="text-text-muted group-hover:text-primary h-3.5 w-3.5 transition-colors" />
             </div>
-            <p className="text-[10px] text-text-secondary leading-tight">
+            <p className="text-text-secondary text-[10px] leading-tight">
               วสส.ยะลา • อาชีวอนามัยฯ รุ่น 3
             </p>
-            <p className="text-[9px] text-text-muted mt-1">
+            <p className="text-text-muted mt-1 text-[9px]">
               © 2026 SafeCheck System
             </p>
           </button>

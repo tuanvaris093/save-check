@@ -1,0 +1,15 @@
+
+> save-check@0.1.1 test:p5
+> node scripts/test-p5.mjs
+
+PASS 1: empty numeric inputs are not coerced to zero; actual zero is valid
+PASS 2: metadata/technique required, optional layout and real calendar dates rejected
+PASS 3: Thai local datetime converts explicitly to UTC+7 including midnight crossing
+PASS 4: Spot surrounding and Area aggregate use same domain validation as Worker
+PASS 5: noise basis does not mix duration and normalized TWA8; blank duration invalid
+PASS 6: heat modes omit inapplicable values and enforce 120 minute weighted average
+PASS 7: retest resets failed measurements, freezes carry IDs/provenance and sends no locked metadata
+PASS 8: environment drafts separated by mode/base/form version; stable IDs survive roundtrip
+PASS 9: effective heat correction accepts only unchanged old measurements; public create and changed values still enforce window
+PASS 10: corrupt environment draft is rejected safely without rendering nested bad shapes
+PASS 11: all public standard PDFs are byte-identical to supplied source assets

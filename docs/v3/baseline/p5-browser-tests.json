@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-16T10:21:09.624Z",
+  "passed": 17,
+  "checks": [
+    "required metadata errors focus first field; light technique before standards; optional local layout with upload after review",
+    "Spot first inspection writes metadata/IDs/standards and server failure result",
+    "three real rounds preserve inspectors, dates, values and complete snapshots in history Excel without overwriting old rounds",
+    "Spot surrounding controls, zero measurement, draft refresh and stable IDs work at threshold boundary",
+    "Area direct average passes but minimum fails; no subpoints; mobile PDFs match source with viewer/download fallback",
+    "Area retest locks standard and requires direct average/minimum",
+    "noise exposure minutes selects true threshold, observed bounds and authoritative result",
+    "classic noise fields use the required exposure duration; failed network retains draft/key and retry succeeds",
+    "heat 14:59–15:59 saves outside the inspection window for create/retest and preserves carried values",
+    "heat correction preserves historical timestamps and accepts point times independent of inspection",
+    "classic heat restores all original fields; raw values, meter value, standard and average persist without a forced 120 minute period",
+    "real concurrent retest rejects stale base; draft survives and reload opens new base",
+    "correction needs no reason input, preserves history and cannot change standards",
+    "attach layout directly on result; lost receipt retry creates one revision and preserves old measurements",
+    "legacy record is excluded from current UI while original source remains unchanged",
+    "incomplete retest metadata and forged topology/standards are rejected without extra revisions",
+    "corrupt local environment draft recovers to safe blank form without page crash"
+  ],
+  "page_errors": [],
+  "runtime": "Chromium + real local workerd/D1/R2; one aborted create for retry",
+  "foreign_key_violations": 0,
+  "remote": false
+}

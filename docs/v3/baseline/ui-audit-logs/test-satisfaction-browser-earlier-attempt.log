@@ -1,0 +1,81 @@
+
+> save-check@0.1.1 test:satisfaction:browser
+> SAT_QUESTION_CHECK=1 node scripts/test-p4-browser.mjs
+
+PASS 1: all health profile fields required, no implicit gender/disease answer; conditional details
+PASS 2: select exact seven programs and separate years 1–6 including higher vocational year 6
+PASS 3: before gate, zero hours/answers valid, after retained while editing before and refresh
+PASS 4: API failure preserves full 20 answers/draft/key; retry persists real Worker result and D1 snapshots
+PASS 5: staff N/A, zero experience, noise multiple/none/other conditional and new ten questions
+PASS 6: heat ten new questions and all zero answers save as zero total
+PASS 7: six official compare examples agree in browser result and Worker API, including decreased-but-high
+PASS 8: legacy light is excluded from current UI without rewriting original answers
+PASS 9: desktop result fits layout and server version/snapshot wording displayed
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+page.goto: Timeout 30000ms exceeded.
+Call log:
+[2m  - navigating to "http://127.0.0.1:3014/assessment/satisfaction?group=environment", waiting until "load"[22m
+
+    at /Users/tuanvaris/dev/save-check/scripts/test-satisfaction-browser.mjs:62:16 {
+  log: [
+    '  - navigating to "http://127.0.0.1:3014/assessment/satisfaction?group=environment", waiting until "load"'
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v22.23.0
+   ▲ Next.js 15.5.19 (Turbopack)
+   - Local:        http://127.0.0.1:3014
+   - Network:      http://127.0.0.1:3014
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 3.7s
+ ○ Compiling / ...
+ ✓ Compiled / in 5.4s
+ GET / 200 in 8004ms
+ ○ Compiling /assessment/health-risk-form ...
+ ✓ Compiled /assessment/health-risk-form in 5s
+ GET /assessment/health-risk-form?category=light 200 in 7413ms
+ GET /assessment/health-risk-form?category=light 200 in 3861ms
+ ○ Compiling /result ...
+ ✓ Compiled /result in 7s
+ GET /result?submissionId=SUB-20261014-097666c7 200 in 7508ms
+ GET /assessment/health-risk-form?category=noise 200 in 1051ms
+ GET /result?submissionId=SUB-20261014-d0b6032a 200 in 969ms
+ GET /assessment/health-risk-form?category=heat 200 in 1049ms
+ GET /result?submissionId=SUB-20261014-52f44a2f 200 in 927ms
+ GET /result?submissionId=SUB-20261014-90dc70fa 200 in 1655ms
+ GET /result?submissionId=SUB-20261014-5f5258ea 200 in 472ms
+ GET /result?submissionId=SUB-20261014-4d133457 200 in 280ms
+ GET /result?submissionId=SUB-20261014-f9127387 200 in 617ms
+ GET /result?submissionId=SUB-20261014-5adc5e93 200 in 462ms
+ GET /result?submissionId=SUB-20261014-dbe49078 200 in 528ms
+ GET /result?submissionId=SUB-20260903-3003 200 in 656ms
+ GET /result?submissionId=SUB-20261014-097666c7 200 in 306ms
+ GET / 200 in 7904ms
+ ○ Compiling /assessment/satisfaction ...
+ ✓ Compiled /assessment/satisfaction in 25.2s
+
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: satisfaction browser
+
+1 !== 0
+
+    at file:///Users/tuanvaris/dev/save-check/scripts/test-p4-browser.mjs:619:12
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v22.23.0

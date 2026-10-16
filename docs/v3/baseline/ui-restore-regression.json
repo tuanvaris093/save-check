@@ -1,0 +1,82 @@
+{
+  "scope": "Restore original table UI and current-only data D19/D20",
+  "date": "2026-10-14T09:29:36.647Z",
+  "mode": "final",
+  "runs": [
+    {
+      "command": "npm run test:v3",
+      "exit_code": 0,
+      "elapsed_seconds": 3.82,
+      "log": "docs/v3/baseline/ui-restore-logs/test-v3.log"
+    },
+    {
+      "command": "npm run test:p5",
+      "exit_code": 0,
+      "elapsed_seconds": 0.478,
+      "log": "docs/v3/baseline/ui-restore-logs/test-p5.log"
+    },
+    {
+      "command": "npm run test:p7",
+      "exit_code": 0,
+      "elapsed_seconds": 0.772,
+      "log": "docs/v3/baseline/ui-restore-logs/test-p7.log"
+    },
+    {
+      "command": "npm run test:p2",
+      "exit_code": 0,
+      "elapsed_seconds": 2.607,
+      "log": "docs/v3/baseline/ui-restore-logs/test-p2.log"
+    },
+    {
+      "command": "npm run test:p7:browser",
+      "exit_code": 0,
+      "elapsed_seconds": 29.328,
+      "log": "docs/v3/baseline/ui-restore-logs/test-p7-browser.log"
+    },
+    {
+      "command": "npm run test:satisfaction:browser",
+      "exit_code": 0,
+      "elapsed_seconds": 60.3,
+      "log": "docs/v3/baseline/ui-restore-logs/test-satisfaction-browser.log"
+    },
+    {
+      "command": "npm run test:p6:browser",
+      "exit_code": 0,
+      "elapsed_seconds": 27.888,
+      "log": "docs/v3/baseline/ui-restore-logs/test-p6-browser.log"
+    },
+    {
+      "command": "npm run test:ui-restore",
+      "exit_code": 0,
+      "elapsed_seconds": 38.044,
+      "log": "docs/v3/baseline/ui-restore-logs/test-ui-restore.log"
+    },
+    {
+      "command": "npm run typecheck:worker",
+      "exit_code": 0,
+      "elapsed_seconds": 3.798,
+      "log": "docs/v3/baseline/ui-restore-logs/typecheck-worker.log"
+    },
+    {
+      "command": "npm run lint",
+      "exit_code": 0,
+      "elapsed_seconds": 6.801,
+      "log": "docs/v3/baseline/ui-restore-logs/lint.log"
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "elapsed_seconds": 23.417,
+      "log": "docs/v3/baseline/ui-restore-logs/build.log"
+    },
+    {
+      "command": "npm run typecheck",
+      "exit_code": 0,
+      "elapsed_seconds": 7.775,
+      "log": "docs/v3/baseline/ui-restore-logs/typecheck.log"
+    }
+  ],
+  "passed": true,
+  "previous_p8_uat": "approved before these corrections",
+  "deployed": false
+}

@@ -1,0 +1,3372 @@
+{
+  "phase": "P8",
+  "date": "2026-10-14T04:53:51.959Z",
+  "passed": 9,
+  "checks": [
+    "all valid applicable shapes create with zero/false/N/A and metadata; no implicit data",
+    "Worker rejects every missing required leaf for all applicable shapes with zero writes",
+    "all optional notes accept omitted/null/empty/whitespace while conditional disease/other text stays required",
+    "eight same-key concurrent submissions replay one code; different keys create distinct jobs",
+    "fresh independent browser profiles open all eight results and download XLSX equal to API without localStorage",
+    "failed → failed → pass keeps only failed units new and preserves original round/ownership",
+    "empty legacy results stay unknown in API/UI/history/Excel with no fabricated score or failure",
+    "key owner acceptance values are independently expected and actual from Worker",
+    "required rejects/optional creates/concurrent runs leave no foreign-key or browser errors"
+  ],
+  "required_rejections": [
+    {
+      "case": "health-light",
+      "path": "schema_version",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "idempotency_key",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "assessment_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "assessment_group",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "assessment_category",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "profile.full_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "profile.gender",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "profile.age",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "profile.weight",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "profile.height",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "profile.education_level",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "profile.marital_status",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "profile.has_underlying_disease",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "workInfo.position_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "workInfo.program_code",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "workInfo.study_year",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "workInfo.working_hours_per_day",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "workInfo.working_hours_per_week",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "answers.before.q1",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "answers.before.q2",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "answers.before.q3",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "answers.before.q4",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "answers.before.q5",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "answers.before.q6",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "answers.before.q7",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "answers.before.q8",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "answers.before.q9",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "answers.before.q10",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "answers.after.q1",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "answers.after.q2",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "answers.after.q3",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "answers.after.q4",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "answers.after.q5",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "answers.after.q6",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "answers.after.q7",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "answers.after.q8",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "answers.after.q9",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "answers.after.q10",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-light",
+      "path": "healthContext.hours_worked_today",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "schema_version",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "idempotency_key",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "assessment_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "assessment_group",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "assessment_category",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "profile.full_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "profile.gender",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "profile.age",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "profile.weight",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "profile.height",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "profile.education_level",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "profile.marital_status",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "profile.has_underlying_disease",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "workInfo.position_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "workInfo.program_code",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "workInfo.study_year",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "workInfo.working_hours_per_day",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "workInfo.working_hours_per_week",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "answers.single.q1",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "answers.single.q2",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "answers.single.q3",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "answers.single.q4",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "answers.single.q5",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "answers.single.q6",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "answers.single.q7",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "answers.single.q8",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "answers.single.q9",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "answers.single.q10",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-noise",
+      "path": "healthContext.noise_sources",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "schema_version",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "idempotency_key",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "assessment_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "assessment_group",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "assessment_category",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "profile.full_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "profile.gender",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "profile.age",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "profile.weight",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "profile.height",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "profile.education_level",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "profile.marital_status",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "profile.has_underlying_disease",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "workInfo.position_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "workInfo.program_code",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "workInfo.study_year",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "workInfo.working_hours_per_day",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "workInfo.working_hours_per_week",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "answers.single.q1",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "answers.single.q2",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "answers.single.q3",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "answers.single.q4",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "answers.single.q5",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "answers.single.q6",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "answers.single.q7",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "answers.single.q8",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "answers.single.q9",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-heat",
+      "path": "answers.single.q10",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "schema_version",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "idempotency_key",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "assessment_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "assessment_group",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "assessment_category",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "profile.full_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "profile.gender",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "profile.age",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "profile.weight",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "profile.height",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "profile.education_level",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "profile.marital_status",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "profile.has_underlying_disease",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "workInfo.position_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "workInfo.program_code",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "workInfo.work_experience_years",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "workInfo.working_hours_per_day",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "workInfo.working_hours_per_week",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "answers.single.q1",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "answers.single.q2",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "answers.single.q3",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "answers.single.q4",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "answers.single.q5",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "answers.single.q6",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "answers.single.q7",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "answers.single.q8",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "answers.single.q9",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-staff-na",
+      "path": "answers.single.q10",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "schema_version",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "idempotency_key",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "assessment_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "assessment_group",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "assessment_category",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "profile.full_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "profile.gender",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "profile.age",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "profile.weight",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "profile.height",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "profile.education_level",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "profile.marital_status",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "profile.has_underlying_disease",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "workInfo.position_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "workInfo.program_code",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "workInfo.study_year",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "workInfo.working_hours_per_day",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "workInfo.working_hours_per_week",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "answers.before.q1",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "answers.before.q2",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "answers.before.q3",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "answers.before.q4",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "answers.before.q5",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "answers.before.q6",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "answers.before.q7",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "answers.before.q8",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "answers.before.q9",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "answers.before.q10",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "answers.after.q1",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "answers.after.q2",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "answers.after.q3",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "answers.after.q4",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "answers.after.q5",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "answers.after.q6",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "answers.after.q7",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "answers.after.q8",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "answers.after.q9",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "answers.after.q10",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "healthContext.hours_worked_today",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-disease",
+      "path": "profile.underlying_disease_details",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "schema_version",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "idempotency_key",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "assessment_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "assessment_group",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "assessment_category",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "profile.full_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "profile.gender",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "profile.age",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "profile.weight",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "profile.height",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "profile.education_level",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "profile.marital_status",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "profile.has_underlying_disease",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "workInfo.position_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "workInfo.program_code",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "workInfo.study_year",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "workInfo.working_hours_per_day",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "workInfo.working_hours_per_week",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "answers.single.q1",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "answers.single.q2",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "answers.single.q3",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "answers.single.q4",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "answers.single.q5",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "answers.single.q6",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "answers.single.q7",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "answers.single.q8",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "answers.single.q9",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "answers.single.q10",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "healthContext.noise_sources",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "health-other-noise",
+      "path": "healthContext.noise_source_other",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "schema_version",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "idempotency_key",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "assessment_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "assessment_group",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "assessment_category",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "inspectionData.inspector_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "inspectionData.position",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "inspectionData.inspection_location",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "inspectionData.inspection_date",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "inspectionData.start_at",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "inspectionData.end_at",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "inspectionData.equipment",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "inspectionData.serial_number",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "inspectionData.calibration_date",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "inspectionData.responsible_department",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "inspectionData.location_responsible_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "inspectionData.measurement_technique",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "layout.file_id",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "units.0.kind",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "units.0.point_id",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "units.0.location_desc",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "units.0.standard_code",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "units.0.standard_target_lux",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-light",
+      "path": "units.0.lux",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "schema_version",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "idempotency_key",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "assessment_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "assessment_group",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "assessment_category",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "inspectionData.inspector_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "inspectionData.position",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "inspectionData.inspection_location",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "inspectionData.inspection_date",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "inspectionData.start_at",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "inspectionData.end_at",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "inspectionData.equipment",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "inspectionData.serial_number",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "inspectionData.calibration_date",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "inspectionData.responsible_department",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "inspectionData.location_responsible_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "inspectionData.measurement_technique",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "layout.file_id",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "units.0.kind",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "units.0.point_id",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "units.0.location_desc",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "units.0.standard_code",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "units.0.standard_target_lux",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "units.0.lux",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "units.0.surrounding_near_lux",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "units.0.surrounding_outer_lux",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "schema_version",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "idempotency_key",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "assessment_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "assessment_group",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "assessment_category",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "inspectionData.inspector_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "inspectionData.position",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "inspectionData.inspection_location",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "inspectionData.inspection_date",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "inspectionData.start_at",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "inspectionData.end_at",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "inspectionData.equipment",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "inspectionData.serial_number",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "inspectionData.calibration_date",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "inspectionData.responsible_department",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "inspectionData.location_responsible_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "inspectionData.measurement_technique",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "layout.file_id",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "units.0.kind",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "units.0.point_id",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "units.0.location_desc",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "units.0.standard_code",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "units.0.samples.0.sample_id",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "units.0.samples.0.lux",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "units.0.samples.1.sample_id",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-area",
+      "path": "units.0.samples.1.lux",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "schema_version",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "idempotency_key",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "assessment_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "assessment_group",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "assessment_category",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "inspectionData.inspector_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "inspectionData.position",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "inspectionData.inspection_location",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "inspectionData.inspection_date",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "inspectionData.start_at",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "inspectionData.end_at",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "inspectionData.equipment",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "inspectionData.serial_number",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "inspectionData.calibration_date",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "inspectionData.responsible_department",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "inspectionData.location_responsible_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "layout.file_id",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "units.0.kind",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "units.0.point_id",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "units.0.location_desc",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "units.0.evaluation_basis",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "units.0.min_dBA",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "units.0.max_dBA",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "units.0.exposure_level_dBA",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-noise",
+      "path": "units.0.exposure_duration_minutes",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "schema_version",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "idempotency_key",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "assessment_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "assessment_group",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "assessment_category",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "inspectionData.inspector_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "inspectionData.position",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "inspectionData.inspection_location",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "inspectionData.inspection_date",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "inspectionData.start_at",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "inspectionData.end_at",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "inspectionData.equipment",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "inspectionData.serial_number",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "inspectionData.calibration_date",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "inspectionData.responsible_department",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "inspectionData.location_responsible_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "layout.file_id",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "units.0.kind",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "units.0.point_id",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "units.0.location_desc",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "units.0.evaluation_basis",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "units.0.min_dBA",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "units.0.max_dBA",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-twa8",
+      "path": "units.0.twa_8hr",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "schema_version",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "idempotency_key",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "assessment_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "assessment_group",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "assessment_category",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "inspectionData.inspector_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "inspectionData.position",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "inspectionData.inspection_location",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "inspectionData.inspection_date",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "inspectionData.start_at",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "inspectionData.end_at",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "inspectionData.equipment",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "inspectionData.serial_number",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "inspectionData.calibration_date",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "inspectionData.responsible_department",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "inspectionData.location_responsible_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "layout.file_id",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "units.0.kind",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "units.0.point_id",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "units.0.location_desc",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "units.0.wbgt_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "units.0.input_mode",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "units.0.workload",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "units.0.start_at",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "units.0.end_at",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-heat",
+      "path": "units.0.wbgt_average",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "schema_version",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "idempotency_key",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "assessment_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "assessment_group",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "assessment_category",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "inspectionData.inspector_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "inspectionData.position",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "inspectionData.inspection_location",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "inspectionData.inspection_date",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "inspectionData.start_at",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "inspectionData.end_at",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "inspectionData.equipment",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "inspectionData.serial_number",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "inspectionData.calibration_date",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "inspectionData.responsible_department",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "inspectionData.location_responsible_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "layout.file_id",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "units.0.kind",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "units.0.point_id",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "units.0.location_desc",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "units.0.wbgt_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "units.0.input_mode",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "units.0.workload",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "units.0.start_at",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "units.0.end_at",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "units.0.intervals.0.wb",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "units.0.intervals.0.gt",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "units.0.intervals.0.db",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "environment-intervals",
+      "path": "units.0.intervals.0.minutes",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "schema_version",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "idempotency_key",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "assessment_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "assessment_group",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "assessment_category",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "profile.full_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "answers.q1",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "answers.q2",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "answers.q3",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "answers.q4",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "answers.q5",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "answers.q6",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "answers.q7",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "answers.q8",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "answers.q9",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "answers.q10",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "answers.q11",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "answers.q12",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "answers.q13",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "answers.q14",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "answers.q15",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "answers.q16",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "durations.traditional.days",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "durations.traditional.hours",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "durations.traditional.minutes",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "durations.traditional.seconds",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "durations.safecheck.days",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "durations.safecheck.hours",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "durations.safecheck.minutes",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "durations.safecheck.seconds",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "schema_version",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "idempotency_key",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "assessment_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "assessment_group",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "assessment_category",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "profile.full_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "answers.q1",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "answers.q2",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "answers.q3",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "answers.q4",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "answers.q5",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "answers.q6",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "answers.q7",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "answers.q8",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "answers.q9",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "answers.q10",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "answers.q11",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "answers.q12",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "answers.q13",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "answers.q14",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "answers.q15",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "answers.q16",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "workInfo.position_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "workInfo.program_code",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "workInfo.study_year",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "schema_version",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "idempotency_key",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "assessment_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "assessment_group",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "assessment_category",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "profile.full_name",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "answers.q1",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "answers.q2",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "answers.q3",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "answers.q4",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "answers.q5",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "answers.q6",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "answers.q7",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "answers.q8",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "answers.q9",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "answers.q10",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "answers.q11",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "answers.q12",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "answers.q13",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "answers.q14",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "answers.q15",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "answers.q16",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "workInfo.position_type",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "workInfo.program_code",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "workInfo.study_year",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "workInfo.other_context",
+      "expected": 400,
+      "actual": 400
+    }
+  ],
+  "optional_acceptance": [
+    {
+      "case": "health-light",
+      "path": "profile.underlying_disease_details",
+      "value": "omitted",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-light",
+      "path": "profile.underlying_disease_details",
+      "value": null,
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-light",
+      "path": "profile.underlying_disease_details",
+      "value": "",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-light",
+      "path": "profile.underlying_disease_details",
+      "value": "  ",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-noise",
+      "path": "profile.underlying_disease_details",
+      "value": "omitted",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-noise",
+      "path": "profile.underlying_disease_details",
+      "value": null,
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-noise",
+      "path": "profile.underlying_disease_details",
+      "value": "",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-noise",
+      "path": "profile.underlying_disease_details",
+      "value": "  ",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-noise",
+      "path": "healthContext.noise_source_other",
+      "value": "omitted",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-noise",
+      "path": "healthContext.noise_source_other",
+      "value": null,
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-noise",
+      "path": "healthContext.noise_source_other",
+      "value": "",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-noise",
+      "path": "healthContext.noise_source_other",
+      "value": "  ",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-heat",
+      "path": "profile.underlying_disease_details",
+      "value": "omitted",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-heat",
+      "path": "profile.underlying_disease_details",
+      "value": null,
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-heat",
+      "path": "profile.underlying_disease_details",
+      "value": "",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-heat",
+      "path": "profile.underlying_disease_details",
+      "value": "  ",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-staff-na",
+      "path": "profile.underlying_disease_details",
+      "value": "omitted",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-staff-na",
+      "path": "profile.underlying_disease_details",
+      "value": null,
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-staff-na",
+      "path": "profile.underlying_disease_details",
+      "value": "",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-staff-na",
+      "path": "profile.underlying_disease_details",
+      "value": "  ",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-other-noise",
+      "path": "profile.underlying_disease_details",
+      "value": "omitted",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-other-noise",
+      "path": "profile.underlying_disease_details",
+      "value": null,
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-other-noise",
+      "path": "profile.underlying_disease_details",
+      "value": "",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "health-other-noise",
+      "path": "profile.underlying_disease_details",
+      "value": "  ",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-light",
+      "path": "units.0.remark",
+      "value": "omitted",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-light",
+      "path": "units.0.remark",
+      "value": null,
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-light",
+      "path": "units.0.remark",
+      "value": "",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-light",
+      "path": "units.0.remark",
+      "value": "  ",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "units.0.remark",
+      "value": "omitted",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "units.0.remark",
+      "value": null,
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "units.0.remark",
+      "value": "",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-surrounding",
+      "path": "units.0.remark",
+      "value": "  ",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-area",
+      "path": "units.0.remark",
+      "value": "omitted",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-area",
+      "path": "units.0.remark",
+      "value": null,
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-area",
+      "path": "units.0.remark",
+      "value": "",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-area",
+      "path": "units.0.remark",
+      "value": "  ",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-noise",
+      "path": "units.0.remark",
+      "value": "omitted",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-noise",
+      "path": "units.0.remark",
+      "value": null,
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-noise",
+      "path": "units.0.remark",
+      "value": "",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-noise",
+      "path": "units.0.remark",
+      "value": "  ",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-twa8",
+      "path": "units.0.remark",
+      "value": "omitted",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-twa8",
+      "path": "units.0.remark",
+      "value": null,
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-twa8",
+      "path": "units.0.remark",
+      "value": "",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-twa8",
+      "path": "units.0.remark",
+      "value": "  ",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-heat",
+      "path": "units.0.remark",
+      "value": "omitted",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-heat",
+      "path": "units.0.remark",
+      "value": null,
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-heat",
+      "path": "units.0.remark",
+      "value": "",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-heat",
+      "path": "units.0.remark",
+      "value": "  ",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-intervals",
+      "path": "units.0.remark",
+      "value": "omitted",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-intervals",
+      "path": "units.0.remark",
+      "value": null,
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-intervals",
+      "path": "units.0.remark",
+      "value": "",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "environment-intervals",
+      "path": "units.0.remark",
+      "value": "  ",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "suggestion",
+      "value": "omitted",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "suggestion",
+      "value": null,
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "suggestion",
+      "value": "",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "satisfaction-environment",
+      "path": "suggestion",
+      "value": "  ",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "suggestion",
+      "value": "omitted",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "suggestion",
+      "value": null,
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "suggestion",
+      "value": "",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "satisfaction-health",
+      "path": "suggestion",
+      "value": "  ",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "suggestion",
+      "value": "omitted",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "suggestion",
+      "value": null,
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "suggestion",
+      "value": "",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "case": "satisfaction-other-study",
+      "path": "suggestion",
+      "value": "  ",
+      "expected": 201,
+      "actual": 201
+    }
+  ],
+  "engines": [
+    {
+      "engine": "chromium",
+      "case": "environment-light",
+      "result": "pass",
+      "snapshot_equals_api": true,
+      "localStorage_keys": 0
+    },
+    {
+      "engine": "chromium",
+      "case": "environment-noise",
+      "result": "pass",
+      "snapshot_equals_api": true,
+      "localStorage_keys": 0
+    },
+    {
+      "engine": "chromium",
+      "case": "environment-heat",
+      "result": "pass",
+      "snapshot_equals_api": true,
+      "localStorage_keys": 0
+    },
+    {
+      "engine": "chromium",
+      "case": "health-light",
+      "result": "pass",
+      "snapshot_equals_api": true,
+      "localStorage_keys": 0
+    },
+    {
+      "engine": "chromium",
+      "case": "health-noise",
+      "result": "pass",
+      "snapshot_equals_api": true,
+      "localStorage_keys": 0
+    },
+    {
+      "engine": "chromium",
+      "case": "health-heat",
+      "result": "pass",
+      "snapshot_equals_api": true,
+      "localStorage_keys": 0
+    },
+    {
+      "engine": "chromium",
+      "case": "satisfaction-environment",
+      "result": "pass",
+      "snapshot_equals_api": true,
+      "localStorage_keys": 0
+    },
+    {
+      "engine": "chromium",
+      "case": "satisfaction-health",
+      "result": "pass",
+      "snapshot_equals_api": true,
+      "localStorage_keys": 0
+    },
+    {
+      "engine": "firefox",
+      "status": "not-run",
+      "reason": "runtime not installed; installation permission declined"
+    },
+    {
+      "engine": "webkit",
+      "status": "not-run",
+      "reason": "runtime not installed; installation permission declined"
+    }
+  ],
+  "owner_acceptance": [
+    {
+      "id": "U09",
+      "expected": {
+        "pass": [
+          false,
+          false,
+          true
+        ],
+        "carried_date": "2026-10-12T01:00:00Z",
+        "old_round_unchanged": true,
+        "foreign_revision_status": 404
+      },
+      "actual": {
+        "pass": [
+          false,
+          false,
+          true
+        ],
+        "carried_date": "2026-10-12T01:00:00Z",
+        "old_round_unchanged": true,
+        "foreign_revision_status": 404
+      },
+      "result": "pass",
+      "owner_status": "confirmed"
+    },
+    {
+      "id": "U01",
+      "expected": {
+        "before": 0,
+        "after": 10,
+        "delta": 10,
+        "level": "medium"
+      },
+      "actual": {
+        "before": 0,
+        "after": 10,
+        "delta": 10,
+        "level": "medium"
+      },
+      "result": "pass",
+      "owner_status": "confirmed"
+    },
+    {
+      "id": "U02",
+      "expected": {
+        "weekly_hours": 40,
+        "year": 6
+      },
+      "actual": {
+        "weekly_hours": 40,
+        "year": 6
+      },
+      "result": "pass",
+      "owner_status": "confirmed"
+    },
+    {
+      "id": "U03",
+      "expected": {
+        "duration": 240,
+        "limit": 88,
+        "is_pass": false
+      },
+      "actual": {
+        "duration": 240,
+        "limit": 88,
+        "is_pass": false
+      },
+      "result": "pass",
+      "owner_status": "confirmed"
+    },
+    {
+      "id": "U04",
+      "expected": {
+        "wbgt": 34,
+        "limit": 34,
+        "is_pass": true
+      },
+      "actual": {
+        "wbgt": 34,
+        "limit": 34,
+        "is_pass": true
+      },
+      "result": "pass",
+      "owner_status": "confirmed"
+    },
+    {
+      "id": "U05",
+      "expected": {
+        "mean": 5,
+        "traditional_seconds": 93784,
+        "safecheck_seconds": 1
+      },
+      "actual": {
+        "mean": 5,
+        "traditional_seconds": 93784,
+        "safecheck_seconds": 1
+      },
+      "result": "pass",
+      "owner_status": "confirmed"
+    }
+  ],
+  "pageErrors": [],
+  "deployed": false,
+  "remote_database": false,
+  "owner_approval": "docs/v3/baseline/p8-owner-uat.json"
+}

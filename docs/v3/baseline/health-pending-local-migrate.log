@@ -1,0 +1,33 @@
+
+> save-check@0.1.1 db:migrate
+> node scripts/d1-migrate.mjs --local --persist-to worker/.wrangler/state
+
+Preflight passed (--local); applying numbered migrations only.
+
+ ⛅️ wrangler 3.114.17 (update available 4.151.0)
+------------------------------------------------
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mThe version of Wrangler you are using is now out-of-date.[0m
+
+  Please update to the latest version to prevent critical errors.
+  Run `npm install --save-dev wrangler@4` to update to the latest version.
+  After installation, run Wrangler with `npx wrangler`.
+
+
+Migrations to be applied:
+┌─────────────────────────┐
+│ name                    │
+├─────────────────────────┤
+│ 0006_health_pending.sql │
+└─────────────────────────┘
+? About to apply 1 migration(s)
+Your database may not be available to serve requests during the migration, continue?
+🤖 Using fallback value in non-interactive context: yes
+🌀 Executing on local database save-check-db (ba75b7dc-092d-4b52-bcf6-3d2a02a1a4d7) from ./worker/.wrangler/state/v3/d1:
+🌀 To execute on your remote database, add a --remote flag to your wrangler command.
+🚣 9 commands executed successfully.
+┌─────────────────────────┬────────┐
+│ name                    │ status │
+├─────────────────────────┼────────┤
+│ 0006_health_pending.sql │ ✅     │
+└─────────────────────────┴────────┘

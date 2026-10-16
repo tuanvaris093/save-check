@@ -1,0 +1,43 @@
+
+> save-check@0.1.1 build
+> next build
+
+   ▲ Next.js 15.5.19
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 3.5s
+   Skipping linting
+   Checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/14) ...
+   Generating static pages (3/14) 
+   Generating static pages (6/14) 
+   Generating static pages (10/14) 
+ ✓ Generating static pages (14/14)
+   Finalizing page optimization ...
+   Collecting build traces ...
+   Exporting (0/2) ...
+ ✓ Exporting (2/2)
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                      979 B         119 kB
+├ ○ /_not-found                            123 B         103 kB
+├ ○ /apple-icon.png                          0 B            0 B
+├ ○ /assessment/environment                130 B         122 kB
+├ ○ /assessment/environment-form         11.8 kB         190 kB
+├ ○ /assessment/health-risk                131 B         122 kB
+├ ○ /assessment/health-risk-form         4.07 kB         185 kB
+├ ○ /assessment/satisfaction             7.91 kB         182 kB
+├ ○ /complete                              162 B         106 kB
+├ ○ /dashboard                           7.21 kB         130 kB
+├ ○ /icon.png                                0 B            0 B
+└ ○ /result                              6.91 kB         174 kB
++ First Load JS shared by all             103 kB
+  ├ chunks/255-eb4aecc3ff015961.js       46.3 kB
+  ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+  └ other shared chunks (total)          2.06 kB
+
+
+○  (Static)  prerendered as static content
+

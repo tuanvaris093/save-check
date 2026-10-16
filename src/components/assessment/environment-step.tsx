@@ -1,4 +1,6 @@
 "use client";
+import { focusFormError } from "@/lib/v3/form-errors";
+import { useStepDraft } from "@/hooks/use-step-draft";
 
 import { useEffect, useState } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
@@ -36,7 +38,6 @@ export function EnvironmentStep({
     control,
     watch,
     formState: { errors },
-    reset,
     setValue,
     getValues,
   } = useForm<EnvironmentMeasurementFormValues>({
@@ -94,7 +95,8 @@ export function EnvironmentStep({
           : [],
       ...defaultValues,
     } as any,
-    mode: "onTouched",
+    mode: "onChange",
+    reValidateMode: "onChange",
   });
 
   const {
@@ -138,84 +140,17 @@ export function EnvironmentStep({
   }, [standards, setValue, category]);
 
   useEffect(() => {
-    if (defaultValues && Object.keys(defaultValues).length > 0) {
-      const mergedDefaults = { ...defaultValues };
-      if (category === "noise") {
-        if (
-          !mergedDefaults.noise_areas ||
-          mergedDefaults.noise_areas.length === 0
-        ) {
-          mergedDefaults.noise_areas = [
-            {
-              location_desc: "",
-              min_dBA: undefined as any,
-              max_dBA: undefined as any,
-              avg_dBA: undefined as any,
-              remark: "",
-            },
-          ];
-        }
-        mergedDefaults.light_areas = [];
-      } else if (category === "light") {
-        if (
-          !mergedDefaults.light_areas ||
-          mergedDefaults.light_areas.length === 0
-        ) {
-          mergedDefaults.light_areas = [
-            {
-              location_desc: "",
-              standard_value: 300,
-              measure: undefined as any,
-              remark: "",
-            },
-          ];
-        }
-        mergedDefaults.noise_areas = [];
-      } else if (category === "heat") {
-        if (
-          !mergedDefaults.heat_areas ||
-          mergedDefaults.heat_areas.length === 0
-        ) {
-          mergedDefaults.heat_areas = [
-            {
-              location_desc: "",
-              start_time: "",
-              end_time: "",
-              db_temp: undefined as any,
-              wb_temp: undefined as any,
-              gt_temp: undefined as any,
-              wbgt_in: undefined as any,
-              wbgt_type: "in" as const,
-              workload: "",
-              wbgt_avg: undefined as any,
-              standard_value: undefined as any,
-              remark: "",
-            },
-          ];
-        }
-        mergedDefaults.noise_areas = [];
-        mergedDefaults.light_areas = [];
-      } else {
-        mergedDefaults.noise_areas = [];
-        mergedDefaults.light_areas = [];
-        mergedDefaults.heat_areas = [];
-      }
-      reset((prev) => ({ ...prev, ...mergedDefaults }));
-    }
-  }, [defaultValues, reset, category]);
-
-  useEffect(() => {
     if (category === "light" && watchedLightAreas) {
       const vals = watchedLightAreas
         .map((a: any) => a?.measure)
         .filter(
           (v: any) =>
-            v !== undefined && v !== "" && v !== null && !isNaN(Number(v))
+            v !== undefined && v !== "" && v !== null && !isNaN(Number(v)),
         );
       if (vals.length > 0) {
         const sum = vals.reduce(
           (acc: number, curr: number) => acc + Number(curr),
-          0
+          0,
         );
         setAverage(Number((sum / vals.length).toFixed(2)));
       } else {
@@ -251,21 +186,22 @@ export function EnvironmentStep({
         setValue(
           `heat_areas.${index}.wbgt_avg` as never,
           Number(calculated.toFixed(1)) as never,
-          { shouldValidate: true }
+          { shouldValidate: true },
         );
       }
     }
   };
 
+  useStepDraft(watch, "answers");
   return (
     <form
-      onSubmit={handleSubmit(onNext)}
-      className="flex flex-col gap-6 animate-fade-in"
+      onSubmit={handleSubmit(onNext, focusFormError)}
+      className="animate-fade-in flex flex-col gap-6"
       noValidate
     >
       {category === "noise" && (
         <div className="form-section-card p-5">
-          <h3 className="mb-4 text-card-title font-semibold text-text-primary">
+          <h3 className="text-card-title text-text-primary mb-4 font-semibold">
             แบบฟอร์มบันทึกการตรวจวัด ({ASSESSMENT_CATEGORY_LABELS[category]})
           </h3>
           <div className="flex flex-col gap-4">
@@ -282,7 +218,9 @@ export function EnvironmentStep({
                   }))}
                   required
                   {...field}
-                  value={field.value !== undefined ? field.value.toString() : ""}
+                  value={
+                    field.value !== undefined ? field.value.toString() : ""
+                  }
                   error={errors.standard_value?.message}
                 />
               )}
@@ -292,10 +230,10 @@ export function EnvironmentStep({
       )}
 
       <div className="form-section-card p-5">
-        <h3 className="mb-4 text-card-title font-semibold text-text-primary flex items-center justify-between">
+        <h3 className="text-card-title text-text-primary mb-4 flex items-center justify-between font-semibold">
           <span>ค่าที่ตรวจวัดได้ ({unitLabel})</span>
           {category !== "noise" && average !== null && (
-            <span className="text-small font-normal text-primary bg-primary-soft px-3 py-1 rounded-full">
+            <span className="text-small text-primary bg-primary-soft rounded-full px-3 py-1 font-normal">
               ค่าเฉลี่ย: {average} {unitLabel}
             </span>
           )}
@@ -304,23 +242,24 @@ export function EnvironmentStep({
         {category === "noise" && (
           <div className="flex flex-col gap-6">
             <p className="text-caption text-text-secondary -mt-2">
-              ระบุสถานที่/ลักษณะงาน ระดับเสียงต่ำสุด สูงสุด เฉลี่ย และเลือกมาตรฐานเฉพาะจุด
+              ระบุสถานที่/ลักษณะงาน ระดับเสียงต่ำสุด สูงสุด เฉลี่ย
+              และเลือกมาตรฐานเฉพาะจุด
             </p>
 
             <div className="flex flex-col gap-4">
               {noiseFields.map((field, index) => (
                 <div
                   key={field.id}
-                  className="relative grid grid-cols-1 md:grid-cols-2 gap-4 p-4 pt-10 border border-border rounded-lg bg-background shadow-sm animate-scale-in"
+                  className="border-border bg-background animate-scale-in relative grid grid-cols-1 gap-4 rounded-lg border p-4 pt-10 shadow-sm md:grid-cols-2"
                 >
-                  <div className="absolute top-3 left-4 text-small font-semibold text-text-primary">
+                  <div className="text-small text-text-primary absolute top-3 left-4 font-semibold">
                     จุดตรวจที่ {index + 1}
                   </div>
                   {noiseFields.length > 1 && (
                     <button
                       type="button"
                       onClick={() => removeNoise(index)}
-                      className="absolute top-2 right-2 text-danger hover:text-danger-hover p-1.5 rounded-full hover:bg-danger-soft transition-colors"
+                      className="text-danger hover:text-danger-hover hover:bg-danger-soft absolute top-2 right-2 rounded-full p-1.5 transition-colors"
                       title="ลบจุดตรวจ"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -356,7 +295,7 @@ export function EnvironmentStep({
                     {...register(`noise_areas.${index}.max_dBA` as never)}
                     error={noiseErrors?.[index]?.max_dBA?.message}
                   />
-                  
+
                   <FormInput
                     label="ระดับเสียงเฉลี่ย (dBA)"
                     type="number"
@@ -381,7 +320,7 @@ export function EnvironmentStep({
             <Button
               type="button"
               variant="outline"
-              className="w-full border-dashed border-2 py-6 flex items-center justify-center gap-2 text-text-secondary hover:text-primary hover:border-primary hover:bg-primary-soft/30 transition-all"
+              className="text-text-secondary hover:text-primary hover:border-primary hover:bg-primary-soft/30 flex w-full items-center justify-center gap-2 border-2 border-dashed py-6 transition-all"
               onClick={() =>
                 appendNoise({
                   location_desc: "",
@@ -408,16 +347,16 @@ export function EnvironmentStep({
               {lightFields.map((field, index) => (
                 <div
                   key={field.id}
-                  className="relative grid grid-cols-1 md:grid-cols-2 gap-4 p-4 pt-10 border border-border rounded-lg bg-background shadow-sm animate-scale-in"
+                  className="border-border bg-background animate-scale-in relative grid grid-cols-1 gap-4 rounded-lg border p-4 pt-10 shadow-sm md:grid-cols-2"
                 >
-                  <div className="absolute top-3 left-4 text-small font-semibold text-text-primary">
+                  <div className="text-small text-text-primary absolute top-3 left-4 font-semibold">
                     จุดตรวจที่ {index + 1}
                   </div>
                   {lightFields.length > 1 && (
                     <button
                       type="button"
                       onClick={() => removeLight(index)}
-                      className="absolute top-2 right-2 text-danger hover:text-danger-hover p-1.5 rounded-full hover:bg-danger-soft transition-colors"
+                      className="text-danger hover:text-danger-hover hover:bg-danger-soft absolute top-2 right-2 rounded-full p-1.5 transition-colors"
                       title="ลบจุดตรวจ"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -446,7 +385,8 @@ export function EnvironmentStep({
                         required
                         {...selectField}
                         value={
-                          selectField.value !== undefined && selectField.value !== null
+                          selectField.value !== undefined &&
+                          selectField.value !== null
                             ? String(selectField.value)
                             : ""
                         }
@@ -479,7 +419,7 @@ export function EnvironmentStep({
             <Button
               type="button"
               variant="outline"
-              className="w-full border-dashed border-2 py-6 flex items-center justify-center gap-2 text-text-secondary hover:text-primary hover:border-primary hover:bg-primary-soft/30 transition-all"
+              className="text-text-secondary hover:text-primary hover:border-primary hover:bg-primary-soft/30 flex w-full items-center justify-center gap-2 border-2 border-dashed py-6 transition-all"
               onClick={() =>
                 appendLight({
                   location_desc: "",
@@ -505,16 +445,16 @@ export function EnvironmentStep({
               {heatFields.map((field, index) => (
                 <div
                   key={field.id}
-                  className="relative flex flex-col gap-4 p-4 pt-10 border border-border rounded-lg bg-background shadow-sm animate-scale-in"
+                  className="border-border bg-background animate-scale-in relative flex flex-col gap-4 rounded-lg border p-4 pt-10 shadow-sm"
                 >
-                  <div className="absolute top-3 left-4 text-small font-semibold text-text-primary">
+                  <div className="text-small text-text-primary absolute top-3 left-4 font-semibold">
                     จุดตรวจที่ {index + 1}
                   </div>
                   {heatFields.length > 1 && (
                     <button
                       type="button"
                       onClick={() => removeHeat(index)}
-                      className="absolute top-2 right-2 text-danger hover:text-danger-hover p-1.5 rounded-full hover:bg-danger-soft transition-colors"
+                      className="text-danger hover:text-danger-hover hover:bg-danger-soft absolute top-2 right-2 rounded-full p-1.5 transition-colors"
                       title="ลบจุดตรวจ"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -529,7 +469,7 @@ export function EnvironmentStep({
                     error={heatErrors?.[index]?.location_desc?.message}
                   />
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <FormInput
                       label="เวลาเริ่มต้น (HH:MM)"
                       type="time"
@@ -546,28 +486,28 @@ export function EnvironmentStep({
                     />
                   </div>
 
-                    <Controller
-                      name={`heat_areas.${index}.wbgt_type` as never}
-                      control={control}
-                      render={({ field: typeField }) => (
-                        <FormSelect
-                          label="ประเภทพื้นที่ (WBGT)"
-                          placeholder="-- เลือกประเภท --"
-                          options={[
-                            { value: "in", label: "ในอาคาร (WBGT in)" },
-                            { value: "out", label: "นอกอาคาร (WBGT out)" },
-                          ]}
-                          {...typeField}
-                          value={typeField.value || "in"}
-                          onChange={(e) => {
-                            typeField.onChange(e);
-                            calculateAndSetWBGT(index, e.target.value);
-                          }}
-                        />
-                      )}
-                    />
+                  <Controller
+                    name={`heat_areas.${index}.wbgt_type` as never}
+                    control={control}
+                    render={({ field: typeField }) => (
+                      <FormSelect
+                        label="ประเภทพื้นที่ (WBGT)"
+                        placeholder="-- เลือกประเภท --"
+                        options={[
+                          { value: "in", label: "ในอาคาร (WBGT in)" },
+                          { value: "out", label: "นอกอาคาร (WBGT out)" },
+                        ]}
+                        {...typeField}
+                        value={typeField.value || "in"}
+                        onChange={(e) => {
+                          typeField.onChange(e);
+                          calculateAndSetWBGT(index, e.target.value);
+                        }}
+                      />
+                    )}
+                  />
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                     <FormInput
                       label="อุณหภูมิกระเปาะแห้ง DB (°C)"
                       type="number"
@@ -576,7 +516,9 @@ export function EnvironmentStep({
                       placeholder="ไม่บังคับ"
                       {...register(`heat_areas.${index}.db_temp` as never)}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        register(`heat_areas.${index}.db_temp` as never).onChange(e);
+                        register(
+                          `heat_areas.${index}.db_temp` as never,
+                        ).onChange(e);
                         calculateAndSetWBGT(index);
                       }}
                       error={heatErrors?.[index]?.db_temp?.message}
@@ -589,7 +531,9 @@ export function EnvironmentStep({
                       placeholder="ไม่บังคับ"
                       {...register(`heat_areas.${index}.wb_temp` as never)}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        register(`heat_areas.${index}.wb_temp` as never).onChange(e);
+                        register(
+                          `heat_areas.${index}.wb_temp` as never,
+                        ).onChange(e);
                         calculateAndSetWBGT(index);
                       }}
                       error={heatErrors?.[index]?.wb_temp?.message}
@@ -602,14 +546,16 @@ export function EnvironmentStep({
                       placeholder="ไม่บังคับ"
                       {...register(`heat_areas.${index}.gt_temp` as never)}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        register(`heat_areas.${index}.gt_temp` as never).onChange(e);
+                        register(
+                          `heat_areas.${index}.gt_temp` as never,
+                        ).onChange(e);
                         calculateAndSetWBGT(index);
                       }}
                       error={heatErrors?.[index]?.gt_temp?.message}
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                     <Controller
                       name={`heat_areas.${index}.wbgt_in` as never}
                       control={control}
@@ -621,18 +567,27 @@ export function EnvironmentStep({
                           step="0.1"
                           placeholder="ไม่บังคับ"
                           {...wbgtInField}
-                          value={wbgtInField.value !== undefined && wbgtInField.value !== null ? String(wbgtInField.value) : ""}
+                          value={
+                            wbgtInField.value !== undefined &&
+                            wbgtInField.value !== null
+                              ? String(wbgtInField.value)
+                              : ""
+                          }
                           onChange={(e) => {
                             wbgtInField.onChange(e);
                             if (e.target.value !== "") {
-                              setValue(`heat_areas.${index}.wbgt_avg` as never, e.target.value as never, { shouldValidate: true });
+                              setValue(
+                                `heat_areas.${index}.wbgt_avg` as never,
+                                e.target.value as never,
+                                { shouldValidate: true },
+                              );
                             }
                           }}
                           error={heatErrors?.[index]?.wbgt_in?.message}
                         />
                       )}
                     />
-                    
+
                     <Controller
                       name={`heat_areas.${index}.workload` as never}
                       control={control}
@@ -644,16 +599,24 @@ export function EnvironmentStep({
                           required
                           {...selectField}
                           value={
-                            selectField.value !== undefined && selectField.value !== null
+                            selectField.value !== undefined &&
+                            selectField.value !== null
                               ? String(selectField.value)
                               : ""
                           }
                           onChange={(e) => {
                             selectField.onChange(e);
                             const val = e.target.value;
-                            const std = HEAT_STANDARDS[val as keyof typeof HEAT_STANDARDS];
+                            const std =
+                              HEAT_STANDARDS[
+                                val as keyof typeof HEAT_STANDARDS
+                              ];
                             if (std) {
-                              setValue(`heat_areas.${index}.standard_value` as never, std.value as never, { shouldValidate: true });
+                              setValue(
+                                `heat_areas.${index}.standard_value` as never,
+                                std.value as never,
+                                { shouldValidate: true },
+                              );
                             }
                           }}
                           error={heatErrors?.[index]?.workload?.message}
@@ -668,7 +631,9 @@ export function EnvironmentStep({
                       step="0.1"
                       placeholder="อิงจากประเภทงาน"
                       required
-                      {...register(`heat_areas.${index}.standard_value` as never)}
+                      {...register(
+                        `heat_areas.${index}.standard_value` as never,
+                      )}
                       error={heatErrors?.[index]?.standard_value?.message}
                     />
 
@@ -697,7 +662,7 @@ export function EnvironmentStep({
             <Button
               type="button"
               variant="outline"
-              className="w-full border-dashed border-2 py-6 flex items-center justify-center gap-2 text-text-secondary hover:text-primary hover:border-primary hover:bg-primary-soft/30 transition-all"
+              className="text-text-secondary hover:text-primary hover:border-primary hover:bg-primary-soft/30 flex w-full items-center justify-center gap-2 border-2 border-dashed py-6 transition-all"
               onClick={() =>
                 appendHeat({
                   location_desc: "",
@@ -723,7 +688,12 @@ export function EnvironmentStep({
       </div>
 
       <div className="mt-2 flex gap-3 pb-8">
-        <Button type="button" variant="outline" className="flex-1" onClick={onPrev}>
+        <Button
+          type="button"
+          variant="outline"
+          className="flex-1"
+          onClick={onPrev}
+        >
           ย้อนกลับ
         </Button>
         <Button type="submit" className="flex-1">

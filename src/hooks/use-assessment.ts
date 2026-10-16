@@ -1,167 +1,239 @@
 "use client";
-
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import type { AssessmentType, AssessmentCategory } from "@/types";
 import type { AssessmentDraftData } from "@/lib/schemas";
-import { getResult } from "@/lib/api";
-
-interface UseAssessmentFormProps {
+import { satisfactionQuestionnaireVersion } from "../../shared/v3";
+import {
+  emptySatisfactionDraft,
+  migrateSatisfactionDraft,
+  satisfactionFromServer,
+} from "@/lib/v3/satisfaction-form";
+import { getResultV3 } from "@/lib/api";
+import {
+  draftKey,
+  readDraft,
+  newDraft,
+  patchDraft,
+  type DraftEnvelope,
+  type DraftIdentity,
+} from "@/lib/v3/draft";
+interface Props {
   type: AssessmentType;
   category: AssessmentCategory;
   totalSteps: number;
   editCode?: string | null;
+  group?: "environment" | "health";
+  mode?: DraftIdentity["mode"];
+  baseRevision?: string | null;
 }
-
-const getDraftKey = (
-  type: string,
-  category: string,
-  editCode?: string | null,
-) =>
-  editCode
-    ? `save_check_draft_${type}_${category}_edit_${editCode}`
-    : `save_check_draft_${type}_${category}`;
-
 export function useAssessmentForm({
   type,
   category,
   totalSteps,
   editCode,
-}: UseAssessmentFormProps) {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [draftData, setDraftData] = useState<AssessmentDraftData>({});
-  const [loadError, setLoadError] = useState<string | null>(null);
-
-  const draftKey = getDraftKey(type, category, editCode);
-
-  // Load draft from localStorage on mount
+  group,
+  mode,
+  baseRevision,
+}: Props) {
+  const [state, setState] = useState<DraftEnvelope | null>(null),
+    [isLoaded, setLoaded] = useState(false),
+    [loadError, setLoadError] = useState<string | null>(null),
+    [draftWarning, setWarning] = useState<string | null>(null);
+  const ref = useRef<DraftEnvelope | null>(null);
+  const identity: DraftIdentity = {
+    group: group ?? (type === "environment" ? "environment" : "health"),
+    type,
+    category,
+    mode: mode ?? (editCode ? "correction" : "create"),
+    code: editCode ?? null,
+    baseRevision: baseRevision ?? null,
+    ...(type === "satisfaction"
+      ? {
+          questionnaireVersion: satisfactionQuestionnaireVersion(
+            group ?? "health",
+          ),
+        }
+      : {}),
+  };
+  const identityJson = JSON.stringify(identity);
   useEffect(() => {
     let cancelled = false;
-
-    const loadDraft = async () => {
+    setLoaded(false);
+    setLoadError(null);
+    setState(null);
+    ref.current = null;
+    const load = async () => {
       try {
-        const saved = localStorage.getItem(draftKey);
-        if (saved) {
-          if (!cancelled) setDraftData(JSON.parse(saved));
-          return;
+        const id = JSON.parse(identityJson) as DraftIdentity;
+        const key = draftKey(id);
+        let fresh = newDraft(id);
+        let seededSatisfaction =
+          id.type === "satisfaction"
+            ? emptySatisfactionDraft(id.group)
+            : undefined;
+        // Editing must first verify the server's latest record. Cache cannot authorize a stale edit.
+        if (id.code) {
+          const response = await getResultV3(id.code);
+          if (!response.success) throw new Error(response.error.message);
+          const source = response.data;
+          if (source.schema_version !== 3)
+            throw new Error(
+              "ข้อมูลเดิมต้องยืนยันข้อมูลก่อนแก้ไข กรุณากลับไปดูผล",
+            );
+          if (
+            source.assessment_type !== id.type ||
+            source.assessment_category !== id.category ||
+            source.assessment_group !== id.group
+          )
+            throw new Error("กลุ่มหรือหัวข้อไม่ตรงกับข้อมูลบน server");
+          const revision = source.revision as
+            { revision_id?: string } | undefined;
+          if (
+            !id.baseRevision ||
+            id.baseRevision !==
+              (revision?.revision_id ?? String(source.data_version))
+          )
+            throw new Error(
+              "ต้องเปิดการแก้ไขจากข้อมูลล่าสุด พร้อมระบุ base revision หรือ data version",
+            );
+          if (
+            id.type === "satisfaction" &&
+            source.questionnaire_version !== id.questionnaireVersion
+          )
+            throw new Error(
+              "ชุดคำถามเปลี่ยนรุ่น กรุณาสร้างแบบประเมินใหม่เพื่อรักษาคำตอบเดิม",
+            );
+          if (id.type === "satisfaction")
+            seededSatisfaction = satisfactionFromServer(source, id.group);
+          fresh.data = {
+            profile: source.profile as DraftEnvelope["data"]["profile"],
+            workInfo: source.workInfo as DraftEnvelope["data"]["workInfo"],
+            inspectionData:
+              source.inspectionData as DraftEnvelope["data"]["inspectionData"],
+            answers: source.answers as DraftEnvelope["data"]["answers"],
+          };
         }
-
-        if (editCode) {
-          let source: any = null;
-
+        if (seededSatisfaction) fresh.data.satisfactionV3 = seededSatisfaction;
+        let raw: string | null = null;
+        try {
+          raw = localStorage.getItem(key);
+        } catch {
+          if (!cancelled)
+            setWarning("บันทึกร่างบนเครื่องไม่ได้ กรุณาอย่าปิดหน้านี้");
+        }
+        const saved = readDraft(raw, id, totalSteps);
+        if (saved) fresh = saved;
+        else if (raw && !cancelled)
+          setWarning("ร่างที่เก็บไว้ไม่ตรงรูปแบบปัจจุบัน จึงไม่ได้โหลดมาใช้");
+        if (id.type === "satisfaction" && saved) {
+          if (!saved.data.satisfactionV3) {
+            fresh.data.satisfactionV3 = id.code
+              ? seededSatisfaction
+              : migrateSatisfactionDraft(saved.data, id.group);
+            fresh.ui.step = 1;
+          }
+          if (
+            fresh.data.satisfactionV3?.questionnaire_version !==
+            id.questionnaireVersion
+          ) {
+            fresh = newDraft(id);
+            fresh.data.satisfactionV3 = seededSatisfaction;
+            if (!cancelled) setWarning("ร่างไม่ตรงชุดคำถาม จึงไม่ได้โหลดมาใช้");
+          }
+        }
+        if (!cancelled) {
           try {
-            const sessionSource = sessionStorage.getItem(
-              `save_check_edit_source_${editCode}`,
-            );
-            if (sessionSource) source = JSON.parse(sessionSource);
-          } catch (error) {
-            console.error("Failed to load edit source", error);
+            localStorage.setItem(key, JSON.stringify(fresh));
+          } catch {
+            setWarning("บันทึกร่างบนเครื่องไม่ได้ กรุณาอย่าปิดหน้านี้");
           }
-
-          if (!source) {
-            const response = await getResult(editCode);
-            if (response.success) source = response.data;
-          }
-
-          if (!source) {
-            const stored = localStorage.getItem("save_check_submissions");
-            const list = stored ? JSON.parse(stored) : [];
-            source = list.find(
-              (item: any) => item.submission_code === editCode,
-            );
-          }
-
-          if (source && !cancelled) {
-            const restored: AssessmentDraftData = {
-              profile: source.profile,
-              workInfo: source.workInfo,
-              inspectionData: source.inspectionData,
-              answers: source.answers || {},
-              layoutFile: source.layout_file || null,
-              editingSubmission: {
-                id: source.id,
-                submission_code: source.submission_code || editCode,
-                started_at: source.started_at,
-                created_at: source.created_at,
-              },
-              lastSavedAt:
-                source.updated_at ||
-                source.completed_at ||
-                new Date().toISOString(),
-            };
-            setDraftData(restored);
-            localStorage.setItem(draftKey, JSON.stringify(restored));
-          } else if (!cancelled) {
-            setLoadError(`ไม่พบข้อมูลการประเมินรหัส ${editCode}`);
-          }
+          ref.current = fresh;
+          setState(fresh);
         }
-      } catch (error) {
-        console.error("Failed to load draft", error);
+      } catch (e) {
+        if (!cancelled)
+          setLoadError(e instanceof Error ? e.message : "โหลดแบบประเมินไม่ได้");
       } finally {
-        if (!cancelled) setIsLoaded(true);
+        if (!cancelled) setLoaded(true);
       }
     };
-
-    loadDraft();
+    void load();
     return () => {
       cancelled = true;
     };
-  }, [draftKey, editCode]);
-
-  // Save partial data to draft
-  const saveDraft = useCallback(
-    (partialData: Partial<AssessmentDraftData>) => {
-      setDraftData((prev) => {
-        const updated = {
-          ...prev,
-          ...partialData,
-          lastSavedAt: new Date().toISOString(),
-        };
-        try {
-          localStorage.setItem(draftKey, JSON.stringify(updated));
-        } catch (error) {
-          console.error("Failed to save draft", error);
-        }
-        return updated;
-      });
-    },
-    [draftKey],
-  );
-
-  // Clear draft
-  const clearDraft = useCallback(() => {
+  }, [identityJson, totalSteps]);
+  const persist = useCallback((next: DraftEnvelope) => {
+    ref.current = next;
+    setState(next);
     try {
-      localStorage.removeItem(draftKey);
-      setDraftData({ lastSavedAt: new Date().toISOString() });
-    } catch (error) {
-      console.error("Failed to clear draft", error);
+      localStorage.setItem(draftKey(next.identity), JSON.stringify(next));
+      setWarning(null);
+    } catch {
+      setWarning(
+        "บันทึกร่างบนเครื่องไม่ได้ ข้อมูลยังอยู่ในหน้านี้ กรุณาอย่าปิดหน้า",
+      );
     }
-  }, [draftKey]);
-
-  const nextStep = useCallback(() => {
-    setCurrentStep((prev) => {
-      if (typeof window !== "undefined")
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      return Math.min(prev + 1, totalSteps);
-    });
-  }, [totalSteps]);
-
-  const prevStep = useCallback(() => {
-    setCurrentStep((prev) => {
-      if (typeof window !== "undefined")
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      return Math.max(prev - 1, 1);
-    });
   }, []);
-
+  const saveDraft = useCallback(
+    (partial: Partial<AssessmentDraftData>) => {
+      if (ref.current)
+        persist(patchDraft(ref.current, partial as DraftEnvelope["data"]));
+    },
+    [persist],
+  );
+  const setStep = useCallback(
+    (step: number) => {
+      if (ref.current) {
+        persist(
+          patchDraft(
+            ref.current,
+            {},
+            { step: Math.max(1, Math.min(totalSteps, step)) },
+          ),
+        );
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    },
+    [persist, totalSteps],
+  );
+  const nextStep = useCallback(
+      () => setStep((ref.current?.ui.step ?? 1) + 1),
+      [setStep],
+    ),
+    prevStep = useCallback(
+      () => setStep((ref.current?.ui.step ?? 1) - 1),
+      [setStep],
+    );
+  const setTab = useCallback(
+    (tab: DraftEnvelope["ui"]["tab"]) => {
+      if (ref.current) persist(patchDraft(ref.current, {}, { tab }));
+    },
+    [persist],
+  );
+  const clearDraft = useCallback(() => {
+    if (ref.current) {
+      try {
+        localStorage.removeItem(draftKey(ref.current.identity));
+      } catch {
+        setWarning("ลบร่างบนเครื่องไม่ได้");
+      }
+      // Keep the completed review visible until navigation unmounts it.
+      ref.current = null;
+    }
+  }, []);
   return {
-    currentStep,
+    currentStep: state?.ui.step ?? 1,
+    currentTab: state?.ui.tab ?? "single",
     totalSteps,
     isLoaded,
-    draftData,
+    draftData: (state?.data ?? {}) as AssessmentDraftData,
     loadError,
+    draftWarning,
+    requestKey: state?.requestKey,
     nextStep,
     prevStep,
+    setStep,
+    setTab,
     saveDraft,
     clearDraft,
   };

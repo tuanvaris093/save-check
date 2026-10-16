@@ -4,12 +4,14 @@ import { cn } from "@/lib/utils";
 
 interface ErrorMessageProps {
   message: string;
+  id?: string;
   className?: string;
   showIcon?: boolean;
 }
 
 export function ErrorMessage({
   message,
+  id,
   className,
   showIcon = true,
 }: ErrorMessageProps) {
@@ -18,10 +20,11 @@ export function ErrorMessage({
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-input bg-danger-soft px-3 py-2 text-caption font-medium text-danger animate-fade-in",
+        "rounded-input bg-danger-soft text-caption text-danger animate-fade-in flex items-center gap-2 px-3 py-2 font-medium",
         className,
       )}
       role="alert"
+      id={id}
     >
       {showIcon && <AlertCircle className="h-4 w-4 shrink-0" />}
       <p>{message}</p>

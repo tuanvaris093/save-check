@@ -28,15 +28,15 @@ export function QuestionCard({
     >
       <div className="mb-4">
         {questionNo && (
-          <span className="mb-1 block text-caption font-semibold text-primary">
+          <span className="text-caption text-primary mb-1 block font-semibold">
             ข้อที่ {questionNo}
           </span>
         )}
-        <h3 className="text-card-title font-semibold text-text-primary leading-relaxed">
+        <h3 className="text-card-title text-text-primary leading-relaxed font-semibold">
           {questionText}
         </h3>
         {description && (
-          <p className="mt-1 text-small text-text-secondary">{description}</p>
+          <p className="text-small text-text-secondary mt-1">{description}</p>
         )}
       </div>
       <div className="w-full">{children}</div>

@@ -10,14 +10,15 @@
     "deploy": "wrangler deploy",
     "worker:deploy": "wrangler deploy",
     "db:create": "wrangler d1 create save-check-db",
-    "db:migrate": "wrangler d1 execute save-check-db --local --file=./src/db/schema.sql",
-    "db:migrate:local": "wrangler d1 execute save-check-db --local --file=./src/db/schema.sql",
+    "db:migrate": "node ../scripts/d1-migrate.mjs --local",
+    "db:migrate:local": "node ../scripts/d1-migrate.mjs --local",
     "db:seed": "wrangler d1 execute save-check-db --local --file=./src/db/seed.sql",
     "db:seed:local": "wrangler d1 execute save-check-db --local --file=./src/db/seed.sql",
     "db:truncate": "wrangler d1 execute save-check-db --local --file=./src/db/truncate.sql",
-    "db:migrate:remote": "wrangler d1 execute save-check-db --remote --file=./src/db/schema.sql",
+    "db:migrate:remote": "node ../scripts/d1-migrate.mjs --remote",
     "db:seed:remote": "wrangler d1 execute save-check-db --remote --file=./src/db/seed.sql",
-    "db:truncate:remote": "wrangler d1 execute save-check-db --remote --file=./src/db/truncate.sql"
+    "db:truncate:remote": "wrangler d1 execute save-check-db --remote --file=./src/db/truncate.sql",
+    "db:migrations:list": "wrangler d1 migrations list save-check-db --local"
   },
   "dependencies": {
     "hono": "^4.7.4"

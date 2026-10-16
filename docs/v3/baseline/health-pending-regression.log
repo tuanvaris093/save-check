@@ -1,0 +1,462 @@
+
+> save-check@0.1.1 test:health-pending:regression
+> node scripts/test-health-pending-regression.mjs
+
+START test:v3
+
+> save-check@0.1.1 test:v3
+> node scripts/test-v3.mjs
+
+TAP version 13
+# Subtest: programs are exact official supplied labels and study year is independent
+ok 1 - programs are exact official supplied labels and study year is independent
+  ---
+  duration_ms: 2.603875
+  type: 'test'
+  ...
+# Subtest: health boundaries, signed deltas and per-item comparison
+ok 2 - health boundaries, signed deltas and per-item comparison
+  ---
+  duration_ms: 0.60475
+  type: 'test'
+  ...
+# Subtest: answers must be complete, finite and closed enums; metadata never contributes
+ok 3 - answers must be complete, finite and closed enums; metadata never contributes
+  ---
+  duration_ms: 1.650542
+  type: 'test'
+  ...
+# Subtest: required fields, conditional disease/year/work and missing zero distinguish
+ok 4 - required fields, conditional disease/year/work and missing zero distinguish
+  ---
+  duration_ms: 1.321166
+  type: 'test'
+  ...
+# Subtest: noise sources are unique, none exclusive, other text conditional
+ok 5 - noise sources are unique, none exclusive, other text conditional
+  ---
+  duration_ms: 0.25975
+  type: 'test'
+  ...
+# Subtest: satisfaction complete 16 scores, notes optional, manual units normalized
+ok 6 - satisfaction complete 16 scores, notes optional, manual units normalized
+  ---
+  duration_ms: 0.622541
+  type: 'test'
+  ...
+# Subtest: light Spot target, full precision and surrounding thresholds
+ok 7 - light Spot target, full precision and surrounding thresholds
+  ---
+  duration_ms: 1.018459
+  type: 'test'
+  ...
+# Subtest: Area average and minimum both evaluated, zero/missing handled
+ok 8 - Area average and minimum both evaluated, zero/missing handled
+  ---
+  duration_ms: 0.479334
+  type: 'test'
+  ...
+# Subtest: noise table takes precedence, formula floors limit only, TWA8 not normalized twice
+ok 9 - noise table takes precedence, formula floors limit only, TWA8 not normalized twice
+  ---
+  duration_ms: 0.645416
+  type: 'test'
+  ...
+# Subtest: WBGT formula, time weighting, source modes and equality before display rounding
+ok 10 - WBGT formula, time weighting, source modes and equality before display rounding
+  ---
+  duration_ms: 1.029833
+  type: 'test'
+  ...
+# Subtest: failed-only retest preserves original measurement provenance across three rounds
+ok 11 - failed-only retest preserves original measurement provenance across three rounds
+  ---
+  duration_ms: 1.161375
+  type: 'test'
+  ...
+# Subtest: Area retest cannot omit or rename samples; archive rejects retest
+ok 12 - Area retest cannot omit or rename samples; archive rejects retest
+  ---
+  duration_ms: 0.245916
+  type: 'test'
+  ...
+# Subtest: legacy adapter preserves zero, old units and unknown group without invented before/after
+ok 13 - legacy adapter preserves zero, old units and unknown group without invented before/after
+  ---
+  duration_ms: 0.133042
+  type: 'test'
+  ...
+# Subtest: frontend and Worker expose matching validation and scoring results
+ok 14 - frontend and Worker expose matching validation and scoring results
+  ---
+  duration_ms: 1.276083
+  type: 'test'
+  ...
+# Subtest: all eight entry flows parse and reject cross-group/category metadata
+ok 15 - all eight entry flows parse and reject cross-group/category metadata
+  ---
+  duration_ms: 5.244875
+  type: 'test'
+  ...
+# Subtest: server snapshots preserve program labels and phase-specific question wording
+ok 16 - server snapshots preserve program labels and phase-specific question wording
+  ---
+  duration_ms: 0.310333
+  type: 'test'
+  ...
+# Subtest: validation errors identify the relevant form field without unrelated branches
+ok 17 - validation errors identify the relevant form field without unrelated branches
+  ---
+  duration_ms: 0.125084
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 88.509083
+test_all_original_columns_preserved_including_zero_null_old_week_units (__main__.Migrations.test_all_original_columns_preserved_including_zero_null_old_week_units) ... ok
+test_empty_install_and_ledger_resume (__main__.Migrations.test_empty_install_and_ledger_resume) ... ok
+test_legacy_snapshots_complete_and_immutable (__main__.Migrations.test_legacy_snapshots_complete_and_immutable) ... ok
+test_new_domain_constraints (__main__.Migrations.test_new_domain_constraints) ... ok
+test_retest_branch_constraints_provenance_and_finalized_sample_guards (__main__.Migrations.test_retest_branch_constraints_provenance_and_finalized_sample_guards) ... ok
+test_v3_cannot_finalize_incomplete_points_or_staged_file (__main__.Migrations.test_v3_cannot_finalize_incomplete_points_or_staged_file) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.079s
+
+OK
+DONE test:v3
+START test:p4
+
+> save-check@0.1.1 test:p4
+> node scripts/test-p4.mjs
+
+PASS health profile requires all fields and never defaults blank numeric to zero
+PASS disease details conditional, no-disease normalizes hidden text to null
+PASS all seven exact programs allow independent study years 1 through 6
+PASS staff/faculty/other contexts only include applicable year or experience and weekly hours
+PASS 20 light answers separated, valid zero accepted, today hours required but not score
+PASS noise source none/other rules and heat has no unwanted context
+PASS server draft adapter preserves before/after zero and questionnaire version
+PASS saved result renders server result and resolved question/program snapshots
+DONE test:p4
+START test:health-pending
+
+> save-check@0.1.1 test:health-pending
+> node scripts/test-health-pending.mjs
+
+PASS 1: pending contract requires completed before/profile/context; partial after stays absent, closed scores and current wording only
+PASS 2: before-only save/retry creates one server draft with no after values, score, final submission or export row
+PASS 3: concurrent creates/updates converge or conflict without duplicates or lost winning data
+PASS 4: incomplete/stale/wrong-source finalization rolls back every scored table; correct completion replays once
+PASS 5: save racing completion permits exactly one mutation against a base; failed batch can be retried atomically
+PASS 6: GUI validates before; skip saves partial after on server; lost save response preserves answers and retry is idempotent
+PASS 7: fresh browser context resumes server data/after tab, retains zero and partial local edits through refresh and back
+PASS 8: stale open tab cannot overwrite remote edits and keeps its unsaved answer
+PASS 9: finish from resumed draft computes true scores once; lost completion receipt retries same result and removes pending row
+PASS 10: normal completed receipt cannot become pending; normal submit racing first save permits one path
+PASS 11: pending table paginates beyond ten, uses responsive rows and never inflates final totals
+Health pending PASS 11
+DONE test:health-pending
+START test:p2
+
+> save-check@0.1.1 test:p2
+> node scripts/test-p2-api.mjs
+
+PASS 1: upload validates MIME, preserves staged file and retries by hash
+PASS 2: health before/after saved with server score, profile, program and all 20 answers
+PASS 3: invalid fields, fake overall score, malformed JSON and old payload rejected without writes
+PASS 4: satisfaction both groups, optional notes and manual duration persist
+PASS 5: noise/heat health, Area, noise exposure/TWA8 and WBGT environment all create/read
+PASS 6: environment atomic create and idempotent retry, file committed with revision snapshot
+PASS 7: locked fields, omitted failed points and foreign revisions cannot retest
+PASS 8: failed-only retest produces latest r2 then r3 and preserves r1/per-point dates
+PASS 9: concurrent writers from one base allow exactly one revision and retries do not branch
+PASS 10: failure inside batch leaves no header/children/payload/idempotency residue
+PASS 11: generic overwrite/layout routes rejected and corrections keep immutable data versions
+PASS 12: archive/restore preserve revision and exclude records from default list/count/export
+PASS 13: dashboard and export distinguish latest jobs, revisions, groups and filter validation
+PASS 14: CORS exact allowlist rejects arbitrary Pages/localhost substrings
+PASS 15: files download, committed metadata lock and orphan cleanup never remove referenced object
+PASS 16: legacy questionnaires remain readable with zero answers and unknown satisfaction group
+PASS 17: legacy supplement records adoption once, preserves old revision and enables failed-only retest
+PASS 18: environment correction creates audit revision and keeps previous result snapshot intact
+PASS 19: missing R2 and unapplied schema return actionable 503 without exposing internals
+PASS 20: same-key concurrent create replays one job and rejects changed payload
+PASS 21: history export has explicit revision pagination without dropping older rounds
+PASS 22: legacy layout returns original bytes before and after upgrade without rewriting snapshot
+PASS 23: oversized JSON and layout streams fail before persistence
+P2 API integration PASS: 23 scenarios; isolated runtime /var/folders/4_/37jfdd410y7dzytvyc3zt84m0000gn/T/savecheck-p2-api-60m622
+DONE test:p2
+START test:p8:migration
+
+> save-check@0.1.1 test:p8:migration
+> node scripts/test-p8-migration.mjs
+
+PASS 1: local recovery SQL exports and restores all original columns/rows before migration
+PASS 2: real local D1 upgrade preserves every original field across all eight tables
+PASS 3: latest pointers, ownership, revision/point identity, finalized status and all migration ledger entries are consistent
+PASS 4: zero/null/old weekly-day units/legacy score/unknown group/layout bytes remain original
+PASS 5: resume is idempotent and cannot rewrite finalized snapshots
+PASS 6: restored legacy recovery copy independently migrates to identical revisions and pointers
+PASS 7: partial legacy schema and changed original columns fail preflight before migration writes
+P8 D1 rehearsal PASS 7; isolated local DB, no remote operation
+DONE test:p8:migration
+START test:ui-restore
+
+> save-check@0.1.1 test:ui-restore
+> node scripts/test-ui-restore.mjs
+
+PASS 1: optional-layout migration preserves populated legacy/current revisions, references, snapshots and guards
+PASS 2: Worker accepts omitted floor plans for light/noise/heat and preserves null without a file reference
+PASS 3: GUI review saves without a plan; no upload/create occurs before final confirmation
+PASS 4: plan-free failed round can be retested while preserving its original history
+PASS 5: add a plan later through GUI review; old rounds and measurement dates/values remain unchanged
+PASS 6: local PDF/image preview, replace/remove and refresh never call upload; keyboard uploader and type validation work
+PASS 7: failed upload prevents submission; stable upload receipt/key and draft survive retries without duplicate records
+PASS 8: current-only Dashboard API counts eight form categories, excludes legacy from lists/export and computes four satisfaction dimensions
+PASS 9: Dashboard restores row/column table and form-specific statuses with no unknown/legacy card
+PASS 10: result headers/code are unique; current environment and satisfaction answers use tables; old links display no raw data
+PASS 11: mobile navigation stays at viewport bottom at top/middle/end, is a body portal and never creates horizontal overflow
+PASS 12: downloaded table report retains exact API snapshot and original scores
+PASS 13: all routes retain headings, menus and bounded layouts on mobile and desktop
+PASS 14: environment headings, concise Area options, review and guidance survive every category
+PASS 15: health restores personal/health/work sections and disease choices through review
+PASS 16: health recommendations follow current symptom levels for all three categories, light uses after score
+PASS 17: satisfaction keeps four summary dimensions, sixteen current questions, suggestions and both groups
+UI restore acceptance PASS 17
+DONE test:ui-restore
+START test:satisfaction:browser
+
+> save-check@0.1.1 test:satisfaction:browser
+> SAT_QUESTION_CHECK=1 node scripts/test-p4-browser.mjs
+
+PASS 1: all health profile fields required, no implicit gender/disease answer; conditional details
+PASS 2: select exact seven programs and separate years 1–6 including higher vocational year 6
+PASS 3: before gate, zero hours/answers valid, after retained while editing before and refresh
+PASS 4: API failure preserves full 20 answers/draft/key; retry persists real Worker result and D1 snapshots
+PASS 5: staff N/A, zero experience, noise multiple/none/other conditional and new ten questions
+PASS 6: heat ten new questions and all zero answers save as zero total
+PASS 7: six official compare examples agree in browser result and Worker API, including decreased-but-high
+PASS 8: legacy light is excluded from current UI without rewriting original answers
+PASS 9: desktop result fits layout and server version/snapshot wording displayed
+Satisfaction question browser/API PASS 5
+PASS home two groups and responsive mobile/desktop without horizontal overflow
+PASS each group has four routes, correct satisfaction group and back link
+PASS all eight direct entry routes render in correct group
+PASS missing/invalid satisfaction group chooses group with no draft guess
+PASS autosave during typing survives immediate navigation, refresh and restores wizard step
+PASS category and satisfaction group drafts do not share answers
+PASS bad cached envelope and invalid category show safe recovery
+PASS required validation focuses first invalid field with accessible error
+PASS submit invalid incomplete v3 form keeps draft and never shows fake server success
+PASS failed server result/edit never uses locally fabricated cache as authority
+PASS valid v3 fixture retries API failure with same key, then uses verified server code
+P3 browser PASS 11
+P4 browser integration PASS 9
+DONE test:satisfaction:browser
+START test:p6:browser
+
+> save-check@0.1.1 test:p6:browser
+> node scripts/test-p6-browser.mjs
+
+PASS 1: independent health entry requires name/type/program/year; real 7 programs and separate years 1–6
+PASS 2: 16 ratings required; optional notes, back/refresh preserve profile and answers; real health create/read
+PASS 3: environment name is required, drafts/groups do not share ratings, durations follow ratings
+PASS 4: all 8 manual units required; positive total/int/ranges validated; 93784 seconds and negative difference persist
+PASS 5: downloaded real Excel matches API group, name, seconds, mean and all stored question text
+PASS 6: staff explicit N/A has no student field; other respondents require study/work context
+PASS 7: network failure keeps typed draft/key; retry creates once, clears only its group and uses server result
+PASS 8: correction includes reason and group/time/profile; old version result is immutable
+PASS 9: Worker rejects missing group/duration/name/student year and invalid rating without writes; no 46/309 quota
+PASS 10: legacy satisfaction is excluded from current UI without new profile/time guesses; invalid groups choose explicitly
+PASS 11: same-questionnaire old drafts keep ratings but require respondent data; corrupt typed drafts recover safely
+P6 browser integration PASS 11
+DONE test:p6:browser
+START test:p7:browser
+
+> save-check@0.1.1 test:p7:browser
+> node scripts/test-p7-browser.mjs
+
+PASS 1: actual local fixtures cover Spot/Area/noise/WBGT, all health and both satisfaction groups
+PASS 2: health paired result and selected Excel totals/wording/metadata exactly match stored API
+PASS 3: environment selected history retains old failure, date/thresholds; only current failed jobs expose retest
+PASS 4: Area samples, noise duration thresholds and WBGT intervals are exported from snapshots
+PASS 5: satisfaction version correction and history selector keep selected wording, mean and manual duration
+PASS 6: legacy data is excluded from current UI while its stored source remains intact
+PASS 7: API date basis/filter validation, one job per code, SQL grouped satisfaction averages
+PASS 8: dashboard filters apply identically to cards/list/XLSX with mobile without overflow
+PASS 9: bulk export reads more than 100 real jobs through all pages with no lost codes
+PASS 10: history export follows 13 real revisions and maintains one job row and frozen previous result
+PASS 11: archive/restore needs reason and keeps all results/history; dashboard archive scope matches
+PASS 12: API failure/invalid selection surfaces errors and retry without stale report
+PASS 13: A4 print/PDF chosen version retains Thai questions/thresholds and hides controls/embedded standard PDF
+PASS 14: no browser runtime errors or SQLite foreign-key violations
+P7 browser PASS 14
+DONE test:p7:browser
+START typecheck:worker
+
+> save-check@0.1.1 typecheck:worker
+> tsc --noEmit -p worker/tsconfig.json
+
+DONE typecheck:worker
+START lint
+
+> save-check@0.1.1 lint
+> eslint src worker/src shared scripts
+
+
+/Users/tuanvaris/dev/save-check/src/components/assessment/environment-step.tsx
+   44:60  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   60:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   61:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   62:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   74:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   75:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   76:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   77:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   80:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   91:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   97:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  131:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  144:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  146:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  166:45  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  167:45  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  170:72  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  326:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  327:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  328:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  426:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  670:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  671:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  672:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  673:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  676:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  677:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/components/assessment/health-risk-step.tsx
+  37:26  warning  'isValid' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  52:10  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/components/assessment/profile-step.tsx
+  30:26  warning  'isValid' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  32:55  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  44:10  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/components/assessment/review-step.tsx
+   13:3   warning  'X' is defined but never used             @typescript-eslint/no-unused-vars
+   60:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  130:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  179:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  244:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/components/assessment/work-info-step.tsx
+  28:26  warning  'isValid' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/tuanvaris/dev/save-check/src/lib/api.ts
+   56:24  warning  '_' is assigned a value but never used    @typescript-eslint/no-unused-vars
+   83:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  109:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  110:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  111:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  112:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  113:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  148:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  174:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  277:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  278:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  279:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  280:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/lib/environment-schema.ts
+   17:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   23:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   27:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   31:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   38:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   46:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   50:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   54:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   66:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   71:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   84:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   88:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   92:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   96:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  102:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  106:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/lib/excel-export.ts
+  227:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  321:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  434:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  530:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/src/lib/satisfaction-schema.ts
+  42:65  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  59:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/tuanvaris/dev/save-check/worker/src/types.ts
+  83:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 74 problems (0 errors, 74 warnings)
+
+DONE lint
+START build
+
+> save-check@0.1.1 build
+> next build
+
+   ▲ Next.js 15.5.19
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 3.5s
+   Skipping linting
+   Checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/14) ...
+   Generating static pages (3/14) 
+   Generating static pages (6/14) 
+   Generating static pages (10/14) 
+ ✓ Generating static pages (14/14)
+   Finalizing page optimization ...
+   Collecting build traces ...
+   Exporting (0/2) ...
+ ✓ Exporting (2/2)
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                      979 B         119 kB
+├ ○ /_not-found                            123 B         103 kB
+├ ○ /apple-icon.png                          0 B            0 B
+├ ○ /assessment/environment                130 B         122 kB
+├ ○ /assessment/environment-form         11.8 kB         190 kB
+├ ○ /assessment/health-risk                131 B         122 kB
+├ ○ /assessment/health-risk-form         4.07 kB         185 kB
+├ ○ /assessment/satisfaction             7.91 kB         182 kB
+├ ○ /complete                              162 B         106 kB
+├ ○ /dashboard                           7.21 kB         130 kB
+├ ○ /icon.png                                0 B            0 B
+└ ○ /result                              6.91 kB         174 kB
++ First Load JS shared by all             103 kB
+  ├ chunks/255-eb4aecc3ff015961.js       46.3 kB
+  ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+  └ other shared chunks (total)          2.06 kB
+
+
+○  (Static)  prerendered as static content
+
+DONE build
+START typecheck
+
+> save-check@0.1.1 typecheck
+> tsc --noEmit --incremental false
+
+DONE typecheck
+Health pending regression PASS 13 commands; no deployment

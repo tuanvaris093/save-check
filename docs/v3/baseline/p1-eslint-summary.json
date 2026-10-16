@@ -1,0 +1,6 @@
+{
+  "scope": "src worker/src shared scripts",
+  "errors": 0,
+  "warnings": 172,
+  "new_domain_warnings": 0
+}

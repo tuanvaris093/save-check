@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  ...(process.env.NODE_ENV === "production" ? { output: "export" as const } : {}),
+  distDir: process.env.SAFECHECK_TEST_DIST_DIR ?? ".next",
+  ...(process.env.NODE_ENV === "production"
+    ? { output: "export" as const }
+    : {}),
   images: {
     unoptimized: true,
   },

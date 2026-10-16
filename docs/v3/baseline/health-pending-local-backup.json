@@ -1,0 +1,370 @@
+{
+  "backup": "/private/tmp/save-check-health-pending-backup-z5ae4hf8/local.sqlite",
+  "snapshot": "/private/tmp/save-check-health-pending-backup-z5ae4hf8/before.json",
+  "tables": {
+    "assessment_audit_events": {
+      "columns": [
+        "id",
+        "submission_id",
+        "revision_id",
+        "action",
+        "before_json",
+        "after_json",
+        "reason",
+        "actor_reference",
+        "created_at"
+      ],
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "assessment_files": {
+      "columns": [
+        "id",
+        "object_key",
+        "file_name",
+        "mime_type",
+        "byte_size",
+        "checksum_sha256",
+        "state",
+        "created_at",
+        "committed_at",
+        "upload_idempotency_key",
+        "upload_request_hash"
+      ],
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "assessment_results": {
+      "columns": [
+        "id",
+        "submission_id",
+        "assessment_type",
+        "assessment_category",
+        "total_score",
+        "risk_level",
+        "calculated_value",
+        "is_pass",
+        "message",
+        "recommendations_json",
+        "created_at",
+        "result_json",
+        "scoring_version",
+        "result_origin"
+      ],
+      "rows": 5,
+      "sha256": "c48bf41e1ea30eb09a6a145f41a56f6fae2c855609bfba923099fbb8b29f7c4a"
+    },
+    "environment_inspections": {
+      "columns": [
+        "id",
+        "submission_id",
+        "inspector_name",
+        "position",
+        "inspection_location",
+        "inspection_date",
+        "equipment",
+        "measurement_technique",
+        "start_time",
+        "end_time",
+        "created_at",
+        "serial_number",
+        "calibration_date",
+        "responsible_department",
+        "location_responsible_name"
+      ],
+      "rows": 2,
+      "sha256": "b94d465f4802d8a6251f974969d45c8b29b7da90d21cf5a954729e35eb520d77"
+    },
+    "environment_measurement_points": {
+      "columns": [
+        "id",
+        "submission_id",
+        "category",
+        "point_no",
+        "location_desc",
+        "measure_value",
+        "min_value",
+        "max_value",
+        "standard_value",
+        "standard_display",
+        "workload",
+        "temp_db",
+        "temp_wb",
+        "temp_gt",
+        "temp_wbgt",
+        "wbgt_type",
+        "start_time",
+        "end_time",
+        "total_time",
+        "is_pass",
+        "remark",
+        "created_at"
+      ],
+      "rows": 5,
+      "sha256": "5209cce2f894e413411d353431a4b1e5c4aaff927c58294f23273423ec388991"
+    },
+    "environment_metadata_supplements": {
+      "columns": [
+        "id",
+        "submission_id",
+        "base_revision_id",
+        "supplement_json",
+        "created_at",
+        "actor_reference"
+      ],
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "environment_revision_points": {
+      "columns": [
+        "submission_id",
+        "revision_id",
+        "point_key",
+        "point_order",
+        "category",
+        "location_desc",
+        "inputs_json",
+        "standard_snapshot_json",
+        "result_json",
+        "is_pass",
+        "measured_at",
+        "observation_kind",
+        "carried_from_revision_id",
+        "legacy_point_id",
+        "remark"
+      ],
+      "rows": 6,
+      "sha256": "9fb5e0e13364746087b2e379d27278b1adb8e1c5075f61122f28448a298dfaa5"
+    },
+    "environment_revision_samples": {
+      "columns": [
+        "revision_id",
+        "point_key",
+        "sample_key",
+        "sample_order",
+        "values_json"
+      ],
+      "rows": 1,
+      "sha256": "ca86259193f64ef04cce901dec6c9faed2f281c1c68197dd84e1df970c38b8a4"
+    },
+    "environment_revisions": {
+      "columns": [
+        "id",
+        "submission_id",
+        "revision_no",
+        "base_revision_id",
+        "schema_version",
+        "kind",
+        "status",
+        "inspection_snapshot_json",
+        "result_json",
+        "scoring_version",
+        "standard_version",
+        "result_origin",
+        "layout_file_id",
+        "legacy_layout_pending",
+        "measured_at",
+        "created_at",
+        "is_pass",
+        "correction_reason"
+      ],
+      "rows": 3,
+      "sha256": "87c702660e5a058ebe392e4a3ad51ae16afdd5792989ce38d9c62dddb4360fb1"
+    },
+    "health_contexts": {
+      "columns": [
+        "submission_id",
+        "hours_worked_today",
+        "noise_source_other"
+      ],
+      "rows": 1,
+      "sha256": "400968999930cd66f83cb19fcba2318ec26142ca4a172cd070924d9075e419b3"
+    },
+    "health_noise_sources": {
+      "columns": [
+        "submission_id",
+        "source_code"
+      ],
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "health_risk_answers": {
+      "columns": [
+        "id",
+        "submission_id",
+        "category",
+        "question_id",
+        "question_no",
+        "question_text",
+        "score",
+        "created_at",
+        "phase",
+        "schema_version",
+        "questionnaire_version"
+      ],
+      "rows": 40,
+      "sha256": "6b0f5bceefb167a7592b4f127a6e7631f315ef015688854329d5c54bb2671647"
+    },
+    "legacy_file_mappings": {
+      "columns": [
+        "revision_id",
+        "file_id",
+        "created_at"
+      ],
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "legacy_layout_snapshots": {
+      "columns": [
+        "revision_id",
+        "file_name",
+        "file_type",
+        "file_size",
+        "file_data",
+        "has_layout"
+      ],
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "mutation_preconditions": {
+      "columns": [
+        "token",
+        "valid"
+      ],
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "mutation_requests": {
+      "columns": [
+        "scope",
+        "idempotency_key",
+        "request_hash",
+        "submission_id",
+        "revision_id",
+        "response_json",
+        "created_at"
+      ],
+      "rows": 3,
+      "sha256": "1dcf2281cc871016b791fdac8676f67806d21462a9309c98d4c2063ca894e608"
+    },
+    "program_catalog": {
+      "columns": [
+        "code",
+        "label",
+        "qualification",
+        "catalog_version"
+      ],
+      "rows": 7,
+      "sha256": "f269d359f039e060ab7bee1b1177cd439149a3bf82b72a37af9c9943c6abf984"
+    },
+    "respondent_profiles": {
+      "columns": [
+        "id",
+        "submission_id",
+        "full_name",
+        "gender",
+        "age",
+        "weight",
+        "height",
+        "education_level",
+        "marital_status",
+        "has_underlying_disease",
+        "underlying_disease_details",
+        "created_at"
+      ],
+      "rows": 3,
+      "sha256": "b15c9e288789767c618a4ba531d555672638b7ea2c72cf9cf3d3723cc6b7a12c"
+    },
+    "respondent_work_infos": {
+      "columns": [
+        "id",
+        "submission_id",
+        "position_type",
+        "department",
+        "position",
+        "work_experience_years",
+        "working_hours_per_day",
+        "working_days_per_week",
+        "work_area",
+        "created_at",
+        "program_code",
+        "program_label",
+        "program_version",
+        "study_year",
+        "other_context",
+        "working_hours_per_week"
+      ],
+      "rows": 3,
+      "sha256": "5ee46d3c4807b10fd6f14f180ed349802b76463d09783ebb3e6af9ff157db23a"
+    },
+    "satisfaction_answers": {
+      "columns": [
+        "id",
+        "submission_id",
+        "question_id",
+        "category",
+        "rating",
+        "suggestion",
+        "created_at"
+      ],
+      "rows": 8,
+      "sha256": "b26d6b40a1dbfde9a6261bdc9501618a28dc3003d1bd4947873fcc0c1f333450"
+    },
+    "satisfaction_metadata": {
+      "columns": [
+        "submission_id",
+        "suggestion",
+        "traditional_duration_seconds",
+        "safecheck_duration_seconds",
+        "duration_source",
+        "questionnaire_version"
+      ],
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "submission_payload_versions": {
+      "columns": [
+        "submission_id",
+        "version_no",
+        "operation",
+        "payload_json",
+        "result_json",
+        "resolved_json",
+        "created_at"
+      ],
+      "rows": 3,
+      "sha256": "81f1caf6be5ca2ac47e24703b0faa923f790aaeb8bed0c6d1e4d977a3baa29ee"
+    },
+    "submissions": {
+      "columns": [
+        "id",
+        "submission_code",
+        "assessment_type",
+        "assessment_category",
+        "status",
+        "overall_score",
+        "overall_level",
+        "has_layout",
+        "layout_file_name",
+        "layout_file_type",
+        "layout_file_size",
+        "layout_file_data",
+        "started_at",
+        "completed_at",
+        "created_at",
+        "updated_at",
+        "schema_version",
+        "assessment_group",
+        "questionnaire_version",
+        "scoring_version",
+        "archived_at",
+        "latest_revision_id",
+        "data_version"
+      ],
+      "rows": 7,
+      "sha256": "73ab7b27265e5e1980381096caf294312ec0be7329651f1d731e693836fe4463"
+    }
+  },
+  "foreign_key_violations": 0,
+  "remote": false
+}
