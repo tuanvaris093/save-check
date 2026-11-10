@@ -29,6 +29,7 @@
     "test:p3": "node scripts/test-p3.mjs",
     "test:p3:browser": "node scripts/test-p3-browser.mjs",
     "test:p4": "node scripts/test-p4.mjs",
+    "test:health-supplement": "node scripts/test-health-supplement.mjs",
     "test:p4:browser": "node scripts/test-p4-browser.mjs",
     "test:satisfaction-questions": "node scripts/test-satisfaction-questions.mjs",
     "test:satisfaction:browser": "SAT_QUESTION_CHECK=1 node scripts/test-p4-browser.mjs",

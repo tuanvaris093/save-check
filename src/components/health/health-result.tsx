@@ -1,12 +1,13 @@
 "use client";
 import { HealthSummary } from "./health-summary";
-import { validateSubmission } from "../../../shared/v3";
+import { validateSubmission, type SupplementSection } from "../../../shared/v3";
 export function HealthResultV3({ data }: { data: Record<string, unknown> }) {
   const resolved = data.resolved as
     | {
         program?: { code: string; label: string | null };
         questions?: Parameters<typeof HealthSummary>[0]["questions"];
         questionnaire_version?: string;
+        healthSupplementSections?: SupplementSection[];
       }
     | undefined;
   const parsed = validateSubmission({
@@ -18,6 +19,9 @@ export function HealthResultV3({ data }: { data: Record<string, unknown> }) {
     profile: data.profile,
     workInfo: data.workInfo,
     answers: data.answers,
+    ...(data.healthSupplement
+      ? { healthSupplement: data.healthSupplement }
+      : {}),
     ...(data.assessment_category === "heat"
       ? {}
       : { healthContext: data.healthContext }),
@@ -41,6 +45,7 @@ export function HealthResultV3({ data }: { data: Record<string, unknown> }) {
               : "ไม่พบชื่อหลักสูตร")
           }
           version={resolved.questionnaire_version}
+          supplementSections={resolved.healthSupplementSections}
           server
         />
       ) : (

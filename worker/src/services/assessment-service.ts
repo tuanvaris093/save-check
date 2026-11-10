@@ -9,6 +9,7 @@ import {
   retestSchema,
   programSnapshot,
   questionSnapshots,
+  HEALTH_SUPPLEMENT_SECTIONS,
   QUESTIONNAIRE_VERSION,
   satisfactionQuestionnaireVersion,
   satisfactionQuestionSnapshots,
@@ -61,6 +62,12 @@ export class AssessmentService {
         "workInfo" in payload
           ? programSnapshot(payload.workInfo.program_code)
           : null,
+      ...(payload.assessment_type === "health_risk" && payload.healthSupplement
+        ? {
+            healthSupplementSections:
+              HEALTH_SUPPLEMENT_SECTIONS[payload.assessment_category],
+          }
+        : {}),
       questions:
         payload.assessment_type === "health_risk"
           ? payload.assessment_category === "light"

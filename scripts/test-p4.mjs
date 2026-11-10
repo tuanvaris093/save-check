@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { resolve, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import assert from "node:assert/strict";
+import { supplementFixture } from "./health-supplement-fixtures.mjs";
 const require = createRequire(resolve("worker/package.json")),
   esbuild = require("esbuild"),
   temp = mkdtempSync(join(tmpdir(), "safecheck-p4-unit-"));
@@ -15,6 +16,15 @@ esbuild.buildSync({
   outfile: join(temp, "form.mjs"),
   logLevel: "silent",
 });
+esbuild.buildSync({
+  entryPoints: ["shared/v3/index.ts"],
+  bundle: true,
+  platform: "node",
+  format: "esm",
+  outfile: join(temp, "domain.mjs"),
+  logLevel: "silent",
+});
+const domain = await import(pathToFileURL(join(temp, "domain.mjs")));
 const m = await import(pathToFileURL(join(temp, "form.mjs")));
 let passed = 0;
 const checks = [];
@@ -51,6 +61,7 @@ const valid = () => ({
     working_hours_per_week: "40",
   },
   context: { hours_worked_today: "0" },
+  supplement: supplementFixture(domain, "light"),
   before: scores(2),
   after: scores(4),
   single: scores(0),
@@ -145,12 +156,14 @@ await check(
   "noise source none/other rules and heat has no unwanted context",
   () => {
     const d = valid();
+    d.supplement = supplementFixture(domain, "noise");
     d.context = { noise_sources: ["other"] };
     assert(!m.buildHealthPayload(d, "noise", "key").success);
     d.context.noise_source_other = "รายละเอียด";
     assert(m.buildHealthPayload(d, "noise", "key").success);
     d.context.noise_sources = ["none", "machine"];
     assert(!m.buildHealthPayload(d, "noise", "key").success);
+    d.supplement = supplementFixture(domain, "heat");
     const r = m.buildHealthPayload(d, "heat", "key");
     assert(r.success);
     assert(!("healthContext" in r.data));

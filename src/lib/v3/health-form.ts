@@ -6,6 +6,8 @@ import {
   validateSubmission,
   PROGRAMS,
   QUESTIONNAIRE_VERSION,
+  healthSupplementInput,
+  type HealthSupplementDraft,
   type CreateSubmissionV3,
 } from "../../../shared/v3";
 export type HealthCategory = "light" | "noise" | "heat";
@@ -18,6 +20,7 @@ export interface HealthDraft {
     noise_sources?: string[];
     noise_source_other?: string;
   };
+  supplement?: HealthSupplementDraft;
   before: Record<string, number>;
   after: Record<string, number>;
   single: Record<string, number>;
@@ -27,6 +30,7 @@ export const emptyHealthDraft = (): HealthDraft => ({
   profile: {},
   work: {},
   context: {},
+  supplement: { answers: {}, details: {} },
   before: {},
   after: {},
   single: {},
@@ -90,6 +94,10 @@ export function buildHealthPayload(
     assessment_category: category,
     profile: profileInput(d),
     workInfo: workInput(d),
+    healthSupplement: healthSupplementInput(
+      category,
+      d.supplement ?? { answers: {}, details: {} },
+    ),
     ...(category === "heat"
       ? {}
       : { healthContext: contextInput(d, category) }),
@@ -110,6 +118,12 @@ export function healthDraftFromServer(
     profile: data.profile as HealthDraft["profile"],
     work: data.workInfo as HealthDraft["work"],
     context: (data.healthContext ?? {}) as HealthDraft["context"],
+    supplement: data.healthSupplement
+      ? {
+          answers: (data.healthSupplement as HealthSupplementDraft).answers,
+          details: (data.healthSupplement as HealthSupplementDraft).details,
+        }
+      : { answers: {}, details: {} },
     before: answers?.before ?? {},
     after: answers?.after ?? {},
     single: answers?.single ?? {},

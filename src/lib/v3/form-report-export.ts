@@ -5,6 +5,8 @@ import {
   LIGHT_SPOT_STANDARDS,
   LIGHT_AREA_STANDARDS,
   STANDARD_VERSIONS,
+  healthSupplementRows,
+  type SupplementSection,
 } from "../../../shared/v3";
 import {
   list,
@@ -335,6 +337,20 @@ function healthRow(r: StoredRecord): FormRow {
       ] = value(score);
     }
   }
+  if (
+    m.category === "light" ||
+    m.category === "heat" ||
+    m.category === "noise"
+  ) {
+    for (const item of healthSupplementRows(
+      m.category,
+      r.healthSupplement,
+      m.resolved.healthSupplementSections as SupplementSection[] | undefined,
+    )) {
+      row[`ข้อมูลประกอบ (ไม่รวมคะแนน) — ${item.section} — ${item.question}`] =
+        item.answer;
+    }
+  }
   return row;
 }
 function satisfactionRow(r: StoredRecord): FormRow {
@@ -447,7 +463,8 @@ function append(
   // Explicit line breaks keep the saved question wording readable in Excel and
   // other viewers without depending on optional styling support in SheetJS.
   const displayHeaders = headers.map((header) => {
-    if (!/ข้อ \d+/.test(header)) return header;
+    if (!/ข้อ \d+/.test(header) && !header.startsWith("ข้อมูลประกอบ"))
+      return header;
     const parts = [
       ...new Intl.Segmenter("th", { granularity: "grapheme" }).segment(header),
     ].map((part) => part.segment);
@@ -466,7 +483,7 @@ function append(
     wch:
       h === "ลำดับ"
         ? 8
-        : /ข้อ \d+/.test(h)
+        : /ข้อ \d+/.test(h) || h.startsWith("ข้อมูลประกอบ")
           ? 36
           : /หลักสูตร|รายละเอียด|ข้อเสนอแนะ/.test(h)
             ? 45

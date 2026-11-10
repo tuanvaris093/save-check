@@ -78,6 +78,7 @@ const fieldLabels: Record<string, string> = {
   layout: "ไฟล์ผัง",
   durations: "ระยะเวลา",
   healthContext: "ข้อมูลประกอบอาการทางสุขภาพ",
+  healthSupplement: "ประวัติสุขภาพและข้อมูลประกอบเฉพาะด้าน",
 };
 export function submissionErrorMessage(error: {
   message: string;

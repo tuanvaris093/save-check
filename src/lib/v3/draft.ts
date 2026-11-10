@@ -1,6 +1,9 @@
 import { z } from "zod";
 import { satisfactionDraftSchema } from "./satisfaction-form";
-import { QUESTIONNAIRE_VERSION } from "../../../shared/v3";
+import {
+  QUESTIONNAIRE_VERSION,
+  healthSupplementDraftSchema,
+} from "../../../shared/v3";
 export const draftIdentitySchema = z
   .object({
     group: z.enum(["environment", "health"]),
@@ -82,6 +85,7 @@ export const draftEnvelopeSchema = z
         healthV3: z
           .object({
             questionnaire_version: z.literal(QUESTIONNAIRE_VERSION),
+            supplement: healthSupplementDraftSchema.optional(),
             profile: z.record(
               z.union([z.string(), z.number().finite(), z.boolean(), z.null()]),
             ),
@@ -156,7 +160,26 @@ export function readDraft(
 ): DraftEnvelope | null {
   if (!raw || raw.length > 15 * 1024 * 1024) return null;
   try {
-    const parsed = draftEnvelopeSchema.safeParse(JSON.parse(raw));
+    const input = JSON.parse(raw);
+    // Keep personal/work details, but do not reuse scores for changed wording.
+    // The old four-step wizard resumes at the new background step at most.
+    if (
+      identity.type === "health_risk" &&
+      input?.data?.healthV3?.questionnaire_version ===
+        "health-symptoms-v3-2026-10-12"
+    ) {
+      input.data.healthV3 = {
+        ...input.data.healthV3,
+        questionnaire_version: QUESTIONNAIRE_VERSION,
+        supplement: { answers: {}, details: {} },
+        before: {},
+        after: {},
+        single: {},
+      };
+      input.ui = { step: Math.min(input.ui?.step ?? 1, 3), tab: "before" };
+      input.requestKey = crypto.randomUUID();
+    }
+    const parsed = draftEnvelopeSchema.safeParse(input);
     if (
       !parsed.success ||
       draftKey(parsed.data.identity) !== draftKey(identity) ||

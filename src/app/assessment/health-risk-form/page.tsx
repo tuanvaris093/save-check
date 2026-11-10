@@ -13,6 +13,7 @@ import {
   HealthQuestionsStep,
 } from "@/components/health/health-steps";
 import { HealthPreview } from "@/components/health/health-summary";
+import { HealthSupplementStep } from "@/components/health/health-supplement-step";
 import {
   emptyHealthDraft,
   buildHealthPayload,
@@ -33,7 +34,7 @@ function HealthRiskFormContent({ category }: { category: HealthCategory }) {
   const form = useAssessmentForm({
     type: "health_risk",
     category,
-    totalSteps: 4,
+    totalSteps: 5,
     editCode,
     baseRevision: params.get("base"),
   });
@@ -114,7 +115,7 @@ function HealthRiskFormContent({ category }: { category: HealthCategory }) {
         backHref={ROUTES.HEALTH_RISK}
       />
       <main className="min-[1440px]:glass-card flex-1 px-4 py-5 min-[1440px]:mt-4 min-[1440px]:px-8">
-        <StepProgress currentStep={form.currentStep} totalSteps={4} />
+        <StepProgress currentStep={form.currentStep} totalSteps={5} />
         {form.draftWarning && (
           <p role="status" className="text-warning mb-4">
             {form.draftWarning}
@@ -144,6 +145,15 @@ function HealthRiskFormContent({ category }: { category: HealthCategory }) {
             />
           )}
           {form.currentStep === 3 && (
+            <HealthSupplementStep
+              data={data}
+              save={save}
+              category={category}
+              next={form.nextStep}
+              prev={form.prevStep}
+            />
+          )}
+          {form.currentStep === 4 && (
             <HealthQuestionsStep
               data={data}
               save={save}
@@ -155,7 +165,7 @@ function HealthRiskFormContent({ category }: { category: HealthCategory }) {
               busy={isSubmitting}
             />
           )}
-          {form.currentStep === 4 &&
+          {form.currentStep === 5 &&
             (preview.success &&
             preview.data.assessment_type === "health_risk" ? (
               <HealthPreview

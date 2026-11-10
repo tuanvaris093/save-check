@@ -210,9 +210,9 @@ try {
         "ทดสอบร่างระหว่างกรอก",
       );
       await page.getByRole("button", { name: "ถัดไป", exact: true }).click();
-      await page.getByText("ขั้นตอนที่ 2 จาก 4").waitFor();
+      await page.getByText("ขั้นตอนที่ 2 จาก 5").waitFor();
       await page.reload();
-      await page.getByText("ขั้นตอนที่ 2 จาก 4").waitFor();
+      await page.getByText("ขั้นตอนที่ 2 จาก 5").waitFor();
       await page
         .locator("form")
         .getByRole("button", { name: "ย้อนกลับ", exact: true })

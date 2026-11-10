@@ -506,6 +506,17 @@ export function HealthQuestionsStep({
         }
         className="flex min-w-0 flex-col gap-5"
       >
+        {category === "noise" && (
+          <p className="text-body font-bold">
+            ขณะหรือหลังปฏิบัติงาน/เรียนท่านมีอาการเหล่านี้หรือไม่
+          </p>
+        )}
+        {category === "heat" && (
+          <p className="text-body font-bold">
+            ขณะหรือหลังปฏิบัติงาน/เรียนในบริเวณที่มีความร้อน
+            ท่านมีอาการเหล่านี้หรือไม่
+          </p>
+        )}
         {questionSnapshots(category, phase).map((q, i) => (
           <div
             key={q.question_id}

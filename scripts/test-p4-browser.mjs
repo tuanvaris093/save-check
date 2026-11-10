@@ -1,4 +1,5 @@
 import { checkSubmitFlow } from "./submit-flow-check.mjs";
+import { supplementFixture } from "./health-supplement-fixtures.mjs";
 import { createRequire } from "node:module";
 import {
   mkdtempSync,
@@ -6,6 +7,7 @@ import {
   readdirSync,
   existsSync,
   writeFileSync,
+  mkdirSync,
 } from "node:fs";
 import { join, resolve } from "node:path";
 import { tmpdir, homedir } from "node:os";
@@ -117,6 +119,10 @@ const browser = await chromium.launch({ headless: true }),
   context = await browser.newContext({ viewport: { width: 390, height: 844 } }),
   page = await context.newPage(),
   pageErrors = [];
+const savedSupplements = new Map();
+const exampleDir = resolve("outputs/health-review-20261110");
+mkdirSync(exampleDir, { recursive: true });
+const xlsx = createRequire(resolve("package.json"))("xlsx");
 page.on("pageerror", (e) => pageErrors.push(e.message));
 let passed = 0;
 const checks = [];
@@ -150,7 +156,7 @@ async function profile() {
   }))
     await field(name).selectOption(value);
   await page.getByRole("button", { name: "ถัดไป", exact: true }).click();
-  await page.getByText("ขั้นตอนที่ 2 จาก 4").waitFor();
+  await page.getByText("ขั้นตอนที่ 2 จาก 5").waitFor();
 }
 async function work(type = "student") {
   await field("position_type").selectOption(type);
@@ -163,14 +169,245 @@ async function work(type = "student") {
   await field("working_hours_per_week").fill("40");
   if (await field("hours_worked_today").count()) {
     await page.getByRole("button", { name: "ถัดไป", exact: true }).click();
-    await page.getByText("ขั้นตอนที่ 2 จาก 4").waitFor();
+    await page.getByText("ขั้นตอนที่ 2 จาก 5").waitFor();
     await field("hours_worked_today").fill("25");
     await page.getByRole("button", { name: "ถัดไป", exact: true }).click();
-    await page.getByText("ขั้นตอนที่ 2 จาก 4").waitFor();
+    await page.getByText("ขั้นตอนที่ 2 จาก 5").waitFor();
     await field("hours_worked_today").fill("0");
   }
   await page.getByRole("button", { name: "ถัดไป", exact: true }).click();
-  await page.getByText("ขั้นตอนที่ 3 จาก 4").waitFor();
+  await page.getByText("ขั้นตอนที่ 3 จาก 5").waitFor();
+  const category = new URL(page.url()).searchParams.get("category");
+  await page.getByRole("button", { name: "ถัดไป", exact: true }).click();
+  assert(
+    await page.getByRole("alert").count(),
+    "background questions must be answered",
+  );
+  const supplement = supplementFixture(domain, category);
+  for (const [id, value] of Object.entries(supplement.answers)) {
+    await page
+      .locator(
+        `[name="supplement.answers.${id}"][value="${[value].flat()[0]}"]`,
+      )
+      .check();
+  }
+  if (category === "light") {
+    await page
+      .locator('[name="supplement.answers.vision_history"][value="yes"]')
+      .check();
+    supplement.answers.vision_history = "yes";
+    supplement.answers.vision_conditions = ["option-1", "other"];
+    await page
+      .locator(
+        '[name="supplement.answers.vision_conditions"][value="option-1"]',
+      )
+      .check();
+    await page
+      .locator('[name="supplement.answers.vision_conditions"][value="other"]')
+      .check();
+    await field("supplement.details.vision_conditions").fill(
+      "รายละเอียดสายตาเพิ่มเติม",
+    );
+    // Switching the parent clears hidden diagnoses and free text.
+    await page
+      .locator('[name="supplement.answers.vision_history"][value="none"]')
+      .check();
+    assert.equal(
+      await field("supplement.answers.vision_conditions").count(),
+      0,
+    );
+    assert.equal(
+      await field("supplement.details.vision_conditions").count(),
+      0,
+    );
+    await page
+      .locator('[name="supplement.answers.vision_history"][value="yes"]')
+      .check();
+    for (const value of supplement.answers.vision_conditions)
+      await page
+        .locator(
+          `[name="supplement.answers.vision_conditions"][value="${value}"]`,
+        )
+        .check();
+    supplement.details.vision_conditions = "รายละเอียดสายตาเพิ่มเติม";
+    await field("supplement.details.vision_conditions").fill(
+      supplement.details.vision_conditions,
+    );
+  }
+  for (const q of domain.HEALTH_SUPPLEMENT_SECTIONS[category].flatMap(
+    (s) => s.questions,
+  )) {
+    if (!domain.supplementQuestionVisible(q, supplement)) continue;
+    assert(
+      (
+        await page
+          .locator(`[data-supplement-question="${q.id}"] legend`)
+          .innerText()
+      ).includes(q.text),
+    );
+    if (q.exclusive?.length && q.options.some((o) => o.value === "other")) {
+      await page
+        .locator(`[name="supplement.answers.${q.id}"][value="other"]`)
+        .check();
+      await field(`supplement.details.${q.id}`).fill("ข้อความที่จะล้าง");
+      await page
+        .locator(
+          `[name="supplement.answers.${q.id}"][value="${q.exclusive[0]}"]`,
+        )
+        .check();
+      assert.equal(await field(`supplement.details.${q.id}`).count(), 0);
+      await page
+        .locator(`[name="supplement.answers.${q.id}"][value="other"]`)
+        .check();
+      supplement.answers[q.id] = ["other"];
+      supplement.details[q.id] = `รายละเอียดเพิ่มเติม ${category} ${q.id}`;
+      await field(`supplement.details.${q.id}`).fill(supplement.details[q.id]);
+      const otherCondition = q.options.find(
+        (o) => o.value !== "other" && !q.exclusive.includes(o.value),
+      );
+      await page
+        .locator(
+          `[name="supplement.answers.${q.id}"][value="${otherCondition.value}"]`,
+        )
+        .check();
+      supplement.answers[q.id].push(otherCondition.value);
+    }
+    if (
+      category === "noise" &&
+      ["tinnitus", "persistent_hearing_loss"].includes(q.id)
+    ) {
+      await page
+        .locator(`[name="supplement.answers.${q.id}"][value="regularly"]`)
+        .check();
+      supplement.answers[q.id] = "regularly";
+    }
+  }
+  savedSupplements.set(category, supplement);
+  await page.reload();
+  await page.getByText("ขั้นตอนที่ 3 จาก 5").waitFor();
+  for (const [id, value] of Object.entries(supplement.answers)) {
+    for (const selected of [value].flat())
+      assert(
+        await page
+          .locator(`[name="supplement.answers.${id}"][value="${selected}"]`)
+          .isChecked(),
+      );
+  }
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    assert(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth + 1,
+      ),
+    );
+  }
+  await page.screenshot({
+    path: `docs/v3/baseline/health-supplement-${category}-step-desktop.png`,
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({
+    path: `docs/v3/baseline/health-supplement-${category}-step-mobile.png`,
+    fullPage: true,
+  });
+  await page.getByRole("button", { name: "ถัดไป", exact: true }).click();
+  await page.getByText("ขั้นตอนที่ 4 จาก 5").waitFor();
+  if (category !== "light") {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await page.locator("#health-questions").screenshot({
+      path: `docs/v3/baseline/health-questions-${category}-updated.png`,
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+  }
+}
+async function savedSupplement(category, code) {
+  const read = await (await fetch(api + "/api/results/" + code)).json();
+  assert(read.success);
+  assert.deepEqual(
+    read.data.healthSupplement,
+    domain.healthSupplementInput(category, savedSupplements.get(category)),
+  );
+  assert.deepEqual(
+    read.data.resolved.healthSupplementSections,
+    domain.HEALTH_SUPPLEMENT_SECTIONS[category],
+  );
+  const summary = await page
+    .locator("[data-health-supplement-summary]")
+    .innerText();
+  const supplementRows = domain.healthSupplementRows(
+    category,
+    read.data.healthSupplement,
+  );
+  for (const row of supplementRows) {
+    assert(summary.includes(row.question));
+    assert(summary.includes(row.answer));
+  }
+  const downloadEvent = page.waitForEvent("download");
+  await page
+    .getByRole("button", { name: "ดาวน์โหลด Excel", exact: true })
+    .click();
+  const download = await downloadEvent;
+  await download.saveAs(join(exampleDir, `safecheck-example-${category}.xlsx`));
+  const workbook = xlsx.readFile(await download.path());
+  const sheetName =
+    "สุขภาพ-" +
+    { light: "แสงสว่าง", noise: "เสียง", heat: "ความร้อน" }[category];
+  const [headers, values] = xlsx.utils.sheet_to_json(
+    workbook.Sheets[sheetName],
+    { header: 1 },
+  );
+  for (const row of supplementRows) {
+    const index = headers.findIndex(
+      (header) =>
+        String(header).replaceAll("\n", "") ===
+        `ข้อมูลประกอบ (ไม่รวมคะแนน) — ${row.section} — ${row.question}`,
+    );
+    assert(index >= 0, row.question);
+    assert.equal(values[index], row.answer);
+  }
+  writeFileSync(join(exampleDir, `${category}-export-check.json`), JSON.stringify({
+    category, sheetName, questions: supplementRows,
+    supplementCount: supplementRows.length, result: read.data.result,
+    columns: headers.map((header, index) => ({ address: xlsx.utils.encode_col(index), header: String(header).replaceAll("\n", ""), value: values[index] ?? "" })),
+  }, null, 2));
+  assert.equal(
+    (
+      await db
+        .prepare(
+          "SELECT COUNT(*) n FROM health_risk_answers WHERE submission_id=?",
+        )
+        .bind(read.data.id)
+        .first()
+    ).n,
+    category === "light" ? 20 : 10,
+  );
+  for (const width of [320, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    assert(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth + 1,
+      ),
+    );
+  }
+  await page.screenshot({
+    path: `docs/v3/baseline/health-supplement-${category}-result.png`,
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+}
+async function captureHealthReview(category) {
+  await page.getByText("ขั้นตอนที่ 5 จาก 5").waitFor();
+  await page.getByRole("button", { name: "บันทึกผล", exact: true }).waitFor();
+  for (const [mode, width] of [["desktop", 1440], ["mobile", 390]]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await page.screenshot({ path: join(exampleDir, `before-save-${category}-${mode}.png`), fullPage: true });
+    if (mode === "desktop") {
+      await page.locator("[data-health-supplement-summary]").screenshot({ path: join(exampleDir, `before-save-${category}-background.png`) });
+    }
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
 }
 async function answer(total) {
   for (let i = 1; i <= 10; i++) {
@@ -303,6 +540,7 @@ const draft = () => ({
     working_hours_per_week: 40,
   },
   context: { hours_worked_today: 0 },
+  supplement: supplementFixture(domain, "light"),
 });
 let lightCode;
 try {
@@ -464,7 +702,13 @@ try {
       );
       assert(await field("q2").nth(2).isChecked());
       await page.getByRole("button", { name: "ดูผลสรุป", exact: true }).click();
-      await page.getByText("ขั้นตอนที่ 4 จาก 4").waitFor();
+      await page.getByText("ขั้นตอนที่ 5 จาก 5").waitFor();
+      await captureHealthReview("light");
+      assert(
+        (
+          await page.locator("[data-health-supplement-summary]").innerText()
+        ).includes("รายละเอียดสายตาเพิ่มเติม"),
+      );
       assert(
         (await page.locator("[data-health-totals]").innerText()).includes(
           "ผลต่าง (หลัง−ก่อน): +2",
@@ -546,6 +790,7 @@ try {
       assert.equal(read.data.answers.before.q2, 0);
       assert.equal(read.data.answers.after.q2, 2);
       assert.equal(read.data.healthContext.hours_worked_today, 0);
+      await savedSupplement("light", lightCode);
       assert.equal(
         (
           await db
@@ -565,6 +810,15 @@ try {
       await start("noise");
       await profile();
       await work("staff");
+      assert(
+        (await page.locator("#health-questions > p").innerText()).includes(
+          "ขณะหรือหลังปฏิบัติงาน/เรียนท่านมีอาการเหล่านี้หรือไม่",
+        ),
+      );
+      assert.equal(
+        domain.questionSnapshots("noise", "single")[3].text,
+        "ท่านมีอาการเวียนศีรษะ หรืออาการมึนงงหรือไม่",
+      );
       for (const q of domain.questionSnapshots("noise", "single"))
         assert(
           (await page.locator("#health-questions").innerText()).includes(
@@ -594,12 +848,17 @@ try {
       await field("noise_source_other").fill("แหล่งเสียงจำลอง");
       await answer(8);
       await page.getByRole("button", { name: "ดูผลสรุป", exact: true }).click();
-      await page.getByText("ขั้นตอนที่ 4 จาก 4").waitFor();
+      await page.getByText("ขั้นตอนที่ 5 จาก 5").waitFor();
+      await captureHealthReview("noise");
       await page.getByRole("button", { name: "บันทึกผล", exact: true }).click();
       await wait(() =>
         Promise.resolve(page.url().includes("/result?submissionId=")),
       );
       await page.locator("[data-health-totals]").waitFor();
+      await savedSupplement(
+        "noise",
+        new URL(page.url()).searchParams.get("submissionId"),
+      );
       assert(
         (await page.locator("[data-health-totals]").innerText()).includes(
           "คะแนนรวม: 8/20",
@@ -626,11 +885,16 @@ try {
         );
       await answer(0);
       await page.getByRole("button", { name: "ดูผลสรุป", exact: true }).click();
+      await captureHealthReview("heat");
       await page.getByRole("button", { name: "บันทึกผล", exact: true }).click();
       await wait(() =>
         Promise.resolve(page.url().includes("/result?submissionId=")),
       );
       await page.locator("[data-health-totals]").waitFor();
+      await savedSupplement(
+        "heat",
+        new URL(page.url()).searchParams.get("submissionId"),
+      );
       assert(
         (await page.locator("[data-health-totals]").innerText()).includes(
           "คะแนนรวม: 0/20",

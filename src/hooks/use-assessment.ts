@@ -2,7 +2,10 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { AssessmentType, AssessmentCategory } from "@/types";
 import type { AssessmentDraftData } from "@/lib/schemas";
-import { satisfactionQuestionnaireVersion } from "../../shared/v3";
+import {
+  satisfactionQuestionnaireVersion,
+  QUESTIONNAIRE_VERSION,
+} from "../../shared/v3";
 import {
   emptySatisfactionDraft,
   migrateSatisfactionDraft,
@@ -125,6 +128,18 @@ export function useAssessmentForm({
         if (saved) fresh = saved;
         else if (raw && !cancelled)
           setWarning("ร่างที่เก็บไว้ไม่ตรงรูปแบบปัจจุบัน จึงไม่ได้โหลดมาใช้");
+        if (
+          saved &&
+          raw &&
+          id.type === "health_risk" &&
+          JSON.parse(raw)?.data?.healthV3?.questionnaire_version !==
+            QUESTIONNAIRE_VERSION &&
+          !cancelled
+        ) {
+          setWarning(
+            "แบบประเมินมีการปรับคำถามแล้ว ระบบเก็บข้อมูลส่วนตัวและการปฏิบัติงานไว้ กรุณาตอบประวัติสุขภาพและอาการในชุดคำถามปัจจุบันอีกครั้ง",
+          );
+        }
         if (id.type === "satisfaction" && saved) {
           if (!saved.data.satisfactionV3) {
             fresh.data.satisfactionV3 = id.code

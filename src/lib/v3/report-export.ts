@@ -133,6 +133,7 @@ export function buildReportWorkbook(
       profile,
       workInfo: work,
       healthContext: context,
+      healthSupplement: r.healthSupplement,
       inspectionData: r.inspectionData ?? m.revision.inspection_snapshot,
       program: m.resolved.program,
     }))

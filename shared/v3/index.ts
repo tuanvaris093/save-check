@@ -1,6 +1,7 @@
 export * from "./catalogs";
 export * from "./contracts";
 export * from "./health-pending";
+export * from "./health-supplement";
 export * from "./evaluate";
 export * from "./retest";
 export * from "./legacy";

@@ -16,6 +16,10 @@ import {
   evaluateSubmission,
   questionSnapshots,
   programSnapshot,
+  HEALTH_SUPPLEMENT_SECTIONS,
+  HEALTH_SUPPLEMENT_MISSING,
+  healthSupplementRows,
+  type SupplementSection,
 } from "../../../shared/v3";
 import type { HealthSubmission } from "@/lib/v3/health-form";
 import { NOISE_SOURCE_LABELS } from "./health-steps";
@@ -60,6 +64,7 @@ export function HealthSummary({
   onSubmit,
   onPrev,
   isSubmitting = false,
+  supplementSections,
 }: {
   payload: HealthSubmission;
   result: HealthResult;
@@ -70,6 +75,7 @@ export function HealthSummary({
   onSubmit?: () => void;
   onPrev?: () => void;
   isSubmitting?: boolean;
+  supplementSections?: SupplementSection[];
 }) {
   const light = payload.assessment_category === "light",
     work = payload.workInfo,
@@ -194,6 +200,44 @@ export function HealthSummary({
             </div>
           )}
         </dl>
+      </section>
+      <section
+        className="form-section-card min-w-0 p-5"
+        aria-label="ประวัติสุขภาพและข้อมูลประกอบเฉพาะด้าน"
+        data-health-supplement-summary
+      >
+        <SummaryHeading icon={ClipboardList}>
+          ประวัติสุขภาพและข้อมูลประกอบเฉพาะด้าน
+        </SummaryHeading>
+        <p className="text-small text-text-secondary mb-4">
+          ข้อมูลประกอบ ไม่รวมในคะแนนอาการทางสุขภาพ
+        </p>
+        {!payload.healthSupplement ? (
+          <p>{HEALTH_SUPPLEMENT_MISSING}</p>
+        ) : (
+          (
+            supplementSections ??
+            HEALTH_SUPPLEMENT_SECTIONS[payload.assessment_category]
+          ).map((section) => (
+            <div key={section.title} className="mt-5 min-w-0">
+              <h3 className="text-card-title mb-3 font-semibold">
+                {section.title}
+              </h3>
+              <dl className="summary-details">
+                {healthSupplementRows(
+                  payload.assessment_category,
+                  payload.healthSupplement,
+                  [section],
+                ).map((row) => (
+                  <div key={row.id}>
+                    <dt className="break-words">{row.question}</dt>
+                    <dd className="break-words">{row.answer}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          ))
+        )}
       </section>
       <div
         className="form-section-card summary-score-list p-5"

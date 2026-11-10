@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { healthSupplementSchema } from "./health-supplement";
 import {
   PROGRAMS,
   NOISE_SOURCES,
@@ -442,6 +443,7 @@ const lightHealth = z
   .object({
     ...health,
     assessment_category: z.literal("light"),
+    healthSupplement: healthSupplementSchema("light").optional(),
     healthContext: z
       .object({ hours_worked_today: nonnegative.max(24) })
       .strict(),
@@ -454,6 +456,7 @@ const noiseHealth = z
   .object({
     ...health,
     assessment_category: z.literal("noise"),
+    healthSupplement: healthSupplementSchema("noise").optional(),
     healthContext: noiseContextSchema,
     answers: z.object({ single: healthAnswersSchema }).strict(),
   })
@@ -462,6 +465,7 @@ const heatHealth = z
   .object({
     ...health,
     assessment_category: z.literal("heat"),
+    healthSupplement: healthSupplementSchema("heat").optional(),
     answers: z.object({ single: healthAnswersSchema }).strict(),
   })
   .strict();
