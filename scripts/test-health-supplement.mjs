@@ -85,9 +85,20 @@ const payload = (category, total = 8) => {
   assert(parsed.success, JSON.stringify(parsed));
   return parsed.data;
 };
+const updatedSymptomWording = {
+  heat: {
+    q1: "ท่านมีอาการเหนื่อยล้า อ่อนเพลียกว่าปกติหรือไม่",
+    q2: "ท่านมีอาการกระหายน้ำมากกว่าปกติหรือไม่",
+    q3: "ท่านมีอาการปวดศีรษะจากการสัมผัสความร้อนหรือไม่",
+    q4: "ท่านมีอาการวิงเวียนศีรษะ มึนงง หน้ามืด จากการสัมผัสความร้อนหรือไม่",
+  },
+  noise: {
+    q4: "ท่านมีอาการเวียนศีรษะหรืออาการมึนงง จากการสัมผัสเสียงหรือไม่",
+  },
+};
 
 check(
-  "full scored wording matches requested changes, before/after mirror, noise Q4 unchanged",
+  "scored wording matches requested changes and light before/after mirror",
   () => {
     const before = d.questionSnapshots("light", "before");
     const expected = {
@@ -106,22 +117,11 @@ check(
           "ก่อนปฏิบัติงาน/เรียนในบริเวณที่มีแสง " + expected[q.question_id],
         );
     }
-    assert.deepEqual(
-      d
-        .questionSnapshots("heat", "single")
-        .slice(0, 4)
-        .map((q) => q.text),
-      [
-        "ท่านมีอาการเหนื่อยล้ากว่าปกติหรือไม่",
-        "ท่านมีอาการกระหายน้ำกว่าปกติหรือไม่",
-        "ท่านมีอาการปวดศีรษะหรือไม่",
-        "ท่านมีอาการวิงเวียนศีรษะ มึนงง หรือหน้ามืดหรือไม่",
-      ],
-    );
-    assert.equal(
-      d.questionSnapshots("noise", "single")[3].text,
-      "ท่านมีอาการเวียนศีรษะ หรืออาการมึนงงหรือไม่",
-    );
+    for (const [category, wording] of Object.entries(updatedSymptomWording)) {
+      const questions = d.questionSnapshots(category, "single");
+      for (const [id, text] of Object.entries(wording))
+        assert.equal(questions.find((q) => q.question_id === id)?.text, text);
+    }
     assert.equal(
       readFileSync("docs/v3/catalogs/health-questionnaire.json", "utf8"),
       readFileSync("shared/v3/catalogs/health-questionnaire.json", "utf8"),
@@ -319,10 +319,10 @@ check(
 );
 
 check(
-  "selected, history and latest Excel contain full background labels, answers and explicit legacy absence",
+  "selected, history and latest XLSX preserve symptom wording, scores and background answers",
   () => {
     for (const category of ["light", "noise", "heat"]) {
-      const p = payload(category);
+      const p = payload(category, 5);
       const api = new service.AssessmentService({ DB: {} });
       const resolved = api.resolved(p);
       assert.deepEqual(
@@ -357,6 +357,33 @@ check(
           { header: 1 },
         );
         const codeIndex = headers.indexOf("รหัสการประเมิน");
+        const currentRow = rows.find(
+          (r) => r[codeIndex] === record.submission_code,
+        );
+        const oldRow = rows.find((r) => r[codeIndex] === old.submission_code);
+        const auditRows =
+          scope === "latest"
+            ? []
+            : XLSX.utils.sheet_to_json(workbook.Sheets["คำตอบอาการ"]);
+        for (const [id, text] of Object.entries(
+          updatedSymptomWording[category] ?? {},
+        )) {
+          const heading = `อาการ ข้อ ${id.slice(1)} (${text})`;
+          const index = headers.findIndex(
+            (h) => String(h).replaceAll("\n", "") === heading,
+          );
+          assert(index >= 0, heading);
+          assert.equal(currentRow[index], p.answers.single[id]);
+          if (scope !== "latest") {
+            const answer = auditRows.find(
+              (r) =>
+                r["รหัสการประเมิน"] === record.submission_code &&
+                r["รหัสข้อ"] === id,
+            );
+            assert.equal(answer?.["คำถามที่บันทึก"], text);
+            assert.equal(answer["คะแนน"], p.answers.single[id]);
+          }
+        }
         for (const item of d.healthSupplementRows(
           category,
           p.healthSupplement,
@@ -367,14 +394,8 @@ check(
               `ข้อมูลประกอบ (ไม่รวมคะแนน) — ${item.section} — ${item.question}`,
           );
           assert(index >= 0, item.question);
-          assert.equal(
-            rows.find((r) => r[codeIndex] === record.submission_code)[index],
-            item.answer,
-          );
-          assert.equal(
-            rows.find((r) => r[codeIndex] === old.submission_code)[index],
-            d.HEALTH_SUPPLEMENT_MISSING,
-          );
+          assert.equal(currentRow[index], item.answer);
+          assert.equal(oldRow[index], d.HEALTH_SUPPLEMENT_MISSING);
         }
       }
     }

@@ -817,7 +817,7 @@ try {
       );
       assert.equal(
         domain.questionSnapshots("noise", "single")[3].text,
-        "ท่านมีอาการเวียนศีรษะ หรืออาการมึนงงหรือไม่",
+        "ท่านมีอาการเวียนศีรษะหรืออาการมึนงง จากการสัมผัสเสียงหรือไม่",
       );
       for (const q of domain.questionSnapshots("noise", "single"))
         assert(
