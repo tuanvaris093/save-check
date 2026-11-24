@@ -10,6 +10,7 @@ import { join, resolve } from "node:path";
 import { tmpdir, homedir } from "node:os";
 import { spawn, spawnSync } from "node:child_process";
 import assert from "node:assert/strict";
+import { testAdminPassword } from "./admin-test-session.mjs";
 const require = createRequire(resolve("worker/package.json")),
   esbuild = require("esbuild"),
   { Miniflare, Log, LogLevel } = require("miniflare"),
@@ -18,7 +19,7 @@ const require = createRequire(resolve("worker/package.json")),
   front = "http://127.0.0.1:3044",
   api = "http://127.0.0.1:3045";
 esbuild.buildSync({
-  entryPoints: ["worker/src/index.ts"],
+  entryPoints: ["scripts/test-worker-with-pages-admin.mjs"],
   bundle: true,
   platform: "browser",
   external: ["node:*"],
@@ -37,7 +38,11 @@ const mf = new Miniflare({
   compatibilityFlags: ["nodejs_compat"],
   d1Databases: ["DB"],
   r2Buckets: ["FILES"],
-  bindings: { FRONTEND_URL: front, ENVIRONMENT: "test" },
+  bindings: {
+    FRONTEND_URL: front,
+    ENVIRONMENT: "test",
+    ADMIN_PASSWORD: testAdminPassword,
+  },
   log: new Log(LogLevel.ERROR),
 });
 const db = await mf.getD1Database("DB");
@@ -90,6 +95,8 @@ const next = spawn(
       ...process.env,
       SAFECHECK_TEST_DIST_DIR: ".next-test-p7",
       NEXT_PUBLIC_API_BASE_URL: api + "/api",
+      NEXT_PUBLIC_ADMIN_API_BASE_URL: api + "/api",
+      ADMIN_PASSWORD: testAdminPassword,
     },
     stdio: ["ignore", "pipe", "pipe"],
   },
@@ -97,7 +104,10 @@ const next = spawn(
 let logs = "";
 next.stdout.on("data", (d) => (logs += d));
 next.stderr.on("data", (d) => (logs += d));
-const browser = await chromium.launch({ headless: true }),
+const browser = await chromium.launch({
+    headless: true,
+    channel: process.env.PLAYWRIGHT_CHANNEL,
+  }),
   context = await browser.newContext({ viewport: { width: 390, height: 844 } }),
   page = await context.newPage(),
   pageErrors = [];
@@ -120,11 +130,15 @@ async function wait(fn) {
 const key = () => crypto.randomUUID(),
   xlsx = createRequire(resolve("package.json"))("xlsx");
 const rows = (w, name) => xlsx.utils.sheet_to_json(w.Sheets[name]);
+let adminToken;
 async function call(path, body, method = "POST") {
   const r = await fetch(api + "/api" + path, {
     method,
     headers: {
       Origin: front,
+      ...(path.startsWith("/dashboard/")
+        ? { Authorization: `Bearer ${adminToken}` }
+        : {}),
       ...(body === undefined ? {} : { "Content-Type": "application/json" }),
     },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
@@ -268,6 +282,65 @@ try {
       return false;
     }
   });
+  await check(
+    "cartoon opens login on tap ten, verifies locally and keeps the session on reload",
+    async () => {
+      await page.goto(front + "/dashboard");
+      const modal = page.getByRole("dialog", { name: "เข้าสู่ระบบแอดมิน" });
+      const loginRequests = [];
+      const recordLoginRequest = (request) => {
+        if (new URL(request.url()).pathname.startsWith("/api/admin/"))
+          loginRequests.push(request.url());
+      };
+      page.on("request", recordLoginRequest);
+      await modal.waitFor();
+      assert.equal(await page.locator("[data-dashboard-list]").count(), 0);
+      await modal.getByRole("button", { name: "ยกเลิก" }).click();
+      await page.waitForURL(front + "/");
+      const cartoon = page.getByRole("button", {
+        name: "รูปการ์ตูน SafeCheck",
+      });
+      for (let i = 0; i < 9; i++) await cartoon.click();
+      assert.equal(await modal.count(), 0);
+      await cartoon.click();
+      await modal.waitFor();
+      const password = modal.getByLabel("รหัสผ่านแอดมิน");
+      const login = modal.getByRole("button", { name: "เข้าสู่ระบบ" });
+      await password.fill("wrong password");
+      assert.equal(await password.getAttribute("type"), "password");
+      await modal.getByRole("button", { name: "แสดงรหัสผ่าน" }).click();
+      assert.equal(await password.getAttribute("type"), "text");
+      assert.equal(await password.inputValue(), "wrong password");
+      await modal.getByRole("button", { name: "ซ่อนรหัสผ่าน" }).click();
+      assert.equal(await password.getAttribute("type"), "password");
+      await login.click();
+      await modal
+        .getByRole("alert")
+        .getByText("รหัสผ่านแอดมินไม่ถูกต้อง")
+        .waitFor();
+      await password.fill(testAdminPassword);
+      const report = page.waitForResponse(
+        (res) =>
+          res.url().startsWith(`${api}/api/dashboard/summary`) && res.ok(),
+      );
+      await login.click();
+      await page.waitForURL(front + "/dashboard");
+      await page.getByRole("heading", { name: "Dashboard" }).waitFor();
+      await report;
+      adminToken = await page.evaluate(
+        () => JSON.parse(localStorage.getItem("safecheck:admin-session")).token,
+      );
+      await page.reload();
+      await page.getByRole("heading", { name: "Dashboard" }).waitFor();
+      assert.equal(await modal.count(), 0);
+      assert.deepEqual(loginRequests, []);
+      page.off("request", recordLoginRequest);
+      assert.equal(
+        await page.getByText("ออกจากระบบ", { exact: true }).count(),
+        0,
+      );
+    },
+  );
   await check(
     "actual local fixtures cover Spot/Area/noise/WBGT, all health and both satisfaction groups",
     async () => {
@@ -1239,26 +1312,7 @@ try {
           JSON.stringify(range),
         );
 
-        if (width < 1440) {
-          const nav = await page.locator(".floating-pill-nav").boundingBox();
-          assert(
-            nav &&
-              nav.width <= 280 &&
-              nav.height <= 54 &&
-              nav.x >= 15 &&
-              nav.x + nav.width <= width - 15,
-            JSON.stringify(nav),
-          );
-          for (const link of await page
-            .locator(".floating-pill-nav-link")
-            .all()) {
-            const box = await link.boundingBox();
-            assert(
-              box && box.height >= 44 && box.height <= 50,
-              JSON.stringify(box),
-            );
-          }
-        }
+        assert.equal(await page.locator(".floating-pill-nav").count(), 0);
         await page.screenshot({
           path: `docs/v3/baseline/original-summary-ui-${width}.png`,
         });
@@ -1663,7 +1717,7 @@ try {
     },
   );
   await check(
-    "mobile/tablet shell stretches below 1440; desktop sidebar only on large screens",
+    "mobile/tablet shell stretches below 1440 without public navigation bars",
     async () => {
       for (const width of [390, 820, 1024, 1366, 1439, 1440]) {
         await page.setViewportSize({ width, height: 900 });
@@ -1676,22 +1730,13 @@ try {
           await page.goto(front + path);
           if (path === "/dashboard")
             await page.locator("[data-dashboard-list]").waitFor();
-          await page
-            .locator(".floating-pill-nav")
-            .waitFor({ state: "attached" });
           await page.locator(".app-mobile-shell").waitFor({ state: "visible" });
           await page
             .locator("[data-global-loading]")
             .waitFor({ state: "hidden" });
           assert.equal(
-            await page.locator(".app-sidebar").isVisible(),
-            width >= 1440,
-            `${path} ${width} sidebar`,
-          );
-          assert.equal(
-            await page.locator(".floating-pill-nav").isVisible(),
-            width < 1440,
-            `${path} ${width} bottom nav`,
+            await page.locator(".app-sidebar, .floating-pill-nav").count(),
+            0,
           );
           assert(
             await page.evaluate(

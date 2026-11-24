@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ROUTES } from "@/lib/constants";
 import { HomeFooter } from "@/components/layout/home-footer";
+import { HomeAdminEntry } from "@/components/layout/home-admin-entry";
 import {
   ASSESSMENT_TYPE_LABELS,
   ASSESSMENT_TYPE_DESCRIPTIONS,
@@ -80,15 +81,7 @@ export default function HomePage() {
                 และความพึงพอใจในการใช้แอป
               </p>
             </div>
-            <Image
-              src="/assets/safecheck-hero-worker.png"
-              alt=""
-              width={1152}
-              height={1366}
-              className="home-hero-worker"
-              aria-hidden="true"
-              priority
-            />
+            <HomeAdminEntry />
             <div className="home-university-logo">
               <Image
                 src="/assets/logo_u.webp"

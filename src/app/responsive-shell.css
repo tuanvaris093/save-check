@@ -11,9 +11,6 @@
     max-width: none;
     margin-inline: 0;
   }
-  .pb-safe-nav {
-    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
-  }
   .app-page-header {
     position: sticky;
     top: 0;

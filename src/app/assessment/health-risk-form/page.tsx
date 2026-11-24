@@ -91,7 +91,7 @@ function HealthRiskFormContent({ category }: { category: HealthCategory }) {
         <PageHeader
           title="ไม่สามารถเปิดการแก้ไข"
           showBack
-          backHref={pendingId ? ROUTES.DASHBOARD : ROUTES.HEALTH_RISK}
+          backHref={pendingId ? ROUTES.HOME : ROUTES.HEALTH_RISK}
         />
         <main className="p-5">
           <p role="alert">
@@ -100,8 +100,8 @@ function HealthRiskFormContent({ category }: { category: HealthCategory }) {
               : (form.loadError ??
                 "การแก้ไขต้องเปิดจากข้อมูลล่าสุดพร้อมเหตุผล กรุณากลับไปดูผลการประเมิน")}
           </p>
-          <Link href={pendingId ? ROUTES.DASHBOARD : ROUTES.HEALTH_RISK}>
-            {pendingId ? "กลับ Dashboard" : "กลับไปเลือกหัวข้อ"}
+          <Link href={pendingId ? ROUTES.HOME : ROUTES.HEALTH_RISK}>
+            {pendingId ? "กลับหน้าแรก" : "กลับไปเลือกหัวข้อ"}
           </Link>
         </main>
       </div>

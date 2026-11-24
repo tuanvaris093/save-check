@@ -1,3 +1,8 @@
+import {
+  createAdminTestSession,
+  testAdminPassword,
+  seedAdminTestSession,
+} from "./admin-test-session.mjs";
 import { fixtures } from "./p8-fixtures.mjs";
 import { createRequire } from "node:module";
 import {
@@ -19,7 +24,7 @@ const require = createRequire(resolve("worker/package.json")),
   front = "http://127.0.0.1:3074",
   api = "http://127.0.0.1:3075";
 esbuild.buildSync({
-  entryPoints: ["worker/src/index.ts"],
+  entryPoints: ["scripts/test-worker-with-pages-admin.mjs"],
   bundle: true,
   platform: "browser",
   external: ["node:*"],
@@ -48,7 +53,11 @@ const mf = new Miniflare({
   compatibilityFlags: ["nodejs_compat"],
   d1Databases: ["DB"],
   r2Buckets: ["FILES"],
-  bindings: { FRONTEND_URL: front, ENVIRONMENT: "test" },
+  bindings: {
+    FRONTEND_URL: front,
+    ENVIRONMENT: "test",
+    ADMIN_PASSWORD: testAdminPassword,
+  },
   log: new Log(LogLevel.ERROR),
 });
 const db = await mf.getD1Database("DB");
@@ -83,6 +92,7 @@ const optionalLayoutMigration = migrationGroups.splice(
 for (const statements of migrationGroups)
   await db.batch(statements.map((sql) => db.prepare(sql)));
 await mf.ready;
+const adminSession = await createAdminTestSession();
 let pp = process.env.PLAYWRIGHT_MODULE_PATH;
 for (const dir of readdirSync(join(homedir(), ".npm/_npx"))) {
   const p = join(
@@ -111,6 +121,8 @@ const next = spawn(
       ...process.env,
       SAFECHECK_TEST_DIST_DIR: ".next-test-ui-restore",
       NEXT_PUBLIC_API_BASE_URL: api + "/api",
+      NEXT_PUBLIC_ADMIN_API_BASE_URL: api + "/api",
+      ADMIN_PASSWORD: testAdminPassword,
     },
     stdio: ["ignore", "pipe", "pipe"],
   },
@@ -122,6 +134,7 @@ const browser = await chromium.launch({ headless: true }),
   context = await browser.newContext({ viewport: { width: 390, height: 844 } }),
   page = await context.newPage(),
   pageErrors = [];
+await seedAdminTestSession(context, front, adminSession);
 page.on("pageerror", (e) => pageErrors.push(e.message));
 let passed = 0;
 const checks = [];
@@ -146,6 +159,9 @@ async function call(path, body, method = "POST") {
     method,
     headers: {
       Origin: front,
+      ...(path.startsWith("/dashboard/")
+        ? { Authorization: `Bearer ${adminSession.token}` }
+        : {}),
       ...(body === undefined ? {} : { "Content-Type": "application/json" }),
     },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
@@ -725,7 +741,7 @@ try {
     },
   );
   await check(
-    "mobile navigation stays at viewport bottom at top/middle/end, is a body portal and never creates horizontal overflow",
+    "public results have no navigation bars or horizontal overflow",
     async () => {
       await page.goto(
         front + "/result?submissionId=" + withFile.submission_code,
@@ -740,25 +756,7 @@ try {
             }),
           fraction,
         );
-        const box = await page.locator(".floating-pill-nav").boundingBox();
-        assert(
-          box &&
-            box.x >= 11 &&
-            box.x + box.width <= 379 &&
-            Math.abs(box.x + box.width / 2 - 195) < 1 &&
-            box.y >= 0 &&
-            Math.abs(box.y + box.height - (844 - 12)) < 2,
-          JSON.stringify(box),
-        );
-        assert(
-          await page
-            .locator(".floating-pill-nav")
-            .evaluate(
-              (e) =>
-                e.parentElement === document.body &&
-                getComputedStyle(e).position === "fixed",
-            ),
-        );
+        assert.equal(await page.locator(".floating-pill-nav").count(), 0);
         assert(
           await page.evaluate(
             () => document.documentElement.scrollWidth <= innerWidth + 1,
@@ -774,19 +772,8 @@ try {
       await page.screenshot({
         path: "docs/v3/baseline/ui-restore-result-mobile.png",
       });
-      assert.equal(
-        await page
-          .locator(".floating-pill-nav a[href='/dashboard']")
-          .getAttribute("aria-current"),
-        "page",
-      );
       await page.setViewportSize({ width: 1440, height: 1000 });
-      assert.equal(
-        await page
-          .locator("aside a[href='/dashboard']")
-          .getAttribute("aria-current"),
-        "page",
-      );
+      assert.equal(await page.locator(".app-sidebar").count(), 0);
       await page.screenshot({
         path: "docs/v3/baseline/ui-restore-result-desktop.png",
         fullPage: true,

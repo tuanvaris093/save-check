@@ -1,3 +1,8 @@
+import {
+  createAdminTestSession,
+  testAdminPassword,
+  seedAdminTestSession,
+} from "./admin-test-session.mjs";
 import { checkSubmitFlow } from "./submit-flow-check.mjs";
 import { supplementFixture } from "./health-supplement-fixtures.mjs";
 import { createRequire } from "node:module";
@@ -22,7 +27,7 @@ const require = createRequire(resolve("worker/package.json")),
   front = "http://127.0.0.1:3014",
   api = "http://127.0.0.1:3015";
 esbuild.buildSync({
-  entryPoints: ["worker/src/index.ts"],
+  entryPoints: ["scripts/test-worker-with-pages-admin.mjs"],
   bundle: true,
   platform: "browser",
   external: ["node:*"],
@@ -55,7 +60,11 @@ const mf = new Miniflare({
   compatibilityFlags: ["nodejs_compat"],
   d1Databases: ["DB"],
   r2Buckets: ["FILES"],
-  bindings: { FRONTEND_URL: front, ENVIRONMENT: "test" },
+  bindings: {
+    FRONTEND_URL: front,
+    ENVIRONMENT: "test",
+    ADMIN_PASSWORD: testAdminPassword,
+  },
   log: new Log(LogLevel.ERROR),
 });
 const db = await mf.getD1Database("DB");
@@ -80,6 +89,7 @@ if (split.status) throw new Error(split.stderr);
 for (const statements of JSON.parse(split.stdout))
   await db.batch(statements.map((sql) => db.prepare(sql)));
 await mf.ready;
+const adminSession = await createAdminTestSession();
 let pp = process.env.PLAYWRIGHT_MODULE_PATH;
 for (const dir of readdirSync(join(homedir(), ".npm/_npx"))) {
   const p = join(
@@ -108,6 +118,8 @@ const next = spawn(
       ...process.env,
       SAFECHECK_TEST_DIST_DIR: ".next-test-p4",
       NEXT_PUBLIC_API_BASE_URL: api + "/api",
+      NEXT_PUBLIC_ADMIN_API_BASE_URL: api + "/api",
+      ADMIN_PASSWORD: testAdminPassword,
     },
     stdio: ["ignore", "pipe", "pipe"],
   },
@@ -119,6 +131,7 @@ const browser = await chromium.launch({ headless: true }),
   context = await browser.newContext({ viewport: { width: 390, height: 844 } }),
   page = await context.newPage(),
   pageErrors = [];
+await seedAdminTestSession(context, front, adminSession);
 const savedSupplements = new Map();
 const exampleDir = resolve("outputs/health-review-20261110");
 mkdirSync(exampleDir, { recursive: true });
@@ -490,15 +503,7 @@ async function checkQuestionLayout(phase) {
             }),
           fraction,
         );
-        const nav = await page.locator(".floating-pill-nav").boundingBox();
-        assert(
-          nav &&
-            nav.x >= 11 &&
-            nav.x + nav.width <= width - 11 &&
-            Math.abs(nav.x + nav.width / 2 - width / 2) < 1 &&
-            Math.abs(nav.y + nav.height - 888) < 2,
-          JSON.stringify({ width, fraction, nav }),
-        );
+        assert.equal(await page.locator(".floating-pill-nav").count(), 0);
       }
     }
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));

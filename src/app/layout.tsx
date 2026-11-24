@@ -7,8 +7,6 @@ import "./content-cards.css";
 import "./legacy-report-ui.css";
 import "./classic-detail.css";
 import "./summary-details.css";
-import { GlassSidebar } from "@/components/layout/glass-sidebar";
-import { FloatingPillNav } from "@/components/layout/floating-pill-nav";
 import { ToastProvider } from "@/components/ui/toast";
 import { GlobalLoadingHost } from "@/components/ui/loading-state";
 
@@ -68,16 +66,7 @@ export default function RootLayout({
       >
         <ToastProvider>
           <GlobalLoadingHost />
-          <div className="flex min-h-dvh">
-            {/* Large-screen Glass Sidebar */}
-            <GlassSidebar />
-
-            {/* Main Content */}
-            <main className="min-w-0 flex-1">{children}</main>
-          </div>
-
-          {/* Mobile/Tablet Floating Pill Navigation */}
-          <FloatingPillNav />
+          {children}
         </ToastProvider>
       </body>
     </html>

@@ -50,11 +50,12 @@ export function PageHeader({
       <div className="mx-auto flex max-w-[1200px] items-center gap-3">
         {showBack && (
           <button
+            type="button"
             onClick={handleBack}
-            className="text-text-secondary hover:bg-primary-tint hover:text-primary flex h-11 w-11 items-center justify-center rounded-full transition-all active:scale-95"
+            className="page-header-back text-text-secondary hover:bg-primary-tint hover:text-primary flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-all active:scale-95"
             aria-label="ย้อนกลับ"
           >
-            <ArrowLeft className="h-5 w-5" strokeWidth={2.25} />
+            <ArrowLeft className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
           </button>
         )}
 

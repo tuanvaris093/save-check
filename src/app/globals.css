@@ -398,6 +398,7 @@ select.glass-input {
 .home-hero-copy {
   position: relative;
   z-index: 2;
+  pointer-events: none;
 }
 
 .home-hero-worker {
@@ -407,7 +408,6 @@ select.glass-input {
   bottom: -12px;
   width: 248px;
   height: auto;
-  pointer-events: none;
   user-select: none;
   filter: drop-shadow(0 18px 22px rgba(20, 43, 115, 0.22));
 }
@@ -464,6 +464,19 @@ select.glass-input {
 .dashboard-hero h1,
 .dashboard-hero p {
   color: #fff;
+}
+
+.dashboard-hero .page-header-back {
+  color: #1e40af;
+  background-color: #fff;
+}
+
+.dashboard-hero .page-header-back:hover {
+  background-color: #dbeafe;
+}
+
+.dashboard-hero .page-header-back:focus-visible {
+  outline-color: #fff;
 }
 
 .kpi-card {
@@ -705,9 +718,9 @@ select.glass-input {
   }
 }
 
-/* --- Safe area padding for mobile nav --- */
+/* --- Safe area padding --- */
 .pb-safe-nav {
-  padding-bottom: calc(72px + 16px + env(safe-area-inset-bottom));
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
 }
 
 @media (min-width: 1440px) {

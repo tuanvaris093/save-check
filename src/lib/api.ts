@@ -6,6 +6,9 @@
 import type { ApiResponse } from "@/types";
 import { API_BASE_URL } from "./constants";
 import { beginGlobalLoading } from "./global-loading";
+import { invalidateAdminSession, readAdminSession } from "./admin-session";
+
+const ADMIN_API_BASE_URL = process.env.NEXT_PUBLIC_ADMIN_API_BASE_URL || "/api";
 
 interface FetchOptions extends RequestInit {
   timeoutMs?: number;
@@ -16,6 +19,7 @@ interface FetchOptions extends RequestInit {
 async function fetchApi<T>(
   endpoint: string,
   options?: FetchOptions,
+  baseUrl = API_BASE_URL,
 ): Promise<ApiResponse<T>> {
   const finishLoading = beginGlobalLoading();
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
@@ -26,7 +30,7 @@ async function fetchApi<T>(
 
     const { timeoutMs: _, ...fetchOptions } = options || {};
 
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const response = await fetch(`${baseUrl}${endpoint}`, {
       headers: {
         "Content-Type": "application/json",
         ...fetchOptions?.headers,
@@ -156,6 +160,23 @@ export async function getResult(
 
 // --- Dashboard APIs ---
 
+async function fetchAdminApi<T>(endpoint: string, options?: FetchOptions) {
+  const session = readAdminSession();
+  if (!session)
+    return {
+      success: false as const,
+      error: { code: "ADMIN_REQUIRED", message: "กรุณาเข้าสู่ระบบแอดมิน" },
+    };
+  const response = await fetchApi<T>(
+    endpoint,
+    { ...options, headers: { Authorization: `Bearer ${session.token}` } },
+    ADMIN_API_BASE_URL,
+  );
+  if (!response.success && response.error.code === "ADMIN_REQUIRED")
+    invalidateAdminSession(session.token);
+  return response;
+}
+
 export interface DashboardSummaryData {
   total_submissions: number;
   by_type: {
@@ -236,14 +257,14 @@ function dashboardQuery(params: DashboardSubmissionsParams = {}) {
   return query.size ? "?" + query : "";
 }
 export async function getDashboardSummary(params?: DashboardSubmissionsParams) {
-  return fetchApi<DashboardSummaryData>(
+  return fetchAdminApi<DashboardSummaryData>(
     "/dashboard/summary" + dashboardQuery(params),
   );
 }
 export async function getDashboardSubmissions(
   params?: DashboardSubmissionsParams,
 ) {
-  return fetchApi<DashboardSubmissionsResponse>(
+  return fetchAdminApi<DashboardSubmissionsResponse>(
     "/dashboard/submissions" + dashboardQuery(params),
   );
 }
@@ -267,7 +288,7 @@ export interface StoredExportPage extends DashboardSubmissionsResponse {
   }[];
 }
 export async function getExportData(params?: DashboardSubmissionsParams) {
-  return fetchApi<StoredExportPage>(
+  return fetchAdminApi<StoredExportPage>(
     "/dashboard/export-data" + dashboardQuery(params),
     { timeoutMs: 30000 },
   );

@@ -2,8 +2,9 @@ import { Hono } from "hono";
 import type { Env } from "../types";
 import { AssessmentRepository } from "../repositories/assessment-repository";
 import { DashboardService } from "../services/dashboard-service";
-export const dashboardRoute = new Hono<{ Bindings: Env }>();
-const service = (env: Env) =>
+type DashboardBindings = Pick<Env, "DB">;
+export const dashboardRoute = new Hono<{ Bindings: DashboardBindings }>();
+const service = (env: DashboardBindings) =>
   new DashboardService(new AssessmentRepository(env.DB));
 dashboardRoute.get("/summary", async (c) =>
   c.json({

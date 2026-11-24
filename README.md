@@ -22,7 +22,7 @@ Hosting: Cloudflare Pages
 
 ## Important Rules
 
-- No Login
+- ผู้ตอบแบบประเมินใช้งานได้โดยไม่ต้องเข้าสู่ระบบ
 - No Register
 - No Dynamic Route
 - Use Query String
@@ -76,6 +76,18 @@ Not included:
 
 
 ## v3 Development
+
+### Dashboard สำหรับแอดมิน
+
+แตะรูปการ์ตูนที่หน้าแรก 10 ครั้ง หรือเปิด `/dashboard` โดยตรง แล้วใส่รหัสผ่านแอดมิน หน้าเว็บตรวจรหัสจากค่าที่คำนวณตอน build และเก็บเซสชันในเบราว์เซอร์ 24 ชั่วโมง คำขอ API เริ่มเมื่อต้องโหลดข้อมูล Dashboard หรือส่งออก Excel
+
+ตั้ง `ADMIN_PASSWORD` ได้จาก Cloudflare → Workers & Pages → โปรเจกต์ Pages ของเว็บ → Settings → Variables and Secrets เลือกเก็บแบบเข้ารหัส แล้ว deploy Pages ให้ใช้ค่าใหม่ การเปลี่ยนรหัสทำให้เซสชันเดิมหมดสิทธิ์ทันทีที่ deployment ใหม่มีผล
+
+สำหรับการเปิดใช้ครั้งแรก ให้ผูก D1 เดิมกับ Pages ด้วยชื่อ `DB` ใน Settings → Bindings ให้ตรงกับ environment ของ Worker แล้ว deploy Worker กับ Pages จากรากโปรเจกต์ เพื่อให้ Pages พบ `functions/`
+
+ทดสอบในเครื่องโดยใส่ `ADMIN_PASSWORD` ในไฟล์ `.env` ที่รากโปรเจกต์ ตั้ง `NEXT_PUBLIC_API_BASE_URL=http://localhost:8787/api` ใน `.env.local` แล้วรัน `npm run db:migrate:local` และ `npm run build` เปิด `npm run worker:dev` และ `npm run pages:dev` คนละเทอร์มินัล จากนั้นเปิด `http://localhost:8788` หลังเปลี่ยนรหัสใน `.env` ให้ build และเปิด `npm run pages:dev` ใหม่
+
+ถ้าเปิดหน้าเว็บด้วย `npm run dev` ที่ `http://localhost:3000` คำขอข้อมูล Dashboard จะผ่าน Pages local ที่พอร์ต 8788 การตรวจรหัสทำในเบราว์เซอร์ทั้งสองพอร์ต
 
 P0–P8 specifications and verification are tracked in [docs/v3/PROGRESS_V3.md](docs/v3/PROGRESS_V3.md). See [P2 API, migration and test guide](docs/v3/P2_REPORT_V3.md) and [P1 domain guide](docs/v3/P1_REPORT_V3.md) before using database commands. `db:migrate` now applies numbered migrations with schema preflight; `schema.sql`/`seed.sql` are legacy fixtures, not the v3 install path. Keep legacy seed/truncate commands away from databases that contain revision history.
 

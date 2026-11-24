@@ -5,6 +5,7 @@ import { Button } from "@/components/ui";
 import { completionDestination } from "@/lib/v3/completion-navigation";
 import Link from "next/link";
 import { getResult } from "@/lib/api";
+import { ROUTES } from "@/lib/constants";
 import { EnvironmentResult } from "@/components/environment/environment-result";
 import { HealthResultV3 } from "@/components/health/health-result";
 import { SatisfactionResult } from "@/components/satisfaction/satisfaction-result";
@@ -68,8 +69,8 @@ function ResultContent() {
         <button className="action-button" onClick={reload}>
           ลองใหม่
         </button>
-        <Link className="action-button" href="/dashboard">
-          กลับ Dashboard
+        <Link className="action-button" href={ROUTES.HOME}>
+          กลับหน้าแรก
         </Link>
       </main>
     );
@@ -84,7 +85,7 @@ function ResultContent() {
       ? data.assessment_group === "environment"
         ? "/assessment/environment"
         : "/assessment/health-risk"
-      : "/dashboard",
+      : ROUTES.HOME,
   );
   return (
     <div
@@ -96,7 +97,11 @@ function ResultContent() {
         title={titles[String(data.assessment_type)] || "ผลการประเมิน"}
         subtitle={String(data.submission_code)}
         showBack
-        backHref="/dashboard"
+        backHref={
+          params.get("returnTo") === ROUTES.DASHBOARD
+            ? ROUTES.DASHBOARD
+            : ROUTES.HOME
+        }
       />
       <main className="mx-auto w-full max-w-[1200px] min-w-0 px-4 py-5 min-[1440px]:px-8">
         <ReportControls data={data} />

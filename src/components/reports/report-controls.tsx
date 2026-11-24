@@ -4,6 +4,7 @@ import Link from "next/link";
 import { History, ChevronDown, Download } from "lucide-react";
 import { Button, useGlobalLoading } from "@/components/ui";
 import { getSubmissionRevisionsV3 } from "@/lib/api";
+import { readAdminSession } from "@/lib/admin-session";
 import {
   reportModel,
   recordedPass,
@@ -24,6 +25,7 @@ export function ReportControls({ data }: { data: StoredRecord }) {
   const [history, setHistory] = useState<StoredRecord[]>([]),
     [page, setPage] = useState(1),
     [total, setTotal] = useState(0),
+    [canExportHistory, setCanExportHistory] = useState(false),
     [historyError, setHistoryError] = useState("");
   const [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
@@ -32,6 +34,7 @@ export function ReportControls({ data }: { data: StoredRecord }) {
   useEffect(() => {
     let cancelled = false;
     if (!environment) return;
+    setCanExportHistory(readAdminSession() !== null);
     const request = getSubmissionRevisionsV3(m.code, page, 20);
     request.then((r) => {
       if (cancelled) return;
@@ -90,6 +93,7 @@ export function ReportControls({ data }: { data: StoredRecord }) {
       );
       setExportProgress("");
     } finally {
+      setCanExportHistory(readAdminSession() !== null);
       setBusy(false);
     }
   }
@@ -147,15 +151,17 @@ export function ReportControls({ data }: { data: StoredRecord }) {
               <p className="text-text-secondary text-sm">
                 เลือกดูข้อมูลที่บันทึกในแต่ละรอบ
               </p>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={exportHistory}
-                disabled={busy}
-              >
-                <Download className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
-                ดาวน์โหลดประวัติทุกรอบ Excel
-              </Button>
+              {canExportHistory && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={exportHistory}
+                  disabled={busy}
+                >
+                  <Download className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
+                  ดาวน์โหลดประวัติทุกรอบ Excel
+                </Button>
+              )}
             </div>
             {exportProgress && (
               <p role="status" className="text-text-secondary mb-3 text-sm">

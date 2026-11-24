@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CheckCircle2, Home, BarChart3 } from "lucide-react";
+import { CheckCircle2, Home } from "lucide-react";
 import { ROUTES } from "@/lib/constants";
 
 export default function CompletePage() {
@@ -35,13 +35,6 @@ export default function CompletePage() {
             >
               <Home className="h-4 w-4" />
               กลับหน้าแรก
-            </Link>
-            <Link
-              href={ROUTES.DASHBOARD}
-              className="btn-secondary-glass text-small flex items-center justify-center gap-2 px-4 py-2 font-medium"
-            >
-              <BarChart3 className="h-4 w-4" />
-              ดู Dashboard
             </Link>
           </div>
         </div>
