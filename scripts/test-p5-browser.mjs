@@ -1,11 +1,6 @@
 import { checkSubmitFlow } from "./submit-flow-check.mjs";
 import { createRequire } from "node:module";
 import {
-  createAdminTestSession,
-  seedAdminTestSession,
-  testAdminPassword,
-} from "./admin-test-session.mjs";
-import {
   mkdtempSync,
   readFileSync,
   readdirSync,
@@ -25,7 +20,7 @@ const require = createRequire(resolve("worker/package.json")),
   front = "http://127.0.0.1:3024",
   api = "http://127.0.0.1:3025";
 esbuild.buildSync({
-  entryPoints: ["scripts/test-worker-with-pages-admin.mjs"],
+  entryPoints: ["worker/src/index.ts"],
   bundle: true,
   platform: "browser",
   external: ["node:*"],
@@ -44,11 +39,7 @@ const mf = new Miniflare({
   compatibilityFlags: ["nodejs_compat"],
   d1Databases: ["DB"],
   r2Buckets: ["FILES"],
-  bindings: {
-    FRONTEND_URL: front,
-    ENVIRONMENT: "test",
-    ADMIN_PASSWORD: testAdminPassword,
-  },
+  bindings: { FRONTEND_URL: front, ENVIRONMENT: "test" },
   log: new Log(LogLevel.ERROR),
 });
 const db = await mf.getD1Database("DB");
@@ -73,7 +64,6 @@ if (split.status) throw new Error(split.stderr);
 for (const statements of JSON.parse(split.stdout))
   await db.batch(statements.map((sql) => db.prepare(sql)));
 await mf.ready;
-const adminSession = await createAdminTestSession();
 let pp = process.env.PLAYWRIGHT_MODULE_PATH;
 for (const dir of readdirSync(join(homedir(), ".npm/_npx"))) {
   const p = join(
@@ -102,8 +92,6 @@ const next = spawn(
       ...process.env,
       SAFECHECK_TEST_DIST_DIR: ".next-test-p5",
       NEXT_PUBLIC_API_BASE_URL: api + "/api",
-      NEXT_PUBLIC_ADMIN_API_BASE_URL: api + "/api",
-      ADMIN_PASSWORD: testAdminPassword,
     },
     stdio: ["ignore", "pipe", "pipe"],
   },
@@ -111,14 +99,10 @@ const next = spawn(
 let logs = "";
 next.stdout.on("data", (d) => (logs += d));
 next.stderr.on("data", (d) => (logs += d));
-const browser = await chromium.launch({
-    headless: true,
-    channel: process.env.PLAYWRIGHT_CHANNEL,
-  }),
+const browser = await chromium.launch({ headless: true }),
   context = await browser.newContext({ viewport: { width: 390, height: 844 } }),
   page = await context.newPage(),
   pageErrors = [];
-await seedAdminTestSession(context, front, adminSession);
 page.on("pageerror", (e) => pageErrors.push(e.message));
 let passed = 0;
 const checks = [];

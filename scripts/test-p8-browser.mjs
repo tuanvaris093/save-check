@@ -23,7 +23,7 @@ const require = createRequire(resolve("worker/package.json")),
   front = "http://127.0.0.1:3054",
   api = "http://127.0.0.1:3055";
 esbuild.buildSync({
-  entryPoints: ["scripts/test-worker-with-pages-admin.mjs"],
+  entryPoints: ["worker/src/index.ts"],
   bundle: true,
   platform: "browser",
   external: ["node:*"],
@@ -45,7 +45,6 @@ const mf = new Miniflare({
   bindings: {
     FRONTEND_URL: front,
     ENVIRONMENT: "test",
-    ADMIN_PASSWORD: testAdminPassword,
   },
   log: new Log(LogLevel.ERROR),
 });
@@ -100,7 +99,6 @@ const next = spawn(
       ...process.env,
       SAFECHECK_TEST_DIST_DIR: ".next-test-p8",
       NEXT_PUBLIC_API_BASE_URL: api + "/api",
-      NEXT_PUBLIC_ADMIN_API_BASE_URL: api + "/api",
       ADMIN_PASSWORD: testAdminPassword,
     },
     stdio: ["ignore", "pipe", "pipe"],

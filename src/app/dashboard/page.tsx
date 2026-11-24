@@ -5,10 +5,7 @@ import { PageHeader } from "@/components/layout";
 import { AssessmentDataTable } from "@/components/dashboard";
 import { AdminLoginDialog } from "@/components/dashboard/admin-login-dialog";
 import { LoadingState } from "@/components/ui";
-import {
-  ADMIN_SESSION_INVALIDATED,
-  readAdminSession,
-} from "@/lib/admin-session";
+import { readAdminSession } from "@/lib/admin-session";
 import { ROUTES } from "@/lib/constants";
 import { BarChart3 } from "lucide-react";
 
@@ -17,12 +14,7 @@ export default function DashboardPage() {
   const [expiresAt, setExpiresAt] = useState<number | null>();
 
   useEffect(() => {
-    const lock = () => setExpiresAt(null);
-    window.addEventListener(ADMIN_SESSION_INVALIDATED, lock);
     setExpiresAt(readAdminSession()?.expiresAt ?? null);
-    return () => {
-      window.removeEventListener(ADMIN_SESSION_INVALIDATED, lock);
-    };
   }, []);
 
   useEffect(() => {

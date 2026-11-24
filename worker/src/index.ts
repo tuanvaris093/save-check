@@ -6,6 +6,7 @@ import { asApiError, fail } from "./lib/errors";
 import type { Env } from "./types";
 import { submissionsRoute } from "./routes/submissions";
 import { resultsRoute } from "./routes/results";
+import { dashboardRoute } from "./routes/dashboard";
 import { healthPendingRoute } from "./routes/health-pending";
 
 const app = new Hono<{ Bindings: Env }>();
@@ -68,6 +69,7 @@ app.get("/api/health", (c) => {
 // Mount Routes under /api
 app.route("/api/submissions", submissionsRoute);
 app.route("/api/results", resultsRoute);
+app.route("/api/dashboard", dashboardRoute);
 app.route("/api/health-light-drafts", healthPendingRoute);
 app.route("/api/files", filesRoute);
 

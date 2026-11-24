@@ -5,15 +5,13 @@ import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import assert from "node:assert/strict";
 import { pathToFileURL } from "node:url";
-import { createAdminSession } from "../shared/admin-authorization.ts";
 const require = createRequire(resolve("worker/package.json"));
 const { Miniflare, Log, LogLevel } = require("miniflare");
 const esbuild = require("esbuild");
-const adminPassword = crypto.randomUUID();
 const temp = mkdtempSync(join(tmpdir(), "savecheck-p2-api-")),
   script = join(temp, "worker.mjs");
 esbuild.buildSync({
-  entryPoints: ["scripts/test-worker-with-pages-admin.mjs"],
+  entryPoints: ["worker/src/index.ts"],
   bundle: true,
   platform: "browser",
   external: ["node:*"],
@@ -33,7 +31,6 @@ const mf = new Miniflare({
     ENVIRONMENT: "test",
     FRONTEND_URL: "http://localhost:3000",
     MAINTENANCE_TOKEN: "test-maintenance-only",
-    ADMIN_PASSWORD: adminPassword,
   },
   log: new Log(LogLevel.ERROR),
 });
@@ -95,16 +92,7 @@ async function call(path, body, method = "POST", extra = {}) {
   }
   return { status: res.status, json, headers: res.headers };
 }
-let adminToken;
-const get = (path) =>
-  call(
-    path,
-    undefined,
-    "GET",
-    path.startsWith("/dashboard/")
-      ? { Authorization: `Bearer ${adminToken}` }
-      : {},
-  );
+const get = (path) => call(path, undefined, "GET");
 const key = () => crypto.randomUUID();
 const answers = (n) =>
   Object.fromEntries(
@@ -225,48 +213,6 @@ const satisfaction = (group = "health") => ({
       }),
 });
 try {
-  await check(
-    "Dashboard and Excel require a valid 24-hour admin session",
-    async () => {
-      for (const path of ["summary", "submissions", "export-data"]) {
-        const denied = await call(`/dashboard/${path}`, undefined, "GET");
-        assert.equal(denied.status, 401);
-        assert.equal(denied.headers.get("Cache-Control"), "no-store");
-      }
-      assert.equal(
-        (await call("/admin/login", { password: adminPassword })).status,
-        404,
-      );
-      assert.equal((await get("/admin/session")).status, 404);
-
-      const now = Date.now();
-      const { token, expiresAt } = await createAdminSession(adminPassword, now);
-      const day = 24 * 60 * 60 * 1000;
-      assert.equal(expiresAt, now + day);
-      const headers = { Authorization: `Bearer ${token}` };
-      assert.equal(
-        (await call("/dashboard/summary", undefined, "GET", headers)).status,
-        200,
-      );
-      for (const invalid of [
-        await createAdminSession(adminPassword, now - day - 1),
-        await createAdminSession("wrong password", now),
-        await createAdminSession(adminPassword, now + day),
-      ]) {
-        const rejected = await call(
-          "/dashboard/export-data",
-          undefined,
-          "GET",
-          {
-            Authorization: `Bearer ${invalid.token}`,
-          },
-        );
-        assert.equal(rejected.status, 401);
-      }
-      adminToken = token;
-    },
-  );
-
   await check(
     "upload validates MIME, preserves staged file and retries by hash",
     async () => {

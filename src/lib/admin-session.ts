@@ -1,18 +1,20 @@
-import {
-  adminPasswordVerifier,
-  createAdminSession,
-} from "../../shared/admin-authorization";
+import { adminPasswordVerifier } from "../../shared/admin-authorization";
 
-export type AdminSession = Awaited<ReturnType<typeof createAdminSession>>;
+type AdminSession = { expiresAt: number; verifier: string };
 
 const STORAGE_KEY = "safecheck:admin-session";
-export const ADMIN_SESSION_INVALIDATED = "safecheck:admin-session-invalidated";
+const SESSION_DURATION = 24 * 60 * 60 * 1000;
+const configuredVerifier = process.env.NEXT_PUBLIC_ADMIN_PASSWORD_VERIFIER;
 
 export async function signInAdmin(password: string) {
-  const expected = process.env.NEXT_PUBLIC_ADMIN_PASSWORD_VERIFIER;
-  if (!expected) throw new Error("ยังไม่ได้ตั้งรหัสผ่านแอดมินใน .env");
-  if ((await adminPasswordVerifier(password)) !== expected) return null;
-  return createAdminSession(password);
+  if (!configuredVerifier)
+    throw new Error("ยังไม่ได้ตั้งรหัสผ่านแอดมินใน .env");
+  if ((await adminPasswordVerifier(password)) !== configuredVerifier)
+    return null;
+  return {
+    expiresAt: Date.now() + SESSION_DURATION,
+    verifier: configuredVerifier,
+  };
 }
 
 export function readAdminSession(): AdminSession | null {
@@ -21,8 +23,8 @@ export function readAdminSession(): AdminSession | null {
     if (!stored) return null;
     const session = JSON.parse(stored) as AdminSession;
     if (
-      typeof session?.token === "string" &&
-      session.token.startsWith("sv2.") &&
+      configuredVerifier &&
+      session?.verifier === configuredVerifier &&
       Number.isFinite(session.expiresAt) &&
       session.expiresAt > Date.now()
     )
@@ -36,11 +38,4 @@ export function readAdminSession(): AdminSession | null {
 
 export function saveAdminSession(session: AdminSession) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-}
-
-export function invalidateAdminSession(token: string) {
-  const current = readAdminSession();
-  if (current && current.token !== token) return;
-  if (current) localStorage.removeItem(STORAGE_KEY);
-  window.dispatchEvent(new Event(ADMIN_SESSION_INVALIDATED));
 }

@@ -10,5 +10,5 @@
     "resolveJsonModule": true,
     "esModuleInterop": true
   },
-  "include": ["src/**/*", "../shared/**/*.ts", "../functions/**/*.ts"]
+  "include": ["src/**/*", "../shared/**/*.ts"]
 }

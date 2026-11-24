@@ -1,9 +1,12 @@
-import { createAdminSession } from "../shared/admin-authorization.ts";
+import { adminPasswordVerifier } from "../shared/admin-authorization.ts";
 
 export const testAdminPassword = crypto.randomUUID();
 
-export function createAdminTestSession() {
-  return createAdminSession(testAdminPassword);
+export async function createAdminTestSession() {
+  return {
+    expiresAt: Date.now() + 24 * 60 * 60 * 1000,
+    verifier: await adminPasswordVerifier(testAdminPassword),
+  };
 }
 
 export function seedAdminTestSession(context, origin, session) {

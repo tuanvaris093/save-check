@@ -627,7 +627,7 @@ export function AssessmentDataTable({
                     <td className="px-4 py-3 whitespace-nowrap">
                       <Link
                         className="action-button action-button-sm font-mono"
-                        href={`/result?submissionId=${encodeURIComponent(item.submission_code)}&returnTo=%2Fdashboard`}
+                        href={`/result?submissionId=${encodeURIComponent(item.submission_code)}`}
                       >
                         {item.submission_code}
                       </Link>
@@ -667,7 +667,7 @@ export function AssessmentDataTable({
                     <td className="px-4 py-3 whitespace-nowrap">
                       <Link
                         className="action-button action-button-sm"
-                        href={`/result?submissionId=${encodeURIComponent(item.submission_code)}&returnTo=%2Fdashboard`}
+                        href={`/result?submissionId=${encodeURIComponent(item.submission_code)}`}
                       >
                         ดูผลล่าสุด{" "}
                         <ChevronRight

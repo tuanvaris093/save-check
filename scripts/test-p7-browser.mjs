@@ -19,7 +19,7 @@ const require = createRequire(resolve("worker/package.json")),
   front = "http://127.0.0.1:3044",
   api = "http://127.0.0.1:3045";
 esbuild.buildSync({
-  entryPoints: ["scripts/test-worker-with-pages-admin.mjs"],
+  entryPoints: ["worker/src/index.ts"],
   bundle: true,
   platform: "browser",
   external: ["node:*"],
@@ -41,7 +41,6 @@ const mf = new Miniflare({
   bindings: {
     FRONTEND_URL: front,
     ENVIRONMENT: "test",
-    ADMIN_PASSWORD: testAdminPassword,
   },
   log: new Log(LogLevel.ERROR),
 });
@@ -95,7 +94,6 @@ const next = spawn(
       ...process.env,
       SAFECHECK_TEST_DIST_DIR: ".next-test-p7",
       NEXT_PUBLIC_API_BASE_URL: api + "/api",
-      NEXT_PUBLIC_ADMIN_API_BASE_URL: api + "/api",
       ADMIN_PASSWORD: testAdminPassword,
     },
     stdio: ["ignore", "pipe", "pipe"],
@@ -130,15 +128,11 @@ async function wait(fn) {
 const key = () => crypto.randomUUID(),
   xlsx = createRequire(resolve("package.json"))("xlsx");
 const rows = (w, name) => xlsx.utils.sheet_to_json(w.Sheets[name]);
-let adminToken;
 async function call(path, body, method = "POST") {
   const r = await fetch(api + "/api" + path, {
     method,
     headers: {
       Origin: front,
-      ...(path.startsWith("/dashboard/")
-        ? { Authorization: `Bearer ${adminToken}` }
-        : {}),
       ...(body === undefined ? {} : { "Content-Type": "application/json" }),
     },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
@@ -327,9 +321,6 @@ try {
       await page.waitForURL(front + "/dashboard");
       await page.getByRole("heading", { name: "Dashboard" }).waitFor();
       await report;
-      adminToken = await page.evaluate(
-        () => JSON.parse(localStorage.getItem("safecheck:admin-session")).token,
-      );
       await page.reload();
       await page.getByRole("heading", { name: "Dashboard" }).waitFor();
       assert.equal(await modal.count(), 0);
